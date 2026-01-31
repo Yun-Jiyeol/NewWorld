@@ -370,7 +370,7 @@ public class WorldBaseCode : MonoBehaviour
             neighbor.go.SetActive(true);
         }
     }
-    BlockFace GetVisibleFaces(Vector3Int pos)
+    BlockFace GetVisibleFaces(Vector3Int pos, BlockData data)
     {
         BlockFace faces = BlockFace.All;
 
@@ -381,7 +381,7 @@ public class WorldBaseCode : MonoBehaviour
             if (!Blocks.TryGetValue(nPos, out BlockData n))
                 continue;
 
-            if (n.IsTransparent)
+            if (n.IsTransparent != data.IsTransparent)
                 continue;
 
             if (dir == Vector3Int.up) faces &= ~BlockFace.Up;
@@ -401,6 +401,6 @@ public class WorldBaseCode : MonoBehaviour
             return;
 
         var meshGen = data.go.GetComponent<BlockMeshGenerator>();
-        meshGen.Build(GetVisibleFaces(pos));
+        meshGen.Build(GetVisibleFaces(pos, data));
     }
 }
