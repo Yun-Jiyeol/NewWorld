@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
+[System.Flags]
+public enum BlockFace
+{
+    None = 0,
+    Up = 1 << 0,
+    Down = 1 << 1,
+    Left = 1 << 2,
+    Right = 1 << 3,
+    Front = 1 << 4,
+    Back = 1 << 5,
+
+    All = Up | Down | Left | Right | Front | Back
+}
+
 public class BlockData
 {
     public GameObject go;
@@ -129,6 +143,9 @@ public class WorldBaseCode : MonoBehaviour
 
         OnBlockPlaced(gridPos);
 
+        UpdateBlockMesh(gridPos);
+        foreach (var dir in CheckDirs) UpdateBlockMesh(gridPos + dir);
+
         CheckSize(_position);
     }
 
@@ -144,7 +161,6 @@ public class WorldBaseCode : MonoBehaviour
         block.GetComponent<BaseBlockCode>().SetColor(_color.color);
         block.GetComponent<BaseBlockCode>().SetColor(_alfar);
 
-
         BlockData newData = new BlockData
         {
             go = block,
@@ -154,9 +170,13 @@ public class WorldBaseCode : MonoBehaviour
         {
             newData.IsTransparent = true;
         }
+
         Blocks.Add(gridPos, newData);
 
         OnBlockPlaced(gridPos);
+
+        UpdateBlockMesh(gridPos);
+        foreach (var dir in CheckDirs) UpdateBlockMesh(gridPos + dir);
 
         CheckSize(_position);
     }
@@ -242,6 +262,8 @@ public class WorldBaseCode : MonoBehaviour
         Destroy(_destroyedblock);
 
         OnBlockDestroyed(keyToRemove);
+
+        foreach (var dir in CheckDirs) UpdateBlockMesh(keyToRemove + dir);
 
         if (Blocks.Count == 0 && isdelete)
         {
@@ -347,5 +369,38 @@ public class WorldBaseCode : MonoBehaviour
 
             neighbor.go.SetActive(true);
         }
+    }
+    BlockFace GetVisibleFaces(Vector3Int pos)
+    {
+        BlockFace faces = BlockFace.All;
+
+        foreach (var dir in CheckDirs)
+        {
+            Vector3Int nPos = pos + dir;
+
+            if (!Blocks.TryGetValue(nPos, out BlockData n))
+                continue;
+
+            if (n.IsTransparent)
+                continue;
+
+            if (dir == Vector3Int.up) faces &= ~BlockFace.Up;
+            if (dir == Vector3Int.down) faces &= ~BlockFace.Down;
+            if (dir == Vector3Int.left) faces &= ~BlockFace.Left;
+            if (dir == Vector3Int.right) faces &= ~BlockFace.Right;
+            if (dir == new Vector3Int(0, 0, 1)) faces &= ~BlockFace.Front;
+            if (dir == new Vector3Int(0, 0, -1)) faces &= ~BlockFace.Back;
+        }
+
+        return faces;
+    }
+
+    void UpdateBlockMesh(Vector3Int pos)
+    {
+        if (!Blocks.TryGetValue(pos, out BlockData data))
+            return;
+
+        var meshGen = data.go.GetComponent<BlockMeshGenerator>();
+        meshGen.Build(GetVisibleFaces(pos));
     }
 }

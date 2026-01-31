@@ -93,8 +93,17 @@ public class InputManager : MonoBehaviour
                 {
                     if (ReadyToBuildBlock == null)
                     {
-                        ReadyToBuildBlock = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, TargetGameObject.transform);
+                        ReadyToBuildBlock = new GameObject();
+                        ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
+
                         ReadyToBuildBlock.transform.localScale = Vector3.one;
+
+                        MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
+                        mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
+
+                        MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
+                        mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
+
                         ReadyToBuildBlock.AddComponent<SampleBlcok>();
                     }
                     if(showpreviewblock) ReadyToBuildBlock.SetActive(true);
@@ -180,8 +189,17 @@ public class InputManager : MonoBehaviour
                 {
                     if (ReadyToBuildBlock == null)
                     {
-                        ReadyToBuildBlock = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, TargetGameObject.transform);
+                        ReadyToBuildBlock = new GameObject();
+                        ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
+
                         ReadyToBuildBlock.transform.localScale = Vector3.one;
+
+                        MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
+                        mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
+
+                        MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
+                        mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
+
                         ReadyToBuildBlock.AddComponent<SampleBlcok>();
                     }
 

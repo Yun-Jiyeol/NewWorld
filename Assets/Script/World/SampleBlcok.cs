@@ -17,8 +17,6 @@ public class SampleBlcok : MonoBehaviour
     {
         Color _rcoloc = new Color(0f, 0f, 0f, 0.4f);
         SetColor(_rcoloc);
-
-        gameObject.GetComponent<BoxCollider>().enabled = false;
     }
 
     public void SetColor(Color color)
