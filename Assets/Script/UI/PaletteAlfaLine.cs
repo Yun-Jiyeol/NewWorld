@@ -15,8 +15,6 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
     Color color;
     public Material targetMaterial;
 
-    Vector2 savedate = new Vector2(150f, 35f);
-
     bool isPressed = false;
 
     float Max = 150f;
@@ -25,12 +23,12 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private void Awake()
     {
         parentRect = transform as RectTransform;
-        GameManager.Instance.BuildManager.alfar = (savedate.x + 150f) / 300f;
     }
 
     public void Setting()
     {
-        childToMove.anchoredPosition = savedate;
+        float value = Mathf.Lerp(-150f, 150f, GameManager.Instance.BuildManager.alfar);
+        childToMove.anchoredPosition = new Vector2(value, 35f);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -79,11 +77,9 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
             {
                 localPoint.x = Min;
             }
+            childToMove.anchoredPosition = new Vector2(localPoint.x, 35f);
 
-            savedate = new Vector2(localPoint.x, 35f);
-            childToMove.anchoredPosition = savedate;
-
-            GameManager.Instance.BuildManager.alfar = (savedate.x + 150f) / 300f;
+            GameManager.Instance.BuildManager.alfar = (localPoint.x + 150f) / 300f;
         }
         else if (Input.GetMouseButtonUp(0)) isPressed = false;
     }
