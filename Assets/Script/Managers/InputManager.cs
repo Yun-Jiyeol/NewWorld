@@ -136,6 +136,11 @@ public class InputManager : MonoBehaviour
                             StopCoroutine(BuildCoroutine);
                         }
                         BuildCoroutine = StartCoroutine(BuildMoreBlocksOnce());
+
+                        Color addcolor = GameManager.Instance.BuildManager.MainColor.color;
+                        addcolor.a = GameManager.Instance.BuildManager.alfar;
+
+                        GameManager.Instance.BuildManager.AddPreColor(addcolor);
                     }
                     if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonDown(0))
                     {
@@ -409,10 +414,13 @@ public class InputManager : MonoBehaviour
 
     void SpawnNewBlock()
     {
+        Material SpawnedColor = GameManager.Instance.BuildManager.MainColor;
+        float alfar = GameManager.Instance.BuildManager.alfar;
+
         TargetGameObject.GetComponent<WorldBaseCode>().MakeNewBlocks(GameManager.Instance.BuildManager.ChooseBlock,
-            ReadyToBuildBlock.transform.localPosition, 
-            GameManager.Instance.BuildManager.MainColor,
-            GameManager.Instance.BuildManager.alfar
+            ReadyToBuildBlock.transform.localPosition,
+            SpawnedColor,
+            alfar
             );
     }
 }

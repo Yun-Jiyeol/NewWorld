@@ -12,12 +12,12 @@ public class PreColorUI : MonoBehaviour
 
     public void ChangePreColors()
     {
-        int i = 0;
+        int i = 3;
 
         foreach(GameObject precolor in precolors)
         {
             precolor.GetComponent<PreColor>().OnSetting(i);
-            i++;
+            i--;
         }
     }
 }

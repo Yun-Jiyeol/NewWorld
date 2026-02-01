@@ -20,6 +20,21 @@ public class BuildManager : MonoBehaviour
         PreColors.Add(_color);
 
         if (PreColors.Count > 4) PreColors.RemoveAt(0);
+
+        GameObject colorui = FindColor();
+        if (colorui == null) Debug.Log("Error");
+
+        colorui.GetComponent<ParetteUI>()._preColorUI.ChangePreColors();
+    }
+
+    GameObject FindColor()
+    {
+        foreach(var want in GameManager.Instance.UIManager.SelectionUI.uIBtnsSelectedUIMaterials)
+        {
+            if(want.UIenum == SelectionUIenum.Color) return want.UISelected;
+        }
+
+        return null;
     }
 
     public void AddSaveColor(Color _color)
