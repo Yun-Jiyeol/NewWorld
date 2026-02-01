@@ -13,10 +13,7 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
     bool isOnImage = false;
 
     Color color;
-    public Material targetMaterial;
     public Material SelectMaterial;
-
-    Vector2 savedate = new Vector2(-150f, 150f);
 
     float Max = 150f;
     float Min = -150f;
@@ -30,7 +27,13 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void Setting()
     {
-        childToMove.anchoredPosition = savedate;
+        Color.RGBToHSV(GameManager.Instance.BuildManager.MainColor.color, out float h, out float s, out float v);
+
+        float svalue = Mathf.Lerp(-150f, 150f, s);
+        float vvalue = Mathf.Lerp(-150f, 150f, v);
+
+        childToMove.anchoredPosition = new Vector2(svalue,vvalue);
+
         DrawPaletteLine();
     }
 
@@ -106,7 +109,7 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
         );
 
         targetImage.sprite = sprite;
-        targetMaterial.color = GetColorFromPalette(savedate);
+        GameManager.Instance.BuildManager.MainColor.color = GetColorFromPalette(childToMove.anchoredPosition);
     }
 
     private void Update()
@@ -142,10 +145,9 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
                 localPoint.y = Min;
             }
 
-            savedate = localPoint;
-            childToMove.anchoredPosition = savedate;
+            childToMove.anchoredPosition = localPoint;
 
-            targetMaterial.color = GetColorFromPalette(savedate);
+            GameManager.Instance.BuildManager.MainColor.color = GetColorFromPalette(childToMove.anchoredPosition);
         }
         else if(Input.GetMouseButtonUp(0)) isPressed = false;
     }

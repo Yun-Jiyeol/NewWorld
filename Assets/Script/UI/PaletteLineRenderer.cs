@@ -1,7 +1,4 @@
-using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,8 +14,6 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
     public Color[] colors = { };
 
     public Material targetMaterial;
-
-    Vector2 savedate = new Vector2(150f, 35f);
 
     bool isPressed = false;
 
@@ -36,8 +31,11 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         DrawPaletteLine();
 
-        childToMove.anchoredPosition = savedate;
-        targetMaterial.color = GetColorFromPalette(new Vector2(savedate.x, 0));
+        Color.RGBToHSV(GameManager.Instance.BuildManager.MainColor.color, out float h, out float s, out float v);
+        float value = Mathf.Lerp(-150f, 150f, h);
+
+        childToMove.anchoredPosition = new Vector2(value, 35f);
+        targetMaterial.color = GetColorFromPalette(new Vector2(value, 0));
         paretteui = _paretteui;
     }
 
@@ -140,8 +138,7 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
                 localPoint.x = Min;
             }
 
-            savedate = new Vector2(localPoint.x, 35f);
-            childToMove.anchoredPosition = savedate;
+            childToMove.anchoredPosition = new Vector2(localPoint.x, 35f);
 
             targetMaterial.color = GetColorFromPalette(new Vector2(localPoint.x, 0));
             paretteui._finalChooseColor.DrawPaletteLine();
