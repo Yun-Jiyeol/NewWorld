@@ -83,6 +83,7 @@ public class InputManager : MonoBehaviour
                 TargetMove(TargetGameObject);
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
+                SaveColors();
 
                 if (!isSomethingHit)
                 {
@@ -235,6 +236,20 @@ public class InputManager : MonoBehaviour
         ReadyToBuildBlock = TargetGameObject.GetComponent<WorldBaseCode>().MakePreview(7);
 
         ReadyToBuildBlock.transform.position = Camera.main.transform.forward * 5f;
+    }
+
+    void SaveColors()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) GameManager.Instance.BuildManager.AddSaveColor(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) GameManager.Instance.BuildManager.AddSaveColor(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) GameManager.Instance.BuildManager.AddSaveColor(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) GameManager.Instance.BuildManager.AddSaveColor(3);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) GameManager.Instance.BuildManager.AddSaveColor(4);
+        if (Input.GetKeyDown(KeyCode.Alpha6)) GameManager.Instance.BuildManager.AddSaveColor(5);
+        if (Input.GetKeyDown(KeyCode.Alpha7)) GameManager.Instance.BuildManager.AddSaveColor(6);
+        if (Input.GetKeyDown(KeyCode.Alpha8)) GameManager.Instance.BuildManager.AddSaveColor(7);
+        if (Input.GetKeyDown(KeyCode.Alpha9)) GameManager.Instance.BuildManager.AddSaveColor(8);
+        if (Input.GetKeyDown(KeyCode.Alpha0)) GameManager.Instance.BuildManager.AddSaveColor(9);
     }
 
     void TargetMove(GameObject _target, bool isMoveSide = true)

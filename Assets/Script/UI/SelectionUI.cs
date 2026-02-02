@@ -30,6 +30,25 @@ public class SelectionUI : MonoBehaviour
 
     public Image BackGround;
 
+    private void Start()
+    {
+        SettingAll();
+    }
+
+    void SettingAll()
+    {
+        for(int i = 0; i< uIBtnsSelectedUIMaterials.Count; i++)
+        {
+            uIBtnsSelectedUIMaterials[i].UISelected.TryGetComponent<BasicUI>(out BasicUI _basic);
+            if (_basic != null)
+            {
+                uIBtnsSelectedUIMaterials[i].UISelected.SetActive(true);
+                _basic.OnSetting();
+            }
+            uIBtnsSelectedUIMaterials[i].UISelected.SetActive(false);
+        }
+    }
+
     public void ChangeNowUIEnum(SelectionUIenum _changeenum)
     {
         nowUIenum = _changeenum;

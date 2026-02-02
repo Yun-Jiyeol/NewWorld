@@ -103,6 +103,7 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
         if (!isOnImage) return;
         StartCoroutine(MouseOutCoroutine());
     }
+
     IEnumerator MouseOutCoroutine()
     {
         while (isPressed)
@@ -145,6 +146,7 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
         }
         else if (Input.GetMouseButtonUp(0)) isPressed = false;
     }
+
     Color GetColorFromPalette(Vector2 localPoint)
     {
         Rect rect = parentRect.rect;
