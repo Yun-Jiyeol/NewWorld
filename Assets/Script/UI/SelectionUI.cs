@@ -18,7 +18,8 @@ public enum SelectionUIenum
     None,
     Setting,
     ChooseHowToMake,
-    Color
+    Color,
+    Save
 }
 
 public class SelectionUI : MonoBehaviour
@@ -42,6 +43,7 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.ChooseHowToMake:
             case SelectionUIenum.Color:
             case SelectionUIenum.Setting:
+            case SelectionUIenum.Save:
                 PopUpSettingPanel();
                 break;
         }
@@ -61,7 +63,7 @@ public class SelectionUI : MonoBehaviour
         _slect.UISelected.TryGetComponent<BasicUI>(out BasicUI _basic);
         if (_basic != null)
         {
-            _slect.UISelected.GetComponent<BasicUI>().OnSetting();
+            _basic.OnSetting();
         }
     }
 

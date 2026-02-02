@@ -14,6 +14,8 @@ public class BuildManager : MonoBehaviour
     public List<Color> PreColors;
     public List<Color> SaveColors;
 
+    ParetteUI paretteUI = null;
+
     public void AddPreColor(Color _color)
     {
         if (PreColors.Contains(_color)) return;
@@ -21,17 +23,15 @@ public class BuildManager : MonoBehaviour
 
         if (PreColors.Count > 4) PreColors.RemoveAt(0);
 
-        GameObject colorui = FindColor();
-        if (colorui == null) Debug.Log("Error");
-
-        colorui.GetComponent<ParetteUI>()._preColorUI.ChangePreColors();
+        if (paretteUI == null) paretteUI = FindColor();
+        paretteUI._preColorUI.ChangePreColors();
     }
 
-    GameObject FindColor()
+    ParetteUI FindColor()
     {
         foreach(var want in GameManager.Instance.UIManager.SelectionUI.uIBtnsSelectedUIMaterials)
         {
-            if(want.UIenum == SelectionUIenum.Color) return want.UISelected;
+            if(want.UIenum == SelectionUIenum.Color) return want.UISelected.GetComponent<ParetteUI>();
         }
 
         return null;
@@ -43,5 +43,15 @@ public class BuildManager : MonoBehaviour
         PreColors.Add(_color);
 
         if (PreColors.Count > 4) PreColors.RemoveAt(0);
+    }
+
+    public void SetColor(Color _color)
+    {
+        alfar = _color.a;
+        _color.a = 1;
+        MainColor.color = _color;
+
+        if (paretteUI == null) paretteUI = FindColor();
+        paretteUI.OnSetting();
     }
 }
