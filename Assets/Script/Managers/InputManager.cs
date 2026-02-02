@@ -151,6 +151,11 @@ public class InputManager : MonoBehaviour
                             BuildCoroutine = null;
                         }
                     }
+
+                    if (Input.GetMouseButtonDown(2))
+                    {
+                        GameManager.Instance.BuildManager.SetColor(OnRaycast.transform.GetComponent<MeshRenderer>().material.color);
+                    }
                 }
                 else
                 {
