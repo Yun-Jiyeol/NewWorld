@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static UnityEngine.GraphicsBuffer;
 
 public class InputManager : MonoBehaviour
@@ -85,6 +86,8 @@ public class InputManager : MonoBehaviour
                 TargetTurn(TargetGameObject);
                 SaveColors();
 
+
+                if (EventSystem.current.IsPointerOverGameObject()) return;
                 if (!isSomethingHit)
                 {
                     if (ReadyToBuildBlock == null) return;
