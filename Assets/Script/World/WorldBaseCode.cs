@@ -36,6 +36,7 @@ public class WorldBaseCode : MonoBehaviour
     };
 
     public Dictionary<Vector3Int, BlockData> Blocks;
+    public int Num;
 
     float Hiestest_X = 0;
     float Lowest_X = 0;
@@ -46,8 +47,10 @@ public class WorldBaseCode : MonoBehaviour
 
     BoxCollider boxCollider;
 
-    public void MakeNewWorld(int _x, int _y, int _z)
+    public void MakeNewWorld(int _x, int _y, int _z, int _num = 0)
     {
+        if(_num != 0) Num = _num;
+
         if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
         if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
 
@@ -126,6 +129,9 @@ public class WorldBaseCode : MonoBehaviour
 
     public void MakeNewBlocks(GameObject _block, Vector3 _position)
     {
+        if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
+        if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
+
         Vector3Int gridPos = Vector3Int.RoundToInt(_position);
 
         GameObject block = Instantiate(_block, transform);
@@ -149,8 +155,11 @@ public class WorldBaseCode : MonoBehaviour
         CheckSize(_position);
     }
 
-    public void MakeNewBlocks(GameObject _block, Vector3 _position, Material _color, float _alfar)
+    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar)
     {
+        if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
+        if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
+
         Vector3Int gridPos = Vector3Int.RoundToInt(_position);
 
         GameObject block = Instantiate(_block, transform);
@@ -158,7 +167,7 @@ public class WorldBaseCode : MonoBehaviour
              .SettingPosition(_position.x, _position.y, _position.z);
         block.layer = 6;
 
-        block.GetComponent<BaseBlockCode>().SetColor(_color.color);
+        block.GetComponent<BaseBlockCode>().SetColor(_color);
         block.GetComponent<BaseBlockCode>().SetColor(_alfar);
 
         BlockData newData = new BlockData
@@ -242,6 +251,9 @@ public class WorldBaseCode : MonoBehaviour
         }
 
         transform.localScale = endScale;
+
+        GameManager.Instance.SaveAndLoadManager.SaveWorldData(this);
+
         if (!isFollow) GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
     }
 

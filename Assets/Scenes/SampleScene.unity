@@ -7745,6 +7745,7 @@ GameObject:
   - component: {fileID: 1173635527}
   - component: {fileID: 1173635529}
   - component: {fileID: 1173635530}
+  - component: {fileID: 1173635531}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -7847,6 +7848,7 @@ MonoBehaviour:
   Worlds: []
   SpawnNewWorldPosition: {fileID: 461394647}
   SpawnedWorlds: {fileID: 1935748503}
+  HowManyYouMakeWorld: 0
 --- !u!114 &1173635530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7861,6 +7863,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainMaterial: {fileID: 2100000, guid: 951d0cf696e2c1544a66a9da40f4a291, type: 2}
   PreviewMaterial: {fileID: 2100000, guid: 5263881b6d16c5242946ad672e15f030, type: 2}
+--- !u!114 &1173635531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173635524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e678b70028619e245b4dd1218012f76c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1192128262
 GameObject:
   m_ObjectHideFlags: 0
@@ -8457,7 +8471,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   savecolor: {fileID: 1063661661}
-  SaveColors: []
 --- !u!1 &1283889592
 GameObject:
   m_ObjectHideFlags: 0

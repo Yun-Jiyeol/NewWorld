@@ -101,6 +101,7 @@ public class InputManager : MonoBehaviour
                         ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
 
                         ReadyToBuildBlock.transform.localScale = Vector3.one;
+                        ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
 
                         MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
                         mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
@@ -195,6 +196,7 @@ public class InputManager : MonoBehaviour
                         ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
 
                         ReadyToBuildBlock.transform.localScale = Vector3.one;
+                        ReadyToBuildBlock.transform.rotation = new Quaternion(0,0,0,0);
 
                         MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
                         mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
@@ -425,7 +427,7 @@ public class InputManager : MonoBehaviour
 
     void SpawnNewBlock()
     {
-        Material SpawnedColor = GameManager.Instance.BuildManager.MainColor;
+        Color SpawnedColor = GameManager.Instance.BuildManager.MainColor.color;
         float alfar = GameManager.Instance.BuildManager.alfar;
 
         TargetGameObject.GetComponent<WorldBaseCode>().MakeNewBlocks(GameManager.Instance.BuildManager.ChooseBlock,
