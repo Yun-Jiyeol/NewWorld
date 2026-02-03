@@ -1,4 +1,3 @@
-using DG.Tweening.Plugins.Core.PathCore;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -41,6 +40,25 @@ public class BlockSaveData
     public float a;
 }
 
+[System.Serializable]
+public class SaveAllData
+{
+    public int NumberOfWorld;
+
+    public ColorSaveData maincolor;
+    public List<ColorSaveData> precolor;
+    public List<ColorSaveData> savecolor;
+}
+
+[System.Serializable]
+public class ColorSaveData
+{
+    public float r;
+    public float g;
+    public float b;
+    public float a;
+}
+
 public class SaveAndLoadManager : MonoBehaviour
 {
     public static string RootPath => Application.persistentDataPath;
@@ -60,19 +78,33 @@ public class SaveAndLoadManager : MonoBehaviour
         EnsureSaveFolder();
         Debug.Log(Application.persistentDataPath);
         string[] files = Directory.GetFiles(SaveFolder);
+
+        List<string> worldfile = new List<string>();
+
         if (files.Length > 0)
         {
             foreach (string file in files)
             {
                 string fileName = System.IO.Path.GetFileName(file);
 
+                if (fileName.StartsWith("Data_"))
+                {
+                    LoadData(file);
+                }
                 if (fileName.StartsWith("World_"))
                 {
-                    LoadWorldData(file);
+                    worldfile.Add(file);
                 }
             }
         }
 
+        if(worldfile.Count > 0)
+        {
+            foreach(string file in worldfile)
+            {
+                LoadWorldData(file);
+            }
+        }
     }
 
     public void SaveWorldData(WorldBaseCode _world)
@@ -170,6 +202,95 @@ public class SaveAndLoadManager : MonoBehaviour
                 new Color(block.r, block.g, block.b),
                 block.a
             );
+        }
+    }
+
+    public void SaveData()
+    {
+        string fileName = $"Data_personal.json";
+
+        string path = System.IO.Path.Combine(SaveFolder, fileName);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+
+        BuildManager BM = GameManager.Instance.BuildManager;
+
+        SaveAllData savedata = new SaveAllData()
+        {
+            NumberOfWorld = GameManager.Instance.WorldManager.HowManyYouMakeWorld,
+
+            maincolor = new ColorSaveData()
+            {
+                r = BM.MainColor.color.r,
+                g = BM.MainColor.color.g,
+                b = BM.MainColor.color.b,
+                a = BM.alfar
+            },
+
+            precolor = new List<ColorSaveData>(),
+            savecolor = new List<ColorSaveData>()
+        };
+
+        if (BM.PreColors.Count > 0)
+        {
+            foreach (Color color in BM.PreColors)
+            {
+                savedata.precolor.Add(new ColorSaveData()
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                    a = color.a
+                });
+            }
+        }
+
+        if (BM.SaveColors.Count > 0)
+        {
+            foreach (Color color in BM.SaveColors)
+            {
+                savedata.savecolor.Add(new ColorSaveData()
+                {
+                    r = color.r,
+                    g = color.g,
+                    b = color.b,
+                    a = color.a
+                });
+            }
+        }
+
+        string json = JsonUtility.ToJson(savedata, true);
+        File.WriteAllText(path, json);
+    }
+
+    public void LoadData(string path)
+    {
+        if (!File.Exists(path)) return;
+
+        string json = File.ReadAllText(path);
+        SaveAllData worldsave = JsonUtility.FromJson<SaveAllData>(json);
+
+        GameManager.Instance.WorldManager.HowManyYouMakeWorld = worldsave.NumberOfWorld;
+
+        BuildManager BM = GameManager.Instance.BuildManager;
+
+        BM.MainColor.color =  new Color(worldsave.maincolor.r, worldsave.maincolor.g, worldsave.maincolor.b, worldsave.maincolor.a);
+
+        if (worldsave.precolor.Count > 0)
+        {
+            foreach (ColorSaveData color in worldsave.precolor)
+            {
+                BM.AddPreColor(new Color(color.r, color.g, color.b, color.a));
+            }
+        }
+        if (worldsave.savecolor.Count > 0)
+        {
+            for(int i = 0; i < worldsave.savecolor.Count; i++)
+            {
+                BM.AddSaveColor(new Color(worldsave.savecolor[i].r, worldsave.savecolor[i].g, worldsave.savecolor[i].b, worldsave.savecolor[i].a), i);
+            }
         }
     }
 }

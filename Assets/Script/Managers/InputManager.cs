@@ -48,6 +48,8 @@ public class InputManager : MonoBehaviour
 
                 if (Input.GetKeyDown(BuildNewWorld))
                 {
+                    GameManager.Instance.SaveAndLoadManager.SaveData();
+
                     GameObject newworld =  GameManager.Instance.WorldManager.MakeNewWorld(3,3,3);
                     StartCoroutine(MoveBlockOnMe(newworld, GameFlow.MakeOneWorld));
                 }
@@ -55,6 +57,8 @@ public class InputManager : MonoBehaviour
                 if(!isSomethingHit) return;
                 if (Input.GetMouseButtonDown(0))
                 {
+                    GameManager.Instance.SaveAndLoadManager.SaveData();
+
                     if (OnRaycast.transform.CompareTag("World"))
                     {
                         StartCoroutine(MoveBlockOnMe(OnRaycast.transform.gameObject, GameFlow.WatchOneWorld));
@@ -66,6 +70,8 @@ public class InputManager : MonoBehaviour
                 //임시 코드
                 if (Input.GetKeyDown(KeyCode.P))
                 {
+                    GameManager.Instance.SaveAndLoadManager.SaveData();
+
                     if (ReadyToBuildBlock != null)
                     {
                         Destroy(ReadyToBuildBlock);
@@ -165,6 +171,7 @@ public class InputManager : MonoBehaviour
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
                 if (Input.GetMouseButtonUp(1))
                 {
+                    GameManager.Instance.SaveAndLoadManager.SaveData();
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
