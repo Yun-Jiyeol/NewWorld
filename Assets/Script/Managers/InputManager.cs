@@ -120,7 +120,7 @@ public class InputManager : MonoBehaviour
                         if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
                         DestroyCoroutine = StartCoroutine(DestroyThisBlock());
                     }
-                    if ((Input.GetMouseButton(0) && isRotated) || Input.GetMouseButtonUp(0))
+                    if ((Input.GetMouseButton(0) && isRotated) || Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(1))
                     {
                         if (DestroyCoroutine != null)
                         {
@@ -135,24 +135,12 @@ public class InputManager : MonoBehaviour
 
                     if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0))
                     {
-                        if (BuildCoroutine != null)
-                        {
-                            StopCoroutine(BuildCoroutine);
-                        }
-                        BuildCoroutine = StartCoroutine(BuildMoreBlocksOnce());
+                        SpawnNewBlock();
 
                         Color addcolor = GameManager.Instance.BuildManager.MainColor.color;
                         addcolor.a = GameManager.Instance.BuildManager.alfar;
 
                         GameManager.Instance.BuildManager.AddPreColor(addcolor);
-                    }
-                    if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonDown(0))
-                    {
-                        if(BuildCoroutine != null)
-                        {
-                            StopCoroutine(BuildCoroutine);
-                            BuildCoroutine = null;
-                        }
                     }
 
                     if (Input.GetMouseButtonDown(2))
@@ -383,7 +371,7 @@ public class InputManager : MonoBehaviour
         GameManager.Instance.ChangeFlow(_gameflow);
     }
 
-    IEnumerator BuildMoreBlocksOnce()
+    /* IEnumerator BuildMoreBlocksOnce() 여러개 설치 코루틴 봉인
     {
         SpawnNewBlock();
 
@@ -394,7 +382,7 @@ public class InputManager : MonoBehaviour
             SpawnNewBlock();
             yield return new WaitForSeconds(0.1f);
         }
-    }
+    } */
 
     Quaternion startRotationInDestroy;
     GameObject destroyBlockInDestroy;
@@ -406,9 +394,9 @@ public class InputManager : MonoBehaviour
 
         startRotationInDestroy = destroyBlockInDestroy.transform.localRotation;
 
-        float duration = 1f;
+        float duration = 0.2f;
         float frequency = 8f;   // 흔들리는 속도
-        float angle = 20f;      // 고개 꺾이는 각도
+        float angle = 5f;      // 고개 꺾이는 각도
 
         float time = 0f;
 
