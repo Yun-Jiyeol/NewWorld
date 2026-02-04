@@ -10,7 +10,6 @@ public class UIBtnsSelectedUIMaterial
     public SelectionUIenum UIenum;
     public GameObject Btn;
     public GameObject UISelected;
-    public Material UIMaterial;
 }
 
 public enum SelectionUIenum
@@ -19,7 +18,8 @@ public enum SelectionUIenum
     Setting,
     ChooseHowToMake,
     Color,
-    Save
+    Save,
+    Light
 }
 
 public class SelectionUI : MonoBehaviour
@@ -74,7 +74,6 @@ public class SelectionUI : MonoBehaviour
         if(_slect == null) return;
 
         gameObject.GetComponent<RectTransform>().DOAnchorPosX(-350f, 0.5f);
-        BackGround.material = _slect.UIMaterial;
 
         OffAllUI();
         _slect.UISelected.SetActive(true);
