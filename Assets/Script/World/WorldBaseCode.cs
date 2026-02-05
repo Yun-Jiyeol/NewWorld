@@ -195,7 +195,7 @@ public class WorldBaseCode : MonoBehaviour
         {
             newData.IsLight = true;
 
-            UpdateBlockLightOnSpawn(_position, _color, _lightdistance);
+            UpdateBlockLightOnSpawn(gridPos, _color, _lightdistance);
         }
 
         Blocks.Add(gridPos, newData);
@@ -434,61 +434,97 @@ public class WorldBaseCode : MonoBehaviour
         meshGen.Build(GetVisibleFaces(pos, data));
     }
 
-    void UpdateBlockLightOnSpawn(Vector3 _position, Color _color, int _distance)
+    void UpdateBlockLightOnSpawn(Vector3Int lightPos, Color lightColor, int range)
     {
-        List<Vector3> ondistance = new List<Vector3>();
-        for (int x = (int)_position.x - _distance; x <= (int)_position.x + _distance; x++)
+        // 범위 내 블럭 수집 (정확도 + 성능 위해 HashSet)
+        HashSet<Vector3Int> targets = new HashSet<Vector3Int>();
+
+        for (int x = lightPos.x - range; x <= lightPos.x + range; x++)
         {
-            for (int y = (int)_position.y - _distance; y <= (int)_position.y + _distance; y++)
+            for (int y = lightPos.y - range; y <= lightPos.y + range; y++)
             {
-                for (int z = (int)_position.z - _distance; z <= (int)_position.z + _distance; z++)
+                for (int z = lightPos.z - range; z <= lightPos.z + range; z++)
                 {
-                    if(Blocks.ContainsKey(new Vector3Int(x, y, z)))
-                    {
-                        if (!Blocks[new Vector3Int(x, y, z)].go.activeSelf) continue;
-                        ondistance.Add(new Vector3(x, y, z));
-                    }
+                    Vector3Int pos = new Vector3Int(x, y, z);
+
+                    if (!Blocks.TryGetValue(pos, out BlockData data))
+                        continue;
+
+                    if (!data.go.activeSelf)
+                        continue;
+
+                    float dist = Vector3Int.Distance(lightPos, pos);
+                    if (dist > range)
+                        continue;
+
+                    targets.Add(pos);
                 }
             }
         }
 
-        if(ondistance.Count == 0) return;
-        foreach(Vector3 block in ondistance)
+        if (targets.Count == 0) return;
+
+        // 각 블럭에 대해 빛 계산
+        foreach (Vector3Int targetPos in targets)
         {
-            Color addcolor = _color;
+            if (targetPos == lightPos)
+                continue;
 
-            Vector3 dir = (block - _position).normalized;
-            float distance = Vector3.Distance(block, _position);
-            float step = 0.2f;
-            bool changecolor = true;
-            Vector3 beforepos = _position;
+            Vector3 dir = ((Vector3)(targetPos - lightPos)).normalized;
+            float distance = Vector3Int.Distance(lightPos, targetPos);
 
-            for(float i = 0; i < distance; i = i + step)
+            Color finalLight = lightColor;
+            bool blocked = false;
+
+            Vector3Int prevPos = lightPos;
+
+            // 광선 추적 (step 방식)
+            float step = 0.25f;
+            for (float t = step; t < distance; t += step)
             {
-                Vector3 pos = _position + i * dir;
-                pos = Vector3Int.RoundToInt(pos);
+                Vector3 sample = lightPos + dir * t;
+                Vector3Int samplePos = Vector3Int.RoundToInt(sample);
 
-                if(pos == beforepos) continue;
-                if(pos == _position || pos == block) continue;
+                if (samplePos == prevPos || samplePos == lightPos || samplePos == targetPos)
+                    continue;
 
-                beforepos = pos;
+                prevPos = samplePos;
 
-                if (ondistance.Contains(pos))
+                if (!Blocks.TryGetValue(samplePos, out BlockData midData))
+                    continue;
+
+                if (!midData.go.activeSelf)
+                    continue;
+
+                BaseBlockCode midBlock = midData.go.GetComponent<BaseBlockCode>();
+                Color midColor = midBlock.OriginalColor;
+
+                // 완전 불투명 → 차단
+                if (midColor.a >= 1f)
                 {
-                    Color ondistanceblockcolor = Blocks[new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z)].go.GetComponent<Renderer>().material.color;
+                    blocked = true;
+                    break;
+                }
 
-                    if (ondistanceblockcolor.a == 0) continue;
-                    if (ondistanceblockcolor.a == 1) 
-                    {
-                        changecolor= false;
-                        break; //중지
-                    } 
-
-                    addcolor += ondistanceblockcolor * ondistanceblockcolor.a * (Vector3.Distance(pos, _position) / _distance);
+                // 반투명 → 색 필터링
+                if (midColor.a > 0f)
+                {
+                    float attenuate = 1f - (Vector3Int.Distance(lightPos, samplePos) / range);
+                    finalLight += midColor * midColor.a * attenuate;
                 }
             }
 
-            if (changecolor) Blocks[new Vector3Int((int)block.x, (int)block.y, (int)block.z)].go.GetComponent<BaseBlockCode>().AddLight(addcolor * Mathf.Clamp01(1- (distance / _distance)));
+            if (blocked)
+                continue;
+
+            float intensity = Mathf.Clamp01(1f - (distance / range));
+            Color applied = finalLight * intensity;
+            applied.a = 1f;
+
+            BaseBlockCode targetBlock =
+                Blocks[targetPos].go.GetComponent<BaseBlockCode>();
+
+            targetBlock.AddLight(applied);
         }
     }
 }

@@ -6,7 +6,7 @@ public class BaseBlockCode : MonoBehaviour
 {
     Renderer ren;
     MaterialPropertyBlock mpb;
-    Color OriginalColor;
+    public Color OriginalColor;
     Color NowColor;
 
     void Awake()
@@ -27,7 +27,9 @@ public class BaseBlockCode : MonoBehaviour
 
         Color baseColor = ren.sharedMaterial.color;
         baseColor.a = _alfar;
+
         OriginalColor = baseColor;
+        NowColor = baseColor;
 
         mpb.SetColor("_Color", baseColor);
         ren.SetPropertyBlock(mpb);
@@ -36,7 +38,9 @@ public class BaseBlockCode : MonoBehaviour
     public void SetColor(Color color)
     {
         ren.material.color = color;
+
         OriginalColor = color;
+        NowColor = color;
     }
 
     public void MakeOriginalColor()
@@ -46,11 +50,18 @@ public class BaseBlockCode : MonoBehaviour
 
     public void AddLight(Color _color)
     {
-        if(NowColor ==  null) NowColor = OriginalColor;
-
-        _color.a = 1;
-
+        _color.a = 1f;
         NowColor += _color;
-        ren.material.color = NowColor;
+        ren.material.color = ClampColor(NowColor);
+    }
+
+    Color ClampColor(Color c)
+    {
+        return new Color(
+            Mathf.Clamp01(c.r),
+            Mathf.Clamp01(c.g),
+            Mathf.Clamp01(c.b),
+            1f
+        );
     }
 }
