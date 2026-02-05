@@ -200,7 +200,7 @@ public class SaveAndLoadManager : MonoBehaviour
                 GameManager.Instance.BuildManager.BasicBlock,
                 new Vector3(block.x, block.y, block.z),
                 new Color(block.r, block.g, block.b),
-                block.a
+                block.a,0
             );
         }
     }

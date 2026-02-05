@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using static UnityEditor.PlayerSettings;
 
 [System.Flags]
@@ -21,6 +22,10 @@ public class BlockData
 {
     public GameObject go;
     public bool IsTransparent;
+
+    public bool IsLight;
+    public int LightDistance;
+    public float LightStrength;
 }
 
 public class WorldBaseCode : MonoBehaviour
@@ -142,7 +147,11 @@ public class WorldBaseCode : MonoBehaviour
         BlockData newData = new BlockData
         {
             go = block,
-            IsTransparent = false // 일단 기본값
+            IsTransparent = false, // 일단 기본값
+
+            IsLight = false,
+            LightDistance = 0,
+            LightStrength = 0
         };
         
         Blocks.Add(gridPos, newData);
@@ -155,7 +164,7 @@ public class WorldBaseCode : MonoBehaviour
         CheckSize(_position);
     }
 
-    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar)
+    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar, int _lightdistance)
     {
         if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
         if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
@@ -173,11 +182,20 @@ public class WorldBaseCode : MonoBehaviour
         BlockData newData = new BlockData
         {
             go = block,
-            IsTransparent = false // 일단 기본값
+            IsTransparent = false, // 일단 기본값
+
+            IsLight = false,
+            LightDistance = _lightdistance,
         };
         if(_alfar != 1)
         {
             newData.IsTransparent = true;
+        }
+        if (_lightdistance != 0) 
+        {
+            newData.IsLight = true;
+
+            UpdateBlockLightOnSpawn(_position, _color, _lightdistance);
         }
 
         Blocks.Add(gridPos, newData);
@@ -414,5 +432,63 @@ public class WorldBaseCode : MonoBehaviour
 
         var meshGen = data.go.GetComponent<BlockMeshGenerator>();
         meshGen.Build(GetVisibleFaces(pos, data));
+    }
+
+    void UpdateBlockLightOnSpawn(Vector3 _position, Color _color, int _distance)
+    {
+        List<Vector3> ondistance = new List<Vector3>();
+        for (int x = (int)_position.x - _distance; x <= (int)_position.x + _distance; x++)
+        {
+            for (int y = (int)_position.y - _distance; y <= (int)_position.y + _distance; y++)
+            {
+                for (int z = (int)_position.z - _distance; z <= (int)_position.z + _distance; z++)
+                {
+                    if(Blocks.ContainsKey(new Vector3Int(x, y, z)))
+                    {
+                        if (!Blocks[new Vector3Int(x, y, z)].go.activeSelf) continue;
+                        ondistance.Add(new Vector3(x, y, z));
+                    }
+                }
+            }
+        }
+
+        if(ondistance.Count == 0) return;
+        foreach(Vector3 block in ondistance)
+        {
+            Color addcolor = _color;
+
+            Vector3 dir = (block - _position).normalized;
+            float distance = Vector3.Distance(block, _position);
+            float step = 0.2f;
+            bool changecolor = true;
+            Vector3 beforepos = _position;
+
+            for(float i = 0; i < distance; i = i + step)
+            {
+                Vector3 pos = _position + i * dir;
+                pos = Vector3Int.RoundToInt(pos);
+
+                if(pos == beforepos) continue;
+                if(pos == _position || pos == block) continue;
+
+                beforepos = pos;
+
+                if (ondistance.Contains(pos))
+                {
+                    Color ondistanceblockcolor = Blocks[new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z)].go.GetComponent<Renderer>().material.color;
+
+                    if (ondistanceblockcolor.a == 0) continue;
+                    if (ondistanceblockcolor.a == 1) 
+                    {
+                        changecolor= false;
+                        break; //중지
+                    } 
+
+                    addcolor += ondistanceblockcolor * ondistanceblockcolor.a * (Vector3.Distance(pos, _position) / _distance);
+                }
+            }
+
+            if (changecolor) Blocks[new Vector3Int((int)block.x, (int)block.y, (int)block.z)].go.GetComponent<BaseBlockCode>().AddLight(addcolor * Mathf.Clamp01(1- (distance / _distance)));
+        }
     }
 }

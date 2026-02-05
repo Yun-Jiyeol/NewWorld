@@ -10,6 +10,7 @@ public class BuildManager : MonoBehaviour
 
     public Material MainColor;
     public float alfar = 1;
+    public int LightDistance = 0;
 
     public List<Color> PreColors;
     public List<Color> SaveColors;
