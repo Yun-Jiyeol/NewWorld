@@ -49,6 +49,8 @@ public class WorldBaseCode : MonoBehaviour
 
     BoxCollider boxCollider;
 
+    public int LightPower = 0;
+
     public void MakeNewWorld(int _x, int _y, int _z, int _num = 0)
     {
         if(_num != 0) Num = _num;
@@ -67,6 +69,7 @@ public class WorldBaseCode : MonoBehaviour
             }
         }
 
+        LightPower = 0;
         gameObject.transform.rotation = Quaternion.Euler(0,0,0);
         gameObject.transform.localScale = Vector3.one/ (Mathf.Max(_x,_y,_z));
     }
@@ -417,6 +420,21 @@ public class WorldBaseCode : MonoBehaviour
         var meshGen = data.go.GetComponent<BlockMeshGenerator>();
         meshGen.Build(GetVisibleFaces(pos, data));
     }
+
+    public Light ChangeLightPower()
+    {
+        Light light;
+        gameObject.TryGetComponent<Light>(out light);
+        if (light == null)
+        {
+            light = gameObject.AddComponent<Light>();
+            light.type = UnityEngine.LightType.Point;
+            light.range = 0;
+        }
+
+        return light;
+    }
+
 
     //빛은 제거하자 굳이? world단위 빛만 만들자
     /* void UpdateBlockLightOnSpawn(Vector3Int lightPos, Color lightColor, int range)

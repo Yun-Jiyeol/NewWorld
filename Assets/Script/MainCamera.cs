@@ -26,7 +26,8 @@ public class MainCamera : MonoBehaviour
         if(GameManager.Instance.flow == GameFlow.WatchOneWorld
             || GameManager.Instance.flow == GameFlow.None
             || GameManager.Instance.flow == GameFlow.Start
-            || GameManager.Instance.flow == GameFlow.MakeOneWorld) return;
+            || GameManager.Instance.flow == GameFlow.MakeOneWorld
+            || GameManager.Instance.flow == GameFlow.SelectOneWorld) return;
         if (stopCamera) return;
 
 

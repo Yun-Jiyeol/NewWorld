@@ -9,7 +9,8 @@ public enum GameFlow
     WatchOneWorld,
     Start,
     PutWorldInSpace,
-    MakeOneWorld
+    MakeOneWorld,
+    SelectOneWorld
 }
 
 
@@ -90,6 +91,14 @@ public class GameManager : MonoBehaviour
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.ChooseHowToMake);
+                break;
+
+            case GameFlow.SelectOneWorld:
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+                UIManager.Compass.SetActive(false);
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld });
+                UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
         }
     }

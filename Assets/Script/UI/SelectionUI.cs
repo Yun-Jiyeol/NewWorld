@@ -19,7 +19,7 @@ public enum SelectionUIenum
     ChooseHowToMake,
     Color,
     Save,
-    Light
+    LightOneWorld
 }
 
 public class SelectionUI : MonoBehaviour
@@ -63,6 +63,7 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.Color:
             case SelectionUIenum.Setting:
             case SelectionUIenum.Save:
+            case SelectionUIenum.LightOneWorld:
                 PopUpSettingPanel();
                 break;
         }

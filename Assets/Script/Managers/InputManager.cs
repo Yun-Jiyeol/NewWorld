@@ -1,5 +1,7 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -50,20 +52,31 @@ public class InputManager : MonoBehaviour
                 {
                     GameManager.Instance.SaveAndLoadManager.SaveData();
 
-                    GameObject newworld =  GameManager.Instance.WorldManager.MakeNewWorld(3,3,3);
+                    GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
                     StartCoroutine(MoveBlockOnMe(newworld, GameFlow.MakeOneWorld));
                 }
 
-                if(!isSomethingHit) return;
+                if (!isSomethingHit) return;
                 if (Input.GetMouseButtonDown(0))
                 {
                     GameManager.Instance.SaveAndLoadManager.SaveData();
 
                     if (OnRaycast.transform.CompareTag("World"))
                     {
-                        StartCoroutine(MoveBlockOnMe(OnRaycast.transform.gameObject, GameFlow.WatchOneWorld));
+                        TargetGameObject = OnRaycast.transform.gameObject;
+                        Camera.main.transform.LookAt(TargetGameObject.transform.position);
+                        GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+
+                        //StartCoroutine(MoveBlockOnMe(OnRaycast.transform.gameObject, GameFlow.WatchOneWorld));
                     }
                 }
+                break;
+
+            case GameFlow.SelectOneWorld:
+                if (EventSystem.current.IsPointerOverGameObject()) return;
+                TargetMove(TargetGameObject);
+                TargetScale(TargetGameObject);
+                TargetTurn(TargetGameObject);
                 break;
 
             case GameFlow.WatchOneWorld:
