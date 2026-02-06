@@ -430,6 +430,7 @@ public class WorldBaseCode : MonoBehaviour
             light = gameObject.AddComponent<Light>();
             light.type = UnityEngine.LightType.Point;
             light.range = 0;
+            light.intensity = 0;
         }
 
         return light;
