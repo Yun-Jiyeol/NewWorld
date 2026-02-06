@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using static UnityEditor.PlayerSettings;
@@ -22,10 +23,6 @@ public class BlockData
 {
     public GameObject go;
     public bool IsTransparent;
-
-    public bool IsLight;
-    public int LightDistance;
-    public float LightStrength;
 }
 
 public class WorldBaseCode : MonoBehaviour
@@ -148,10 +145,6 @@ public class WorldBaseCode : MonoBehaviour
         {
             go = block,
             IsTransparent = false, // 일단 기본값
-
-            IsLight = false,
-            LightDistance = 0,
-            LightStrength = 0
         };
         
         Blocks.Add(gridPos, newData);
@@ -164,7 +157,7 @@ public class WorldBaseCode : MonoBehaviour
         CheckSize(_position);
     }
 
-    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar, int _lightdistance)
+    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar)
     {
         if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
         if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
@@ -183,19 +176,10 @@ public class WorldBaseCode : MonoBehaviour
         {
             go = block,
             IsTransparent = false, // 일단 기본값
-
-            IsLight = false,
-            LightDistance = _lightdistance,
         };
         if(_alfar != 1)
         {
             newData.IsTransparent = true;
-        }
-        if (_lightdistance != 0) 
-        {
-            newData.IsLight = true;
-
-            UpdateBlockLightOnSpawn(gridPos, _color, _lightdistance);
         }
 
         Blocks.Add(gridPos, newData);
@@ -434,7 +418,8 @@ public class WorldBaseCode : MonoBehaviour
         meshGen.Build(GetVisibleFaces(pos, data));
     }
 
-    void UpdateBlockLightOnSpawn(Vector3Int lightPos, Color lightColor, int range)
+    //빛은 제거하자 굳이? world단위 빛만 만들자
+    /* void UpdateBlockLightOnSpawn(Vector3Int lightPos, Color lightColor, int range)
     {
         // 범위 내 블럭 수집 (정확도 + 성능 위해 HashSet)
         HashSet<Vector3Int> targets = new HashSet<Vector3Int>();
@@ -517,7 +502,8 @@ public class WorldBaseCode : MonoBehaviour
             if (blocked)
                 continue;
 
-            float intensity = Mathf.Clamp01(1f - (distance / range));
+            float attenuation = Mathf.Pow(1f - (distance / range), 3f);
+            float intensity = Mathf.Clamp01(attenuation);
             Color applied = finalLight * intensity;
             applied.a = 1f;
 
@@ -526,5 +512,5 @@ public class WorldBaseCode : MonoBehaviour
 
             targetBlock.AddLight(applied);
         }
-    }
+    }*/
 }

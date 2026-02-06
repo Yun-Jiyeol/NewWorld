@@ -436,13 +436,11 @@ public class InputManager : MonoBehaviour
     {
         Color SpawnedColor = GameManager.Instance.BuildManager.MainColor.color;
         float alfar = GameManager.Instance.BuildManager.alfar;
-        int distance = GameManager.Instance.BuildManager.LightDistance;
 
         TargetGameObject.GetComponent<WorldBaseCode>().MakeNewBlocks(GameManager.Instance.BuildManager.ChooseBlock,
             ReadyToBuildBlock.transform.localPosition,
             SpawnedColor,
-            alfar,
-            distance
+            alfar
             );
     }
 }

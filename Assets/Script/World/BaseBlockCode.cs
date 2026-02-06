@@ -47,21 +47,4 @@ public class BaseBlockCode : MonoBehaviour
     {
         SetColor(OriginalColor);
     }
-
-    public void AddLight(Color _color)
-    {
-        _color.a = 1f;
-        NowColor += _color;
-        ren.material.color = ClampColor(NowColor);
-    }
-
-    Color ClampColor(Color c)
-    {
-        return new Color(
-            Mathf.Clamp01(c.r),
-            Mathf.Clamp01(c.g),
-            Mathf.Clamp01(c.b),
-            1f
-        );
-    }
 }
