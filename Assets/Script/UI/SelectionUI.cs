@@ -19,7 +19,8 @@ public enum SelectionUIenum
     ChooseHowToMake,
     Color,
     Save,
-    LightOneWorld
+    LightOneWorld,
+    MoveOneWorld
 }
 
 public class SelectionUI : MonoBehaviour

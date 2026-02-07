@@ -350,7 +350,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    IEnumerator MoveBlockOnMe(GameObject _targetobject, GameFlow _gameflow)
+    public IEnumerator MoveBlockOnMe(GameObject _targetobject, GameFlow _gameflow)
     {
         GameManager.Instance.ChangeFlow(GameFlow.None);
 
