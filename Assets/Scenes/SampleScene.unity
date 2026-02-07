@@ -4103,7 +4103,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 175, y: -485}
-  m_SizeDelta: {x: 350, y: 150}
+  m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &512366878
 GameObject:
@@ -6779,6 +6779,7 @@ MonoBehaviour:
   showSettingRange: {fileID: 1091592079}
   Spot: {fileID: 873714961}
   Point: {fileID: 920824858}
+  target: {fileID: 0}
   _color: {r: 0, g: 0, b: 0, a: 0}
   inLineChoose: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &862579699
@@ -7933,7 +7934,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 175, y: -815}
+  m_AnchoredPosition: {x: 175, y: -765}
   m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1022460562
@@ -9166,6 +9167,7 @@ GameObject:
   - component: {fileID: 1173635529}
   - component: {fileID: 1173635530}
   - component: {fileID: 1173635531}
+  - component: {fileID: 1173635532}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -9283,6 +9285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainMaterial: {fileID: 2100000, guid: 951d0cf696e2c1544a66a9da40f4a291, type: 2}
   PreviewMaterial: {fileID: 2100000, guid: 5263881b6d16c5242946ad672e15f030, type: 2}
+  LightMaterial: {fileID: 2100000, guid: c805c93743b0ba849b633fae1077005f, type: 2}
 --- !u!114 &1173635531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9295,6 +9298,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e678b70028619e245b4dd1218012f76c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1173635532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173635524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a629045a472a2408d60ac4d788d51c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RayLight: {fileID: 7550057465421984627, guid: 66762872d793fcf44bd52251839f0908, type: 3}
+  SphereLight: {fileID: 3275965954818396602, guid: 537647870f6f67548b0159ef05b06736, type: 3}
 --- !u!1 &1192128262
 GameObject:
   m_ObjectHideFlags: 0
@@ -10066,7 +10083,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1288886751}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10975,7 +10992,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 175, y: -650}
+  m_AnchoredPosition: {x: 175, y: -600}
   m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1381418966

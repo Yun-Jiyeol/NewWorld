@@ -74,9 +74,6 @@ public class InputManager : MonoBehaviour
 
             case GameFlow.SelectOneWorld:
                 if (EventSystem.current.IsPointerOverGameObject()) return;
-                TargetMove(TargetGameObject);
-                TargetScale(TargetGameObject);
-                TargetTurn(TargetGameObject);
                 break;
 
             case GameFlow.WatchOneWorld:
@@ -270,7 +267,7 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha0)) GameManager.Instance.BuildManager.AddSaveColor(9);
     }
 
-    void TargetMove(GameObject _target, bool isMoveSide = true)
+    public void TargetMove(GameObject _target, bool isMoveSide = true)
     {
         Vector3 move = Vector3.zero;
         if (isMoveSide)
@@ -288,7 +285,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void TargetScale(GameObject _target)
+    public void TargetScale(GameObject _target)
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) != 0)
@@ -300,7 +297,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void TargetTurn(GameObject _target)
+    public void TargetTurn(GameObject _target)
     {
         if (Input.GetMouseButtonDown(0))
         {

@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public WorldManager WorldManager { get; private set; }
     public MaterialManager MaterialManager { get; private set; }
     public SaveAndLoadManager SaveAndLoadManager { get; private set; }
+    public LightManager LightManager { get; private set; }
 
     public UIManager UIManager;
 
@@ -46,6 +47,7 @@ public class GameManager : MonoBehaviour
         WorldManager = gameObject.GetComponent<WorldManager>();
         MaterialManager = gameObject.GetComponent<MaterialManager>();
         SaveAndLoadManager = gameObject.GetComponent<SaveAndLoadManager>();
+        LightManager = gameObject.GetComponent<LightManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
 
         ChangeFlow(GameFlow.WatchAllWorld);

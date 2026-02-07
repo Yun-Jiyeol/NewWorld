@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static DG.Tweening.DOTweenAnimation;
 using static UnityEngine.GraphicsBuffer;
@@ -26,11 +27,13 @@ public class LightUI : BasicUI
     int MaxLight = 99;
     int MinLight = 0;
 
-    Light target;
+    public Light target;
     LightType targettype;
 
     public Color _color;
     public Color inLineChoose;
+
+    GameObject ShowLight;
 
     public override void OnSetting() 
     {
@@ -55,6 +58,47 @@ public class LightUI : BasicUI
         ShowSettingLight();
     }
 
+    private void Update()
+    {
+        if(target == null) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        GameManager.Instance.InputManager.TargetMove(target.gameObject);
+        GameManager.Instance.InputManager.TargetTurn(target.gameObject);
+
+        if(targettype == LightType.Spot)
+        {
+            ChangeAngle();
+        }
+    }
+
+    void ChangeAngle()
+    {
+        float scroll = Input.mouseScrollDelta.y;
+        if (scroll != 0)
+        {
+            target.spotAngle += scroll * 1f;
+        }
+    }
+
+    void MakeSpere()
+    {
+        if(ShowLight != null) Destroy(ShowLight);
+
+        if (targettype == LightType.Spot)
+        {
+            ShowLight = Instantiate(GameManager.Instance.LightManager.RayLight, target.transform);
+        }
+        if (targettype == LightType.Point)
+        {
+            ShowLight = Instantiate(GameManager.Instance.LightManager.SphereLight, target.transform);
+        }
+
+        ShowLight.layer = 6;
+        ShowLight.transform.localScale = Vector3.one * 0.2f;
+        SettingColor();
+    }
+
     public void ChangeSettingLight(int i)
     {
         SettingLight += i;
@@ -74,6 +118,15 @@ public class LightUI : BasicUI
 
     void ShowSettingLight()
     {
+        if (SettingLight == 0)
+        {
+            target.enabled = false;
+        }
+        else
+        {
+            target.enabled = true;
+        }
+
         showSettingLight.text = SettingLight.ToString();
     }
 
@@ -96,12 +149,31 @@ public class LightUI : BasicUI
 
     void ShowSettingLightRange()
     {
+        if (SettingRange == 0)
+        {
+            target.enabled = false;
+        }
+        else
+        {
+            target.enabled = true;
+        }
+
         showSettingRange.text = SettingRange.ToString();
     }
 
     public void ChangeColor()
     {
         target.color = _color;
+        SettingColor();
+    }
+
+    void SettingColor()
+    {
+        if (ShowLight == null) return;
+
+        Color showcolor = _color;
+        showcolor.a = 1f;
+        GameManager.Instance.MaterialManager.LightMaterial.color = showcolor;
     }
 
     public void ChangeType(LightType _type)
@@ -119,12 +191,21 @@ public class LightUI : BasicUI
             case (LightType.Spot):
                 Spot.gameObject.GetComponent<Image>().color = new Color(1, 0.5f, 0.5f);
                 Point.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
+                MakeSpere();
+                SettingColor();
                 break;
 
             case (LightType.Point):
                 Spot.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
                 Point.gameObject.GetComponent<Image>().color = new Color(0.5f, 1, 0.5f);
+                MakeSpere();
+                SettingColor();
                 break;
         }
+    }
+
+    private void OnDisable()
+    {
+        if (ShowLight != null) Destroy(ShowLight);
     }
 }

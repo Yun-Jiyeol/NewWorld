@@ -38,6 +38,7 @@ public class WorldBaseCode : MonoBehaviour
     };
 
     public Dictionary<Vector3Int, BlockData> Blocks;
+    GameObject LightBlock;
     public int Num;
 
     float Hiestest_X = 0;
@@ -423,14 +424,17 @@ public class WorldBaseCode : MonoBehaviour
 
     public Light ChangeLightPower()
     {
+        if (LightBlock == null) LightBlock = Instantiate(new GameObject(), gameObject.transform);
+
         Light light;
-        gameObject.TryGetComponent<Light>(out light);
+        LightBlock.TryGetComponent<Light>(out light);
         if (light == null)
         {
-            light = gameObject.AddComponent<Light>();
+            light = LightBlock.AddComponent<Light>();
             light.type = UnityEngine.LightType.Point;
             light.range = 0;
             light.intensity = 0;
+            LightBlock.transform.localPosition = new Vector3(0, 0, 0);
         }
 
         return light;
