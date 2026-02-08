@@ -80,7 +80,6 @@ public class ChooseHowToMake : BasicUI
     {
         WorldBaseCode _world = GameManager.Instance.InputManager.TargetGameObject.GetComponent<WorldBaseCode>();
 
-        _world.DestroyAllBlocks();
         _world.MakeNewWorld(x, y, z);
     }
 

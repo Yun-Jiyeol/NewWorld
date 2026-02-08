@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.UIElements;
 using static UnityEditor.PlayerSettings;
 
 [System.Flags]
@@ -59,20 +60,36 @@ public class WorldBaseCode : MonoBehaviour
         if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
         if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
 
+        List<Vector3Int> CheckBlocks = new List<Vector3Int>(Blocks.Keys);
+
         for (int x = 0; x < _x; x++)
         {
             for (int y = 0; y < _y; y++)
             {
                 for (int z = 0; z < _z; z++)
                 {
-                    MakeNewBlocks(GameManager.Instance.BuildManager.BasicBlock, new Vector3(x, y, z));
+                    Vector3Int v3 = new Vector3Int(x, y, z);
+                    if (Blocks.ContainsKey(v3))
+                    {
+                        Checkblockpos(v3);
+                    }
+                    else
+                    {
+                        MakeNewBlocks(GameManager.Instance.BuildManager.BasicBlock, new Vector3(x, y, z));
+                    }
+
+                    if(CheckBlocks.Contains(v3)) CheckBlocks.Remove(v3);
                 }
             }
         }
 
+        foreach(Vector3Int vec in CheckBlocks)
+        {
+            DestroyBlock(Blocks[vec].go);
+        }
+
         LightPower = 0;
-        gameObject.transform.rotation = Quaternion.Euler(0,0,0);
-        gameObject.transform.localScale = Vector3.one/ (Mathf.Max(_x,_y,_z));
+        StartChangeEveryThingSmooth(0.2f, 1f / (Mathf.Max(_x, _y, _z)), transform.position, transform.rotation, true);
     }
 
     public void DestroyAllBlocks(bool destroyWorld = false)
@@ -159,6 +176,18 @@ public class WorldBaseCode : MonoBehaviour
         foreach (var dir in CheckDirs) UpdateBlockMesh(gridPos + dir);
 
         CheckSize(_position);
+    }
+
+    void Checkblockpos(Vector3Int pos)
+    {
+        Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+
+        OnBlockPlaced(gridPos);
+
+        UpdateBlockMesh(gridPos);
+        foreach (var dir in CheckDirs) UpdateBlockMesh(gridPos + dir);
+
+        CheckSize(pos);
     }
 
     public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar)
