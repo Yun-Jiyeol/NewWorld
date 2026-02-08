@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld , SelectionUIenum.MoveOneWorld});
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
         }

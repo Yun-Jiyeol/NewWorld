@@ -65,6 +65,7 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.Setting:
             case SelectionUIenum.Save:
             case SelectionUIenum.LightOneWorld:
+            case SelectionUIenum.MoveOneWorld:
                 PopUpSettingPanel();
                 break;
         }
@@ -90,6 +91,15 @@ public class SelectionUI : MonoBehaviour
     void PopInSettingPanel()
     {
         gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.25f);
+
+        for (int i = 0; i < uIBtnsSelectedUIMaterials.Count; i++)
+        {
+            uIBtnsSelectedUIMaterials[i].UISelected.TryGetComponent<BasicUI>(out BasicUI _basic);
+            if (_basic != null)
+            {
+                uIBtnsSelectedUIMaterials[i].UISelected.SetActive(false);
+            }
+        }
     }
 
     UIBtnsSelectedUIMaterial Findnowenum()

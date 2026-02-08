@@ -75,17 +75,17 @@ public class WorldBaseCode : MonoBehaviour
         gameObject.transform.localScale = Vector3.one/ (Mathf.Max(_x,_y,_z));
     }
 
-    public void DestroyAllBlocks()
+    public void DestroyAllBlocks(bool destroyWorld = false)
     {
         foreach (BlockData block in Blocks.Values)
         {
             block.go.SetActive(false);
         }
-        DestroyNoneSeenBlocks(false);
+        DestroyNoneSeenBlocks(destroyWorld);
         Blocks.Clear();
     }
 
-    public void DestroyNoneSeenBlocks(bool isDestroy = true)
+    public void DestroyNoneSeenBlocks(bool isDestroy)
     {
         var removeList = new List<Vector3Int>();
 

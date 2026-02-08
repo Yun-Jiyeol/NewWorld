@@ -299,12 +299,13 @@ public class InputManager : MonoBehaviour
 
     public void TargetTurn(GameObject _target)
     {
-        if (Input.GetMouseButtonDown(0))
+        isRotating = false;
+
+        if (Input.GetMouseButton(0))
         {
             isRotating = true;
             isRotated = false;
         }
-        if (Input.GetMouseButtonUp(0)) isRotating = false;
 
         if (isRotating && _target != null)
         {
