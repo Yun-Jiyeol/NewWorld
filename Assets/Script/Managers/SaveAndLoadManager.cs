@@ -23,6 +23,7 @@ public class WorldSaveData
     public float size;
 
     public List<BlockSaveData> blocks;
+    public LightBlockSaveData lightblock;
 }
 
 [System.Serializable]
@@ -38,6 +39,31 @@ public class BlockSaveData
     public float g;
     public float b;
     public float a;
+}
+
+[System.Serializable]
+public class LightBlockSaveData
+{
+    //ÁÂÇ¥
+    public float x;
+    public float y;
+    public float z;
+
+    //¹æÇâ
+    public float xrot;
+    public float yrot;
+    public float zrot;
+    public float wrot;
+
+    //ºû °ü·Ã ÀúÀå
+    public float r;
+    public float g;
+    public float b;
+
+    public int type; //1 -> Spot, 2 -> point
+    public float SpotAngle;
+    public float Range;
+    public float Intensive;
 }
 
 [System.Serializable]
@@ -155,6 +181,43 @@ public class SaveAndLoadManager : MonoBehaviour
             worldsave.blocks.Add(blocksave);
         }
 
+        if(_world.LightBlock != null)
+        {
+            GameObject LB = _world.LightBlock.gameObject;
+            Light L = LB.GetComponent<Light>();
+            int _type = 0;
+            if (L.type == LightType.Spot)
+            {
+                _type = 1;
+            }
+            if (L.type == LightType.Point)
+            {
+                _type = 2;
+            }
+
+
+            worldsave.lightblock = new LightBlockSaveData()
+            {
+                x= LB.transform.position.x,
+                y= LB.transform.position.y,
+                z= LB.transform.position.z,
+
+                xrot = LB.transform.rotation.x,
+                yrot = LB.transform.rotation.y,
+                zrot = LB.transform.rotation.z,
+                wrot = LB.transform.rotation.w,
+
+                r = L.color.r,
+                g = L.color.g,
+                b = L.color.b,
+
+                type = _type,
+                SpotAngle = L.spotAngle,
+                Range = L.range,
+                Intensive = L.intensity,
+            };
+        }
+
         string json = JsonUtility.ToJson(worldsave, true);
         File.WriteAllText(path, json);
     }
@@ -202,6 +265,26 @@ public class SaveAndLoadManager : MonoBehaviour
                 new Color(block.r, block.g, block.b),
                 block.a
             );
+        }
+
+        if(worldsave.lightblock != null)
+        {
+            Light light = worldBaseCode.ChangeLightPower();
+            light.gameObject.transform.position = new Vector3(worldsave.lightblock.x, worldsave.lightblock.y, worldsave.lightblock.z);
+            light.gameObject.transform.rotation = new Quaternion(worldsave.lightblock.xrot, worldsave.lightblock.yrot, worldsave.lightblock.zrot, worldsave.lightblock.wrot);
+            light.color = new Color(worldsave.lightblock.r, worldsave.lightblock.g, worldsave.lightblock.b);
+            switch (worldsave.lightblock.type)
+            {
+                case 1:
+                    light.type = LightType.Spot;
+                    break;
+                case 2:
+                    light.type = LightType.Point;
+                    break;
+            }
+            light.spotAngle = worldsave.lightblock.SpotAngle;
+            light.range = worldsave.lightblock.Range;
+            light.intensity = worldsave.lightblock.Intensive;
         }
     }
 
@@ -291,6 +374,14 @@ public class SaveAndLoadManager : MonoBehaviour
             {
                 BM.AddSaveColor(new Color(worldsave.savecolor[i].r, worldsave.savecolor[i].g, worldsave.savecolor[i].b, worldsave.savecolor[i].a), i);
             }
+        }
+    }
+
+    public void SaveAllWorld()
+    {
+        foreach(GameObject wb in GameManager.Instance.WorldManager.Worlds)
+        {
+            SaveWorldData(wb.GetComponent<WorldBaseCode>());
         }
     }
 }

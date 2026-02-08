@@ -39,7 +39,7 @@ public class WorldBaseCode : MonoBehaviour
     };
 
     public Dictionary<Vector3Int, BlockData> Blocks;
-    GameObject LightBlock;
+    public GameObject LightBlock;
     public int Num;
 
     float Hiestest_X = 0;

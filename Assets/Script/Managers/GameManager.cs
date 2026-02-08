@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangeFlow(GameFlow _flow)
     {
+        SaveAndLoadManager.SaveAllWorld();
         if (_flow == flow) return;
 
         flow = _flow;
