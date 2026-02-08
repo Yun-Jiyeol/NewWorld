@@ -208,4 +208,9 @@ public class LightUI : BasicUI
     {
         if (ShowLight != null) Destroy(ShowLight);
     }
+
+    public void ResetPosition()
+    {
+        GameManager.Instance.InputManager.TargetGameObject.GetComponent<WorldBaseCode>().SetLightPosition();
+    }
 }

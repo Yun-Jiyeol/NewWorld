@@ -463,10 +463,16 @@ public class WorldBaseCode : MonoBehaviour
             light.type = UnityEngine.LightType.Point;
             light.range = 0;
             light.intensity = 0;
-            LightBlock.transform.localPosition = new Vector3(0, 0, 0);
+            LightBlock.transform.localPosition = boxCollider.center;
         }
 
         return light;
+    }
+
+    public void SetLightPosition()
+    {
+        if (LightBlock != null)
+            LightBlock.transform.localPosition = boxCollider.center;
     }
 
 

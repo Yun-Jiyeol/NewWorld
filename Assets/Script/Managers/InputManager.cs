@@ -64,10 +64,8 @@ public class InputManager : MonoBehaviour
                     if (OnRaycast.transform.CompareTag("World"))
                     {
                         TargetGameObject = OnRaycast.transform.gameObject;
-                        Camera.main.transform.LookAt(TargetGameObject.transform.position);
+                        Camera.main.transform.LookAt(TargetGameObject.GetComponent<BoxCollider>().bounds.center);
                         GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
-
-                        //StartCoroutine(MoveBlockOnMe(OnRaycast.transform.gameObject, GameFlow.WatchOneWorld));
                     }
                 }
                 break;
