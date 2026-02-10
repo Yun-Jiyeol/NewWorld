@@ -463,11 +463,13 @@ public class InputManager : MonoBehaviour
     {
         Color SpawnedColor = GameManager.Instance.BuildManager.MainColor.color;
         float alfar = GameManager.Instance.BuildManager.alfar;
+        SpawnedColor.a = alfar;
 
-        TargetGameObject.GetComponent<WorldBaseCode>().MakeNewBlocks(GameManager.Instance.BuildManager.ChooseBlock,
-            ReadyToBuildBlock.transform.localPosition,
-            SpawnedColor,
-            alfar
-            );
+        GameManager.Instance.BuildManager.RequestBuild
+            (new WorldAndBlock 
+            { world = TargetGameObject.GetComponent<WorldBaseCode>(), 
+            blockposition = ReadyToBuildBlock.transform.localPosition,
+            blockcolor = SpawnedColor,
+            collider = true});
     }
 }

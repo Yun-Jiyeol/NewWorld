@@ -259,12 +259,15 @@ public class SaveAndLoadManager : MonoBehaviour
         worldBaseCode.Num = worldsave.Num;
         foreach (BlockSaveData block in worldsave.blocks)
         {
-            worldBaseCode.MakeNewBlocks(
-                GameManager.Instance.BuildManager.BasicBlock,
-                new Vector3(block.x, block.y, block.z),
-                new Color(block.r, block.g, block.b),
-                block.a
-            );
+
+            GameManager.Instance.BuildManager.RequestBuild
+                (new WorldAndBlock
+                {
+                    world = worldBaseCode,
+                    blockposition = new Vector3(block.x, block.y, block.z),
+                    blockcolor = new Color(block.r, block.g, block.b, block.a),
+                    collider = false
+                });
         }
 
         if(worldsave.lightblock != null)

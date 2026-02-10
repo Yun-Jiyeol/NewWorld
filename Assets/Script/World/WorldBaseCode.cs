@@ -75,7 +75,14 @@ public class WorldBaseCode : MonoBehaviour
                     }
                     else
                     {
-                        MakeNewBlocks(GameManager.Instance.BuildManager.BasicBlock, new Vector3(x, y, z));
+                        GameManager.Instance.BuildManager.RequestBuild
+                            (new WorldAndBlock
+                            {
+                                world = this,
+                                blockposition = new Vector3(x, y, z),
+                                blockcolor = Color.white,
+                                collider = true
+                            });
                     }
 
                     if(CheckBlocks.Contains(v3)) CheckBlocks.Remove(v3);
@@ -150,34 +157,6 @@ public class WorldBaseCode : MonoBehaviour
         SettingMiddle();
     }
 
-    public void MakeNewBlocks(GameObject _block, Vector3 _position)
-    {
-        if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
-        if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
-
-        Vector3Int gridPos = Vector3Int.RoundToInt(_position);
-
-        GameObject block = Instantiate(_block, transform);
-        block.AddComponent<BaseBlockCode>()
-             .SettingPosition(_position.x, _position.y, _position.z);
-        block.layer = 6;
-
-        BlockData newData = new BlockData
-        {
-            go = block,
-            IsTransparent = false, // 일단 기본값
-        };
-        
-        Blocks.Add(gridPos, newData);
-
-        OnBlockPlaced(gridPos);
-
-        UpdateBlockMesh(gridPos);
-        foreach (var dir in CheckDirs) UpdateBlockMesh(gridPos + dir);
-
-        CheckSize(_position);
-    }
-
     void Checkblockpos(Vector3Int pos)
     {
         Vector3Int gridPos = Vector3Int.RoundToInt(pos);
@@ -190,20 +169,21 @@ public class WorldBaseCode : MonoBehaviour
         CheckSize(pos);
     }
 
-    public void MakeNewBlocks(GameObject _block, Vector3 _position, Color _color, float _alfar)
+    public void MakeNewBlocks(Vector3 _position, Color _color, float _alfar, bool collider)
     {
         if (Blocks == null) Blocks = new Dictionary<Vector3Int, BlockData>();
         if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
 
         Vector3Int gridPos = Vector3Int.RoundToInt(_position);
 
-        GameObject block = Instantiate(_block, transform);
+        GameObject block = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, transform);
         block.AddComponent<BaseBlockCode>()
              .SettingPosition(_position.x, _position.y, _position.z);
         block.layer = 6;
 
         block.GetComponent<BaseBlockCode>().SetColor(_color);
         block.GetComponent<BaseBlockCode>().SetColor(_alfar);
+        block.GetComponent<Collider>().enabled = collider;
 
         BlockData newData = new BlockData
         {
@@ -463,7 +443,7 @@ public class WorldBaseCode : MonoBehaviour
             light.type = UnityEngine.LightType.Point;
             light.range = 0;
             light.intensity = 0;
-            LightBlock.transform.localPosition = boxCollider.center;
+            if(boxCollider != null) LightBlock.transform.localPosition = boxCollider.center;
         }
 
         return light;
@@ -474,7 +454,6 @@ public class WorldBaseCode : MonoBehaviour
         if (LightBlock != null)
             LightBlock.transform.localPosition = boxCollider.center;
     }
-
 
     //빛은 제거하자 굳이? world단위 빛만 만들자
     /* void UpdateBlockLightOnSpawn(Vector3Int lightPos, Color lightColor, int range)

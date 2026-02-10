@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class WorldAndBlock
+{
+    public WorldBaseCode world;
+    public Vector3 blockposition;
+    public Color blockcolor;
+    public bool collider;
+}
+
 public class BuildManager : MonoBehaviour
 {
     public GameObject BasicBlock;
@@ -19,6 +27,51 @@ public class BuildManager : MonoBehaviour
 
     ParetteUI paretteUI = null;
     SaveUI saveUI = null;
+
+    public float maxFrameTime = 1f;
+    Queue<WorldAndBlock> buildQueue = new();
+
+    private void Awake()
+    {
+        StartCoroutine(BuildRoutine());
+    }
+
+    public void RequestBuild(List<WorldAndBlock> requests)
+    {
+        foreach (var r in requests) buildQueue.Enqueue(r);
+    }
+
+    public void RequestBuild(WorldAndBlock requests)
+    {
+        buildQueue.Enqueue(requests);
+    }
+
+    IEnumerator BuildRoutine()
+    {
+        while (true)
+        {
+            float start = Time.realtimeSinceStartup;
+
+            while (buildQueue.Count > 0)
+            {
+                BuildBlock(buildQueue.Dequeue());
+
+                if ((Time.realtimeSinceStartup - start) * 1000f > maxFrameTime)
+                    break;
+            }
+
+            yield return null;
+        }
+    }
+
+    void BuildBlock(WorldAndBlock _wab)
+    {
+        Color _color = _wab.blockcolor;
+        _color.a = 1;
+        float _alfar = _wab.blockcolor.a;
+
+        _wab.world.MakeNewBlocks(_wab.blockposition, _color, alfar, _wab.collider);
+    }
 
     public void AddPreColor(Color _color)
     {
