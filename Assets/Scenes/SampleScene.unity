@@ -457,6 +457,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ChangeColor: 0
+  _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &34185256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1256,6 +1258,7 @@ GameObject:
   - component: {fileID: 105544795}
   - component: {fileID: 105544797}
   - component: {fileID: 105544796}
+  - component: {fileID: 105544798}
   m_Layer: 5
   m_Name: Sub
   m_TagString: Untagged
@@ -1321,6 +1324,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 105544794}
   m_CullTransparentMesh: 1
+--- !u!114 &105544798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105544794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeYValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &122445285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1785,6 +1817,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ChangeColor: 0
+  _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &178347427
 GameObject:
   m_ObjectHideFlags: 0
@@ -3125,10 +3159,10 @@ RectTransform:
   m_Father: {fileID: 659794355}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 150}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 175, y: -526}
+  m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &325202996
 GameObject:
@@ -3704,6 +3738,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ChangeColor: 0
+  _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &385428086
 GameObject:
   m_ObjectHideFlags: 0
@@ -3736,10 +3772,10 @@ RectTransform:
   m_Father: {fileID: 659794355}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 76}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 175, y: -68}
+  m_SizeDelta: {x: 350, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &411615008
 GameObject:
@@ -4453,6 +4489,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ChangeColor: 0
+  _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &454348419
 GameObject:
   m_ObjectHideFlags: 0
@@ -6321,7 +6359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &659794355
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7242,6 +7280,7 @@ GameObject:
   - component: {fileID: 780624653}
   - component: {fileID: 780624655}
   - component: {fileID: 780624654}
+  - component: {fileID: 780624656}
   m_Layer: 5
   m_Name: Add
   m_TagString: Untagged
@@ -7307,6 +7346,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 780624652}
   m_CullTransparentMesh: 1
+--- !u!114 &780624656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780624652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeXValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &799959830
 GameObject:
   m_ObjectHideFlags: 0
@@ -8099,6 +8167,7 @@ GameObject:
   - component: {fileID: 885177196}
   - component: {fileID: 885177198}
   - component: {fileID: 885177197}
+  - component: {fileID: 885177199}
   m_Layer: 5
   m_Name: Sub
   m_TagString: Untagged
@@ -8164,6 +8233,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 885177195}
   m_CullTransparentMesh: 1
+--- !u!114 &885177199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885177195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeXValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &889500653
 GameObject:
   m_ObjectHideFlags: 0
@@ -8197,10 +8295,10 @@ RectTransform:
   m_Father: {fileID: 659794355}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 150}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 175, y: -361}
+  m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &892510194
 GameObject:
@@ -9715,6 +9813,7 @@ GameObject:
   - component: {fileID: 1073857474}
   - component: {fileID: 1073857476}
   - component: {fileID: 1073857475}
+  - component: {fileID: 1073857477}
   m_Layer: 5
   m_Name: Sub
   m_TagString: Untagged
@@ -9780,6 +9879,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1073857473}
   m_CullTransparentMesh: 1
+--- !u!114 &1073857477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073857473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeZValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &1079480769
 GameObject:
   m_ObjectHideFlags: 0
@@ -12457,6 +12585,7 @@ GameObject:
   - component: {fileID: 1374153532}
   - component: {fileID: 1374153534}
   - component: {fileID: 1374153533}
+  - component: {fileID: 1374153535}
   m_Layer: 5
   m_Name: Add
   m_TagString: Untagged
@@ -12522,6 +12651,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374153531}
   m_CullTransparentMesh: 1
+--- !u!114 &1374153535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374153531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeZValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &1375509571
 GameObject:
   m_ObjectHideFlags: 0
@@ -14990,6 +15148,7 @@ GameObject:
   - component: {fileID: 1708483437}
   - component: {fileID: 1708483439}
   - component: {fileID: 1708483438}
+  - component: {fileID: 1708483440}
   m_Layer: 5
   m_Name: Add
   m_TagString: Untagged
@@ -15055,6 +15214,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1708483436}
   m_CullTransparentMesh: 1
+--- !u!114 &1708483440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708483436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084c7254c65bfc04099b1d00ce4aea04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659794358}
+        m_TargetAssemblyTypeName: ChooseHowToMake, Assembly-CSharp
+        m_MethodName: ChangeYValue
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  ChangeColor: 1
+  _color: {r: 0.8627451, g: 1, b: 0.8627451, a: 1}
 --- !u!1 &1716266224
 GameObject:
   m_ObjectHideFlags: 0
@@ -15236,6 +15424,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ChangeColor: 0
+  _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1725288593
 GameObject:
   m_ObjectHideFlags: 0
@@ -16789,10 +16979,10 @@ RectTransform:
   m_Father: {fileID: 659794355}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 150}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 175, y: -196}
+  m_SizeDelta: {x: 350, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1869930350
 GameObject:

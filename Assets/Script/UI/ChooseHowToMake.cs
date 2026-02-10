@@ -40,6 +40,21 @@ public class ChooseHowToMake : BasicUI
         MakeNewWorld();
     }
 
+    public void ChangeXValue(int i)
+    {
+        int value = x + i;
+
+        if (value <= 0 || value > 100)
+        {
+            Xtext.text = x.ToString();
+            return;
+        }
+
+        x = value;
+        Xtext.text = x.ToString();
+        MakeNewWorld();
+    }
+
     public void ChageYValue()
     {
         int value = 0;
@@ -58,6 +73,21 @@ public class ChooseHowToMake : BasicUI
         MakeNewWorld();
     }
 
+    public void ChangeYValue(int i)
+    {
+        int value = y + i;
+
+        if (value <= 0 || value > 100)
+        {
+            Ytext.text = y.ToString();
+            return;
+        }
+
+        y = value;
+        Ytext.text = y.ToString();
+        MakeNewWorld();
+    }
+
     public void ChageZValue()
     {
         int value = 0;
@@ -73,6 +103,21 @@ public class ChooseHowToMake : BasicUI
         }
 
         z = value;
+        MakeNewWorld();
+    }
+
+    public void ChangeZValue(int i)
+    {
+        int value = z + i;
+
+        if (value <= 0 || value > 100)
+        {
+            Ztext.text = z.ToString();
+            return;
+        }
+
+        z = value;
+        Ztext.text = z.ToString();
         MakeNewWorld();
     }
 
