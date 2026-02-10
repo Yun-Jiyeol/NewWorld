@@ -30,7 +30,7 @@ public class ChooseHowToMake : BasicUI
             Xtext.text = x.ToString();
             return;
         }
-        if (value <= 0 || value > 20)
+        if (value <= 0 || value > 100)
         {
             Xtext.text = x.ToString();
             return;
@@ -48,7 +48,7 @@ public class ChooseHowToMake : BasicUI
             Ytext.text = y.ToString();
             return;
         }
-        if (value <= 0 || value > 20)
+        if (value <= 0 || value > 100)
         {
             Ytext.text = y.ToString();
             return;
@@ -66,7 +66,7 @@ public class ChooseHowToMake : BasicUI
             Ztext.text = z.ToString();
             return;
         }
-        if (value <= 0 || value > 20)
+        if (value <= 0 || value > 100)
         {
             Ztext.text = z.ToString();
             return;
