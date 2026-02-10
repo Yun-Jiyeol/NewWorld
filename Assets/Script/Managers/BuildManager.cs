@@ -14,7 +14,7 @@ public class BuildManager : MonoBehaviour
     public List<Color> PreColors;
     public List<Color> SaveColors;
 
-    public int precolornum = 4;
+    public int precolornum = 12;
     public int savecolornum = 10;
 
     ParetteUI paretteUI = null;
@@ -27,7 +27,7 @@ public class BuildManager : MonoBehaviour
         if (PreColors.Contains(_color)) return;
         PreColors.Add(_color);
 
-        if (PreColors.Count > 4) PreColors.RemoveAt(0);
+        if (PreColors.Count > precolornum) PreColors.RemoveAt(0);
 
         if (paretteUI == null) paretteUI = FindColor();
         paretteUI._preColorUI.ChangePreColors();
