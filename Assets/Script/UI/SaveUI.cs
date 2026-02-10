@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SaveUI : BasicUI
+public class SaveUI : MonoBehaviour
 {
     public GameObject savecolor;
     List<GameObject> SaveColors = new List<GameObject>();
 
-    public override void OnSetting()
+    public void Setting()
     {
         MakeSaveColors();
         SettingAllColor();
@@ -26,8 +26,6 @@ public class SaveUI : BasicUI
             go.GetComponent<SaveColor>().Setting(i+1);
             SaveColors.Add(go);
         }
-
-        SaveColors[9].GetComponent<SaveColor>().Setting(0);
     }
 
     void SettingAllColor()

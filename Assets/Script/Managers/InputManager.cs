@@ -95,13 +95,13 @@ public class InputManager : MonoBehaviour
                 //임시 코드
 
                 CheckRaycast(false);
+                SaveAndLoadColor();
+
+                if (EventSystem.current.IsPointerOverGameObject()) return;
                 TargetMove(TargetGameObject);
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
-                SaveColors();
 
-
-                if (EventSystem.current.IsPointerOverGameObject()) return;
                 if (!isSomethingHit)
                 {
                     if (ReadyToBuildBlock == null) return;
@@ -251,6 +251,18 @@ public class InputManager : MonoBehaviour
         ReadyToBuildBlock.transform.position = Camera.main.transform.forward * 5f;
     }
 
+    void SaveAndLoadColor()
+    {
+        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            SaveColors();
+        }
+        else
+        {
+            LoadColor();
+        }
+    }
+
     void SaveColors()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1)) GameManager.Instance.BuildManager.AddSaveColor(0);
@@ -259,10 +271,16 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha4)) GameManager.Instance.BuildManager.AddSaveColor(3);
         if (Input.GetKeyDown(KeyCode.Alpha5)) GameManager.Instance.BuildManager.AddSaveColor(4);
         if (Input.GetKeyDown(KeyCode.Alpha6)) GameManager.Instance.BuildManager.AddSaveColor(5);
-        if (Input.GetKeyDown(KeyCode.Alpha7)) GameManager.Instance.BuildManager.AddSaveColor(6);
-        if (Input.GetKeyDown(KeyCode.Alpha8)) GameManager.Instance.BuildManager.AddSaveColor(7);
-        if (Input.GetKeyDown(KeyCode.Alpha9)) GameManager.Instance.BuildManager.AddSaveColor(8);
-        if (Input.GetKeyDown(KeyCode.Alpha0)) GameManager.Instance.BuildManager.AddSaveColor(9);
+    }
+
+    void LoadColor()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
+        if (Input.GetKeyDown(KeyCode.Alpha6)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
     }
 
     public void TargetMove(GameObject _target, bool isMoveSide = true)

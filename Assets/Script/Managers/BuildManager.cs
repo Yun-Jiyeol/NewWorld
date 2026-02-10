@@ -15,7 +15,7 @@ public class BuildManager : MonoBehaviour
     public List<Color> SaveColors;
 
     public int precolornum = 12;
-    public int savecolornum = 10;
+    public int savecolornum = 6;
 
     ParetteUI paretteUI = null;
     SaveUI saveUI = null;
@@ -88,7 +88,7 @@ public class BuildManager : MonoBehaviour
     {
         foreach (var want in GameManager.Instance.UIManager.SelectionUI.uIBtnsSelectedUIMaterials)
         {
-            if (want.UIenum == SelectionUIenum.Save) return want.UISelected.GetComponent<SaveUI>();
+            if (want.UIenum == SelectionUIenum.Color) return want.UISelected.GetComponent<ParetteUI>()._saveUI;
         }
 
         return null;
