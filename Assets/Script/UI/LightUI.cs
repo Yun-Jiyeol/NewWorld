@@ -13,6 +13,7 @@ public class LightUI : BasicUI
     public CopyLine CopyLine;
     public ClickImagetoChange RightClick;
     public ClickImagetoChange LeftClick;
+
     public ClickImageToChangeRange RightRangeClick;
     public ClickImageToChangeRange LeftRangeClick;
 
@@ -22,7 +23,7 @@ public class LightUI : BasicUI
     public ChangeLightTypeButton Spot;
     public ChangeLightTypeButton Point;
 
-    int SettingLight;
+    float SettingLight;
     float SettingRange;
     int MaxLight = 99;
     int MinLight = 0;
@@ -95,11 +96,11 @@ public class LightUI : BasicUI
         }
 
         ShowLight.layer = 6;
-        ShowLight.transform.localScale = Vector3.one * 0.2f;
+        ShowLight.transform.localScale = Vector3.one * GameManager.Instance.InputManager.TargetGameObject.GetComponent<BoxCollider>().size.x * 0.15f;
         SettingColor();
     }
 
-    public void ChangeSettingLight(int i)
+    public void ChangeSettingLight(float i)
     {
         SettingLight += i;
 
@@ -127,10 +128,10 @@ public class LightUI : BasicUI
             target.enabled = true;
         }
 
-        showSettingLight.text = SettingLight.ToString();
+        showSettingLight.text = SettingLight.ToString("F1");
     }
 
-    public void ChangeSettingLightRange(int i)
+    public void ChangeSettingLightRange(float i)
     {
         SettingRange += i;
 
@@ -143,7 +144,7 @@ public class LightUI : BasicUI
             SettingRange = MaxLight;
         }
 
-        target.range = SettingRange * 0.5f;
+        target.range = SettingRange;
         ShowSettingLightRange();
     }
 
@@ -158,7 +159,7 @@ public class LightUI : BasicUI
             target.enabled = true;
         }
 
-        showSettingRange.text = SettingRange.ToString();
+        showSettingRange.text = SettingRange.ToString("F1");
     }
 
     public void ChangeColor()

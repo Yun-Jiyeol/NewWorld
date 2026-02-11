@@ -1,20 +1,34 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class ClickImagetoChange : MonoBehaviour, IPointerClickHandler
+public class ClickImagetoChange : MonoBehaviour, IPointerDownHandler
 {
     LightUI ui;
-    public int ChagedValue;
+    public float ChagedValue;
 
     public void Setting(LightUI _lightui)
     {
         ui = _lightui;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
-        ui.ChangeSettingLight(ChagedValue);
+        StartCoroutine(Changelightsetting());
+    }
+
+    IEnumerator Changelightsetting()
+    {
+        while (true)
+        {
+            if (!Input.GetMouseButton(0)) break;
+
+            gameObject.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f);
+            ui.ChangeSettingLight(ChagedValue * Time.deltaTime);
+            yield return null;
+        }
+
+        gameObject.GetComponent<Image>().color = Color.white;
     }
 }

@@ -433,7 +433,7 @@ public class WorldBaseCode : MonoBehaviour
 
     public Light ChangeLightPower()
     {
-        if (LightBlock == null) LightBlock = Instantiate(new GameObject(), gameObject.transform);
+        if (LightBlock == null) LightBlock = Instantiate(new GameObject("LightObject"), gameObject.transform);
 
         Light light;
         LightBlock.TryGetComponent<Light>(out light);

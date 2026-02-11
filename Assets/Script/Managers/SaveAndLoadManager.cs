@@ -23,6 +23,8 @@ public class WorldSaveData
     public float size;
 
     public List<BlockSaveData> blocks;
+
+    public bool isLightBlock = false;
     public LightBlockSaveData lightblock;
 }
 
@@ -183,6 +185,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
         if(_world.LightBlock != null)
         {
+            worldsave.isLightBlock = true;
+
             GameObject LB = _world.LightBlock.gameObject;
             Light L = LB.GetComponent<Light>();
             int _type = 0;
@@ -270,7 +274,7 @@ public class SaveAndLoadManager : MonoBehaviour
                 });
         }
 
-        if(worldsave.lightblock != null)
+        if(worldsave.isLightBlock)
         {
             Light light = worldBaseCode.ChangeLightPower();
             light.gameObject.transform.position = new Vector3(worldsave.lightblock.x, worldsave.lightblock.y, worldsave.lightblock.z);
