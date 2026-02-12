@@ -50,17 +50,17 @@ public class InputManager : MonoBehaviour
 
                 if (Input.GetKeyDown(BuildNewWorld))
                 {
-                    GameManager.Instance.SaveAndLoadManager.SaveData();
+                    GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
 
+                    /*
                     GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
                     StartCoroutine(MoveBlockOnMe(newworld, GameFlow.MakeOneWorld));
+                    */
                 }
 
                 if (!isSomethingHit) return;
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GameManager.Instance.SaveAndLoadManager.SaveData();
-
                     if (OnRaycast.transform.CompareTag("World"))
                     {
                         TargetGameObject = OnRaycast.transform.gameObject;

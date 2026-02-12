@@ -11271,6 +11271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainMaterial: {fileID: 2100000, guid: 951d0cf696e2c1544a66a9da40f4a291, type: 2}
+  MainVisibleMaterial: {fileID: 2100000, guid: e2b77ea3585af924092fd2d89db4257a, type: 2}
   PreviewMaterial: {fileID: 2100000, guid: 5263881b6d16c5242946ad672e15f030, type: 2}
   LightMaterial: {fileID: 2100000, guid: c805c93743b0ba849b633fae1077005f, type: 2}
 --- !u!114 &1173635531
