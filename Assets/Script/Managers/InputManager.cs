@@ -110,7 +110,7 @@ public class InputManager : MonoBehaviour
                         ReadyToBuildBlock = new GameObject();
                         ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
 
-                        ReadyToBuildBlock.transform.localScale = Vector3.one;
+                        ReadyToBuildBlock.transform.localScale = Vector3.one * 1.01f;
                         ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
 
                         MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
@@ -123,13 +123,16 @@ public class InputManager : MonoBehaviour
                     }
                     if(showpreviewblock) ReadyToBuildBlock.SetActive(true);
 
-                    Vector3 offset = Vector3.Scale(OnRaycast.normal, TargetGameObject.transform.localScale);
-                    ReadyToBuildBlock.transform.position = OnRaycast.transform.position + offset;
+                    Vector3 localHit = TargetGameObject.transform.InverseTransformPoint(OnRaycast.point - OnRaycast.normal * 0.01f);
 
-                    if(Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
+                    Vector3Int grid = Vector3Int.RoundToInt(localHit);
+
+                    ReadyToBuildBlock.transform.localPosition = grid;
+
+                    if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
                     {
-                        if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
-                        DestroyCoroutine = StartCoroutine(DestroyThisBlock());
+                        //if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
+                        //DestroyCoroutine = StartCoroutine(DestroyThisBlock());
                     }
                     if ((Input.GetMouseButton(0) && isRotated) || Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(1))
                     {

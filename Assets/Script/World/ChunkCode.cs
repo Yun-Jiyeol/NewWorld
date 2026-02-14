@@ -66,6 +66,15 @@ public class ChunkCode : MonoBehaviour
         }
     }
 
+    public bool ishaveblock(Vector3 _position)
+    {
+        Vector3Int gridPos = Vector3Int.RoundToInt(_position);
+
+        if (!BlocksinChunk.ContainsKey(GetChunkCoord(gridPos))) return false;
+        if (!BlocksinChunk[GetChunkCoord(gridPos)].ContainsKey(GetLocalPos(gridPos))) return false;
+
+        return true;
+    }
 
     public void MakeBlockData(Vector3 _position, Color color, bool updateChunk = true)
     {
@@ -102,6 +111,7 @@ public class ChunkCode : MonoBehaviour
             GameObject block = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, transform);
             block.transform.localPosition = gridPos;
             block.GetComponent<Renderer>().material.color = color;
+            block.tag = "Block";
 
             BlocksinChunk[ChunkPos].TryGetValue(LocalPos, out BlockInChunkData value);
             value._go = block;
@@ -146,7 +156,7 @@ public class ChunkCode : MonoBehaviour
             (minZ + maxZ) / 2f
         );
 
-        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 8),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
+        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 4),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
     }
 
     public void PutThisWorld()
@@ -186,7 +196,8 @@ public class ChunkCode : MonoBehaviour
         if (position.y < minY) minY = position.y;
         if (position.z < minZ) minZ = position.z;
 
-        col.size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
+        col.size = new Vector3(maxX - minX + 1, maxY - minY + 1, maxZ - minZ + 1);
+        col.center = new Vector3((maxX + minX)/2, (maxY + minY)/2, (maxZ + minZ)/2);
     }
 
     Vector3Int GetLocalPos(Vector3Int worldPos)
@@ -214,6 +225,7 @@ public class ChunkCode : MonoBehaviour
         _chunk.transform.localPosition = _position * ChunkSize;
         _chunk.transform.localRotation = Quaternion.identity;
         _chunk.transform.localScale = Vector3.one;
+        _chunk.tag = "Block";
 
         _chunk.AddComponent<MeshFilter>();
         _chunk.AddComponent<MeshRenderer>().material = new Material(GameManager.Instance.MaterialManager.MainMaterial);

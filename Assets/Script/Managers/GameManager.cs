@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
+                UIManager.OffThePreviewWorld();
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.Color});
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
@@ -92,6 +93,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
+                UIManager.OffThePreviewWorld();
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.ChooseHowToMake);
                 break;
@@ -100,6 +102,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
+                UIManager.OffThePreviewWorld();
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld , SelectionUIenum.MoveOneWorld});
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
