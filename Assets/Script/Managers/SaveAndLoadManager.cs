@@ -388,7 +388,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         foreach(GameObject wb in GameManager.Instance.WorldManager.Worlds)
         {
-            SaveWorldData(wb.GetComponent<WorldBaseCode>());
+            //SaveWorldData(wb.GetComponent<WorldBaseCode>());
         }
     }
 }

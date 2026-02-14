@@ -51,11 +51,7 @@ public class InputManager : MonoBehaviour
                 if (Input.GetKeyDown(BuildNewWorld))
                 {
                     GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
-
-                    /*
-                    GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
                     StartCoroutine(MoveBlockOnMe(newworld, GameFlow.MakeOneWorld));
-                    */
                 }
 
                 if (!isSomethingHit) return;
@@ -373,6 +369,8 @@ public class InputManager : MonoBehaviour
 
         TargetGameObject = _targetobject;
 
+        TargetGameObject.GetComponent<ChunkCode>().MoveMiddle();
+
         Transform cam = Camera.main.transform;
         BoxCollider box = TargetGameObject.GetComponent<BoxCollider>();
 
@@ -387,6 +385,7 @@ public class InputManager : MonoBehaviour
 
         float duration = 0.5f;
         float time = 0f;
+
 
         while (time < duration)
         {
@@ -403,7 +402,7 @@ public class InputManager : MonoBehaviour
         TargetGameObject.transform.SetParent(SelectWorldPosition.transform);
         TargetGameObject.transform.position = endPos;
 
-        TargetGameObject.GetComponent<WorldBaseCode>().ChooseThisWorld();
+        TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
         GameManager.Instance.ChangeFlow(_gameflow);
     }
 

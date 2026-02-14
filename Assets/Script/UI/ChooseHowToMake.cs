@@ -123,7 +123,7 @@ public class ChooseHowToMake : BasicUI
 
     void MakeNewWorld()
     {
-        WorldBaseCode _world = GameManager.Instance.InputManager.TargetGameObject.GetComponent<WorldBaseCode>();
+        ChunkCode _world = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>();
 
         _world.MakeNewWorld(x, y, z);
     }

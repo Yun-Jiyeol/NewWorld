@@ -20,6 +20,7 @@ public class WorldManager : MonoBehaviour
         newWorld.transform.tag = "World";
         newWorld.layer = 6;
         newWorld.transform.position = SpawnNewWorldPosition.position;
+        newWorld.AddComponent<BoxCollider>();
         newWorld.AddComponent<ChunkCode>().MakeNewWorld(3, 3, 3);
         Worlds.Add(newWorld);
 

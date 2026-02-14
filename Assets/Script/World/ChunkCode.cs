@@ -1,10 +1,14 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BlockInChunkData
 {
-    public Vector3Int _position;
     public Color _color;
+
+    public Vector3Int _position;
+    public GameObject _go;
 }
 
 public class ChunkCode : MonoBehaviour
@@ -12,6 +16,14 @@ public class ChunkCode : MonoBehaviour
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
+
+    float minX = int.MaxValue;
+    float minY = int.MaxValue;
+    float minZ = int.MaxValue;
+
+    float maxX = int.MinValue;
+    float maxY = int.MinValue;
+    float maxZ = int.MinValue;
 
     Vector3Int[] directions = new Vector3Int[]
 {
@@ -25,14 +37,25 @@ public class ChunkCode : MonoBehaviour
 
     public void MakeNewWorld(int x, int y, int z)
     {
-        for(int _x =0; _x < x; _x++)
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+
+        for (int _x =0; _x < x; _x++)
         {
             for(int _y = 0; _y < y; _y++)
             {
                 for (int _z = 0; _z < z; _z++)
                 {
-                    if(x == 1) MakeBlockData(new Vector3(_x, _y, _z), new Color(1, 1, 0, 1 / 2f), false);
-                    else MakeBlockData(new Vector3(_x, _y, _z), Color.white, false);
+                    Vector3 pos = new Vector3(_x, _y, _z);
+                    Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+
+                    if (BlocksinChunk.ContainsKey(GetChunkCoord(gridPos)))
+                    {
+                        if (BlocksinChunk[GetChunkCoord(gridPos)].ContainsKey(GetLocalPos(gridPos)))
+                            continue;
+                    }
+
+                    MakeBlockData(pos, Color.white, false);
                 }
             }
         }
@@ -57,20 +80,113 @@ public class ChunkCode : MonoBehaviour
         {
             MakeNewChunk(ChunkPos); //청크가 없을 시 청크 추가
         }
-
-        if (BlocksinChunk[ChunkPos].Count > 0)
-        {
-            if (BlocksinChunk[ChunkPos].ContainsKey(LocalPos))
-            {
-                Debug.LogWarning("이미 있는 좌표");
-                return;
-            }
-        }
-
-        Debug.Log(color);
         BlocksinChunk[ChunkPos].Add(LocalPos, new BlockInChunkData { _position = LocalPos, _color = color }); //데이터 저장
 
-        if (updateChunk) BuildMesh(gridPos);
+        CheckSize(gridPos);
+
+        if (color.a == 1) //청크 단위(불투명)
+        {
+            if (BlocksinChunk[ChunkPos].Count > 0)
+            {
+                if (BlocksinChunk[ChunkPos].ContainsKey(LocalPos))
+                {
+                    Debug.LogWarning("이미 있는 좌표");
+                    return;
+                }
+            }
+
+            if (updateChunk) BuildMesh(gridPos);
+        }
+        else //게임오브젝트 단위(투명)
+        {
+            GameObject block = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, transform);
+            block.transform.localPosition = gridPos;
+            block.GetComponent<Renderer>().material.color = color;
+
+            BlocksinChunk[ChunkPos].TryGetValue(LocalPos, out BlockInChunkData value);
+            value._go = block;
+
+            OnBlockPlaced(gridPos);
+
+            UpdateBlockMesh(gridPos);
+            foreach (var dir in directions) UpdateBlockMesh(gridPos + dir);
+        }
+    }
+
+    public void ChooseThisWorld()
+    {
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+
+        foreach(GameObject chunk in Chunks.Values)
+        {
+            var col = chunk.GetComponent<Collider>();
+            if (col != null)
+                col.enabled = true; // 끄기
+        } 
+
+        foreach (var chunk in BlocksinChunk.Values)
+        {
+            foreach (var block in chunk.Values)
+            {
+                if (block._go == null)
+                    continue;
+
+                var col = block._go.GetComponent<BoxCollider>();
+                if (col != null)
+                    col.enabled = true; // 끄기
+            }
+        }
+    }
+
+    public void MoveMiddle()
+    {
+        Vector3 centerChunkCoord = new Vector3(
+            (minX + maxX) / 2f,
+            (minY + maxY) / 2f,
+            (minZ + maxZ) / 2f
+        );
+
+        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 8),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
+    }
+
+    public void PutThisWorld()
+    {
+        gameObject.GetComponent<BoxCollider>().enabled = true;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            var col = chunk.GetComponent<Collider>();
+            if (col != null)
+                col.enabled = false; // 끄기
+        }
+
+        foreach (var chunk in BlocksinChunk.Values)
+        {
+            foreach (var block in chunk.Values)
+            {
+                if (block._go == null)
+                    continue;
+
+                var col = block._go.GetComponent<BoxCollider>();
+                if (col != null)
+                    col.enabled = false; // 끄기
+            }
+        }
+    }
+
+    void CheckSize(Vector3 position)
+    {
+        BoxCollider col = gameObject.GetComponent<BoxCollider>();
+
+        if (position.x > maxX) maxX = position.x;
+        if (position.y > maxY) maxY = position.y;
+        if (position.z > maxZ) maxZ = position.z;
+
+        if (position.x < minX) minX = position.x;
+        if (position.y < minY) minY = position.y;
+        if (position.z < minZ) minZ = position.z;
+
+        col.size = new Vector3(maxX - minX, maxY - minY, maxZ - minZ);
     }
 
     Vector3Int GetLocalPos(Vector3Int worldPos)
@@ -121,7 +237,13 @@ public class ChunkCode : MonoBehaviour
 
         foreach (var kvp in BlocksinChunk[chunkCoord])
         {
-            AddCube(chunkCoord, kvp.Value, ref vertices, ref triangles, ref colors, ref vertexIndex);
+            var block = kvp.Value;
+
+            // alpha 1 미만은 chunk 메쉬에서 제외
+            if (block._color.a < 1f)
+                continue;
+
+            AddCube(chunkCoord, block, ref vertices, ref triangles, ref colors, ref vertexIndex);
         }
 
         mesh.SetVertices(vertices);
@@ -209,5 +331,149 @@ public class ChunkCode : MonoBehaviour
             colors.Add(color);
 
         vertexIndex += 4;
+    }
+
+    bool IsFullyCovered(Vector3Int pos)
+    {
+        foreach (var dir in directions)
+        {
+            Vector3Int nPos = pos + dir;
+
+            if (!BlocksinChunk.ContainsKey(GetChunkCoord(nPos)))
+                return false;
+
+            if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData data))
+                return false;
+
+            if (data._color.a == 1)
+                return false;
+        }
+        return true;
+    }
+
+    public void OnBlockPlaced(Vector3Int pos)
+    {
+        UpdateSelfVisibility(pos);
+
+        UpdateAroundVisibility(pos);
+    }
+
+    void UpdateSelfVisibility(Vector3Int pos)
+    {
+        if (!BlocksinChunk.ContainsKey(GetChunkCoord(pos)))
+            return;
+
+        if (!BlocksinChunk[GetChunkCoord(pos)].TryGetValue(GetLocalPos(pos), out BlockInChunkData data))
+            return;
+
+        bool covered = IsFullyCovered(pos);
+        data._go.SetActive(!covered);
+    }
+
+    void UpdateAroundVisibility(Vector3Int pos)
+    {
+        foreach (var dir in directions)
+        {
+            Vector3Int nPos = pos + dir;
+
+            if (!BlocksinChunk.ContainsKey(GetChunkCoord(nPos)))
+                continue;
+
+            if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData data))
+                continue;
+
+            bool covered = IsFullyCovered(nPos);
+            data._go.SetActive(!covered);
+        }
+    }
+
+    public void OnBlockDestroyed(Vector3Int pos)
+    {
+        foreach (var dir in directions)
+        {
+            Vector3Int nPos = pos + dir;
+
+            if (!BlocksinChunk.ContainsKey(GetChunkCoord(nPos)))
+                continue;
+
+            if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData data))
+                continue;
+
+            data._go.SetActive(true);
+        }
+    }
+
+    BlockFace GetVisibleFaces(Vector3Int pos, BlockInChunkData data)
+    {
+        BlockFace faces = BlockFace.All;
+
+        foreach (var dir in directions)
+        {
+            Vector3Int nPos = pos + dir;
+
+            if (!BlocksinChunk.ContainsKey(GetChunkCoord(nPos)))
+                continue;
+
+            if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData n))
+                continue;
+
+            if ((n._color.a == 1) != (data._color.a == 1))
+                continue;
+
+            if (dir == Vector3Int.up) faces &= ~BlockFace.Up;
+            if (dir == Vector3Int.down) faces &= ~BlockFace.Down;
+            if (dir == Vector3Int.left) faces &= ~BlockFace.Left;
+            if (dir == Vector3Int.right) faces &= ~BlockFace.Right;
+            if (dir == new Vector3Int(0, 0, 1)) faces &= ~BlockFace.Front;
+            if (dir == new Vector3Int(0, 0, -1)) faces &= ~BlockFace.Back;
+        }
+
+        return faces;
+    }
+
+    void UpdateBlockMesh(Vector3Int pos)
+    {
+        if (!BlocksinChunk.ContainsKey(GetChunkCoord(pos)))
+            return;
+
+        if (!BlocksinChunk[GetChunkCoord(pos)].TryGetValue(GetLocalPos(pos), out BlockInChunkData data))
+            return;
+
+        var meshGen = data._go.GetComponent<BlockMeshGenerator>();
+        meshGen.Build(GetVisibleFaces(pos, data));
+    }
+
+    public void StartChangeEveryThingSmooth(float duration, 
+        bool changescale, float _scale, 
+        bool changeposition, Vector3 _position, 
+        bool changerotation, Quaternion _rotation)
+    {
+        StartCoroutine(ChangeEveryThingSmooth(duration, changescale, _scale, changeposition, _position, changerotation, _rotation));
+    }
+
+    IEnumerator ChangeEveryThingSmooth(float duration,
+        bool changescale, float _scale,
+        bool changeposition, Vector3 _position,
+        bool changerotation, Quaternion _rotation)
+    {
+        Vector3 startScale = transform.localScale;
+        Vector3 endScale = Vector3.one * _scale;
+
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = _position;
+
+        Quaternion startRotation = transform.localRotation;
+        Quaternion endRotation = _rotation;
+
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            if (changescale) transform.localScale = Vector3.Lerp(startScale, endScale, time / duration);
+            if (changeposition) transform.position = Vector3.Lerp(startPosition, endPosition, time / duration);
+            if (changerotation) transform.localRotation = Quaternion.Lerp(startRotation, endRotation, time / duration);
+            yield return null;
+        }
     }
 }
