@@ -264,14 +264,14 @@ public class SaveAndLoadManager : MonoBehaviour
         foreach (BlockSaveData block in worldsave.blocks)
         {
 
-            GameManager.Instance.BuildManager.RequestBuild
+           /* GameManager.Instance.BuildManager.RequestBuild
                 (new WorldAndBlock
                 {
                     world = worldBaseCode,
                     blockposition = new Vector3(block.x, block.y, block.z),
                     blockcolor = new Color(block.r, block.g, block.b, block.a),
                     collider = false
-                });
+                });*/
         }
 
         if(worldsave.isLightBlock)

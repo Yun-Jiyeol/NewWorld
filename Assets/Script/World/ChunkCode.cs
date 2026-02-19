@@ -49,20 +49,23 @@ public class ChunkCode : MonoBehaviour
                     Vector3 pos = new Vector3(_x, _y, _z);
                     Vector3Int gridPos = Vector3Int.RoundToInt(pos);
 
+                    CheckSize(gridPos);
+
                     if (BlocksinChunk.ContainsKey(GetChunkCoord(gridPos)))
                     {
                         if (BlocksinChunk[GetChunkCoord(gridPos)].ContainsKey(GetLocalPos(gridPos)))
                             continue;
                     }
 
-                    MakeBlockData(pos, Color.white, false);
+                    GameManager.Instance.BuildManager.RequestBuild
+                        (new WorldAndBlock
+                        {
+                            world = this,
+                            blockposition = pos,
+                            blockcolor = Color.white
+                        });
                 }
             }
-        }
-
-        foreach(Vector3Int _pos in Chunks.Keys)
-        {
-            BuildMesh(_pos * ChunkSize);
         }
     }
 
@@ -76,7 +79,7 @@ public class ChunkCode : MonoBehaviour
         return true;
     }
 
-    public void MakeBlockData(Vector3 _position, Color color, bool updateChunk = true)
+    public void MakeBlockData(Vector3 _position, Color color)
     {
         if(BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> ();
         if(Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject> ();
@@ -89,24 +92,18 @@ public class ChunkCode : MonoBehaviour
         {
             MakeNewChunk(ChunkPos); //청크가 없을 시 청크 추가
         }
-        BlocksinChunk[ChunkPos].Add(LocalPos, new BlockInChunkData { _position = LocalPos, _color = color }); //데이터 저장
 
-        CheckSize(gridPos);
-
-        if (color.a == 1) //청크 단위(불투명)
+        if (BlocksinChunk[ChunkPos].ContainsKey(LocalPos))
         {
-            if (BlocksinChunk[ChunkPos].Count > 0)
-            {
-                if (BlocksinChunk[ChunkPos].ContainsKey(LocalPos))
-                {
-                    Debug.LogWarning("이미 있는 좌표");
-                    return;
-                }
-            }
-
-            if (updateChunk) BuildMesh(gridPos);
+            Debug.LogWarning("이미 있는 좌표");
+            return;
         }
-        else //게임오브젝트 단위(투명)
+        else
+        {
+            BlocksinChunk[ChunkPos].Add(LocalPos, new BlockInChunkData { _position = LocalPos, _color = color }); //데이터 저장
+        }
+
+        if (color.a < 1)
         {
             GameObject block = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, transform);
             block.transform.localPosition = gridPos;
@@ -120,6 +117,54 @@ public class ChunkCode : MonoBehaviour
 
             UpdateBlockMesh(gridPos);
             foreach (var dir in directions) UpdateBlockMesh(gridPos + dir);
+        }
+
+        BuildMesh(gridPos);
+
+        for (int i = 0; i < directions.Length; i++)
+        {
+            Vector3Int dir = directions[i];
+
+            bool isBorder =
+                (dir == Vector3Int.left && LocalPos.x == 0) ||
+                (dir == Vector3Int.right && LocalPos.x == ChunkSize - 1) ||
+                (dir == Vector3Int.down && LocalPos.y == 0) ||
+                (dir == Vector3Int.up && LocalPos.y == ChunkSize - 1) ||
+                (dir == new Vector3Int(0, 0, -1) && LocalPos.z == 0) ||
+                (dir == new Vector3Int(0, 0, 1) && LocalPos.z == ChunkSize - 1);
+
+            if (!isBorder)
+                continue;
+
+            Vector3Int neighborWorld = gridPos + dir;
+            Vector3Int neighborChunk = GetChunkCoord(neighborWorld);
+
+            if (neighborChunk != ChunkPos && Chunks.ContainsKey(neighborChunk))
+            {
+                BuildMesh(neighborWorld);
+            }
+        }
+    }
+
+    public void FinishSettingBlock()
+    {
+        switch (GameManager.Instance.flow)
+        {
+            case GameFlow.MakeOneWorld:
+                MoveMiddle();
+                findselect();
+                break;
+        }
+    }
+
+    void findselect()
+    {
+        foreach(var ui in GameManager.Instance.UIManager.SelectionUI.uIBtnsSelectedUIMaterials)
+        {
+            if(ui.UIenum == SelectionUIenum.ChooseHowToMake)
+            {
+                ui.UISelected.GetComponent<ChooseHowToMake>().check();
+            }
         }
     }
 
@@ -156,7 +201,7 @@ public class ChunkCode : MonoBehaviour
             (minZ + maxZ) / 2f
         );
 
-        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 4),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
+        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 2),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
     }
 
     public void PutThisWorld()
@@ -200,6 +245,14 @@ public class ChunkCode : MonoBehaviour
         col.center = new Vector3((maxX + minX)/2, (maxY + minY)/2, (maxZ + minZ)/2);
     }
 
+    void updatesize()
+    {
+        BoxCollider col = gameObject.GetComponent<BoxCollider>();
+
+        col.size = new Vector3(maxX - minX + 1, maxY - minY + 1, maxZ - minZ + 1);
+        col.center = new Vector3((maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
+    }
+
     Vector3Int GetLocalPos(Vector3Int worldPos)
     {
         Vector3Int chunkCoord = GetChunkCoord(worldPos);
@@ -239,85 +292,78 @@ public class ChunkCode : MonoBehaviour
     {
         Vector3Int chunkCoord = GetChunkCoord(worldPos);
 
-        Mesh mesh = new Mesh();
+        List<Vector3> renderVertices = new();
+        List<int> renderTriangles = new();
+        List<Color> renderColors = new();
+        int renderVertexIndex = 0;
 
-        List<Vector3> vertices = new();
-        List<int> triangles = new();
-        List<Color> colors = new();
-
-        int vertexIndex = 0;
+        List<Vector3> colliderVertices = new();
+        List<int> colliderTriangles = new();
+        int colliderVertexIndex = 0;
 
         foreach (var kvp in BlocksinChunk[chunkCoord])
         {
             var block = kvp.Value;
 
-            // alpha 1 미만은 chunk 메쉬에서 제외
-            if (block._color.a < 1f)
-                continue;
+            AddCube(
+                chunkCoord,
+                block,
 
-            AddCube(chunkCoord, block, ref vertices, ref triangles, ref colors, ref vertexIndex);
+                ref renderVertices,
+                ref renderTriangles,
+                ref renderColors,
+                ref renderVertexIndex,
+
+                ref colliderVertices,
+                ref colliderTriangles,
+                ref colliderVertexIndex
+            );
         }
 
-        mesh.SetVertices(vertices);
-        mesh.SetTriangles(triangles, 0);
-        mesh.SetColors(colors);
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
+        Mesh renderMesh = new Mesh();
+        renderMesh.SetVertices(renderVertices);
+        renderMesh.SetTriangles(renderTriangles, 0);
+        renderMesh.SetColors(renderColors);
+        renderMesh.RecalculateNormals();
+        renderMesh.RecalculateBounds();
 
         MeshFilter mf = Chunks[chunkCoord].GetComponent<MeshFilter>();
-        mf.mesh = mesh;
+        mf.mesh = renderMesh;
+
+        Mesh colliderMesh = new Mesh();
+        colliderMesh.SetVertices(colliderVertices);
+        colliderMesh.SetTriangles(colliderTriangles, 0);
+        colliderMesh.RecalculateNormals();
+        colliderMesh.RecalculateBounds();
 
         MeshCollider mc = Chunks[chunkCoord].GetComponent<MeshCollider>();
-        if (mc == null) mc = Chunks[chunkCoord].AddComponent<MeshCollider>();
+        if (mc == null)
+            mc = Chunks[chunkCoord].AddComponent<MeshCollider>();
 
-        mc.sharedMesh = null;   // 중요
-        mc.sharedMesh = mesh;
+        mc.sharedMesh = null; // 중요
+        mc.sharedMesh = colliderMesh;
+
+        updatesize();
     }
 
-    void AddCube(Vector3Int chunkCoord,BlockInChunkData block, ref List<Vector3> vertices,ref List<int> triangles, ref List<Color> colors,ref int vertexIndex)
+    void AddCube(
+     Vector3Int chunkCoord,
+     BlockInChunkData block,
+
+     ref List<Vector3> renderVertices,
+     ref List<int> renderTriangles,
+     ref List<Color> renderColors,
+     ref int renderVertexIndex,
+
+     ref List<Vector3> colliderVertices,
+     ref List<int> colliderTriangles,
+     ref int colliderVertexIndex
+ )
     {
         Vector3Int localPos = block._position;
         Vector3Int worldPos = chunkCoord * ChunkSize + localPos;
 
         bool currentOpaque = block._color.a >= 1f;
-
-        for (int face = 0; face < 6; face++)
-        {
-            Vector3Int neighborWorld = worldPos + directions[face];
-            Vector3Int neighborChunk = GetChunkCoord(neighborWorld);
-            Vector3Int neighborLocal = GetLocalPos(neighborWorld);
-
-            BlockInChunkData neighbor = null;
-
-            if (BlocksinChunk.ContainsKey(neighborChunk) &&
-                BlocksinChunk[neighborChunk].ContainsKey(neighborLocal))
-            {
-                neighbor = BlocksinChunk[neighborChunk][neighborLocal];
-            }
-
-            bool removeFace = false;
-
-            if (neighbor != null)
-            {
-                bool neighborOpaque = neighbor._color.a >= 1f;
-
-                if (currentOpaque && neighborOpaque)
-                    removeFace = true;
-
-                if (!currentOpaque && !neighborOpaque)
-                    removeFace = true;
-            }
-
-            if (!removeFace)
-            {
-                AddFace(localPos, face, block._color,ref vertices, ref triangles, ref colors, ref vertexIndex);
-            }
-        }
-    }
-
-    void AddFace(Vector3Int pos, int face, Color color, ref List<Vector3> vertices, ref List<int> triangles,ref List<Color> colors,ref int vertexIndex)
-    {
-        Vector3 p = pos;
 
         Vector3[,] faceVerts = new Vector3[6, 4]
         {
@@ -329,20 +375,57 @@ public class ChunkCode : MonoBehaviour
         { new(-0.5f,-0.5f,-0.5f), new( 0.5f,-0.5f,-0.5f), new( 0.5f,-0.5f, 0.5f), new(-0.5f,-0.5f, 0.5f) }
         };
 
-        for (int i = 0; i < 4; i++)
-            vertices.Add(p + faceVerts[face, i]);
+        for (int face = 0; face < 6; face++)
+        {
+            Vector3Int neighborWorld = worldPos + directions[face];
+            Vector3Int neighborChunk = GetChunkCoord(neighborWorld);
+            Vector3Int neighborLocal = GetLocalPos(neighborWorld);
 
-        triangles.Add(vertexIndex + 0);
-        triangles.Add(vertexIndex + 1);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex + 0);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex + 3);
+            bool neighborExists = false;
+            bool neighborOpaque = false;
 
-        for (int i = 0; i < 4; i++)
-            colors.Add(color);
+            if (BlocksinChunk.ContainsKey(neighborChunk) &&
+                BlocksinChunk[neighborChunk].TryGetValue(neighborLocal, out var neighborBlock))
+            {
+                neighborExists = true;
+                neighborOpaque = neighborBlock._color.a >= 1f;
+            }
 
-        vertexIndex += 4;
+            Vector3 p = localPos;
+
+            if (!neighborExists)
+            {
+                for (int i = 0; i < 4; i++)
+                    colliderVertices.Add(p + faceVerts[face, i]);
+
+                colliderTriangles.Add(colliderVertexIndex + 0);
+                colliderTriangles.Add(colliderVertexIndex + 1);
+                colliderTriangles.Add(colliderVertexIndex + 2);
+                colliderTriangles.Add(colliderVertexIndex + 0);
+                colliderTriangles.Add(colliderVertexIndex + 2);
+                colliderTriangles.Add(colliderVertexIndex + 3);
+
+                colliderVertexIndex += 4;
+            }
+
+            if (!neighborOpaque && currentOpaque)
+            {
+                for (int i = 0; i < 4; i++)
+                    renderVertices.Add(p + faceVerts[face, i]);
+
+                renderTriangles.Add(renderVertexIndex + 0);
+                renderTriangles.Add(renderVertexIndex + 1);
+                renderTriangles.Add(renderVertexIndex + 2);
+                renderTriangles.Add(renderVertexIndex + 0);
+                renderTriangles.Add(renderVertexIndex + 2);
+                renderTriangles.Add(renderVertexIndex + 3);
+
+                for (int i = 0; i < 4; i++)
+                    renderColors.Add(block._color);
+
+                renderVertexIndex += 4;
+            }
+        }
     }
 
     bool IsFullyCovered(Vector3Int pos)
@@ -394,6 +477,9 @@ public class ChunkCode : MonoBehaviour
             if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData data))
                 continue;
 
+            if(data._go == null)
+                continue;
+
             bool covered = IsFullyCovered(nPos);
             data._go.SetActive(!covered);
         }
@@ -409,6 +495,9 @@ public class ChunkCode : MonoBehaviour
                 continue;
 
             if (!BlocksinChunk[GetChunkCoord(nPos)].TryGetValue(GetLocalPos(nPos), out BlockInChunkData data))
+                continue;
+
+            if (data._go == null)
                 continue;
 
             data._go.SetActive(true);
@@ -449,6 +538,9 @@ public class ChunkCode : MonoBehaviour
             return;
 
         if (!BlocksinChunk[GetChunkCoord(pos)].TryGetValue(GetLocalPos(pos), out BlockInChunkData data))
+            return;
+
+        if (data._go == null)
             return;
 
         var meshGen = data._go.GetComponent<BlockMeshGenerator>();

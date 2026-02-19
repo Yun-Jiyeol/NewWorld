@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
         switch (flow)
         {
             case GameFlow.WatchAllWorld:
+                BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
                 MainCamera.stopCamera = false;
@@ -71,6 +72,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
+                BuildManager.maxFrameTime = 1f;
                 InputManager.SettingWhenChangeToPutWorld();
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -81,6 +83,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.WatchOneWorld:
+                BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
@@ -90,6 +93,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.MakeOneWorld:
+                BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
@@ -99,6 +103,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.SelectOneWorld:
+                BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);

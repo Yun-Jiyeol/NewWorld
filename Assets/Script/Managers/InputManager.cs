@@ -105,34 +105,12 @@ public class InputManager : MonoBehaviour
                 }
                 else if (OnRaycast.transform.CompareTag("Block"))
                 {
-                    if (ReadyToBuildBlock == null)
-                    {
-                        ReadyToBuildBlock = new GameObject();
-                        ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
-
-                        ReadyToBuildBlock.transform.localScale = Vector3.one * 1.01f;
-                        ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
-
-                        MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
-                        mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
-
-                        MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
-                        mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
-
-                        ReadyToBuildBlock.AddComponent<SampleBlcok>();
-                    }
-                    if(showpreviewblock) ReadyToBuildBlock.SetActive(true);
-
-                    Vector3 localHit = TargetGameObject.transform.InverseTransformPoint(OnRaycast.point - OnRaycast.normal * 0.01f);
-
-                    Vector3Int grid = Vector3Int.RoundToInt(localHit);
-
-                    ReadyToBuildBlock.transform.localPosition = grid;
+                    SeeChooseBlock();
 
                     if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
                     {
-                        //if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
-                        //DestroyCoroutine = StartCoroutine(DestroyThisBlock());
+                        if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
+                        DestroyCoroutine = StartCoroutine(DestroyThisBlock());
                     }
                     if ((Input.GetMouseButton(0) && isRotated) || Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(1))
                     {
@@ -204,26 +182,7 @@ public class InputManager : MonoBehaviour
                 }
                 else if (OnRaycast.transform.CompareTag("Block"))
                 {
-                    if (ReadyToBuildBlock == null)
-                    {
-                        ReadyToBuildBlock = new GameObject();
-                        ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
-
-                        ReadyToBuildBlock.transform.localScale = Vector3.one;
-                        ReadyToBuildBlock.transform.rotation = new Quaternion(0,0,0,0);
-
-                        MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
-                        mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
-
-                        MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
-                        mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
-
-                        ReadyToBuildBlock.AddComponent<SampleBlcok>();
-                    }
-
-                    ReadyToBuildBlock.SetActive(true);
-                    Vector3 offset = Vector3.Scale(OnRaycast.normal, TargetGameObject.transform.localScale);
-                    ReadyToBuildBlock.transform.position = OnRaycast.transform.position + offset;
+                    SeeChooseBlock();
                 }
                 else
                 {
@@ -241,6 +200,33 @@ public class InputManager : MonoBehaviour
         TargetGameObject = null;
 
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
+    }
+
+    void SeeChooseBlock()
+    {
+        if (ReadyToBuildBlock == null)
+        {
+            ReadyToBuildBlock = new GameObject();
+            ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
+
+            ReadyToBuildBlock.transform.localScale = Vector3.one * 1.05f;
+            ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
+
+            MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
+            mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
+
+            MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
+            mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
+
+            ReadyToBuildBlock.AddComponent<SampleBlcok>();
+        }
+        if (showpreviewblock) ReadyToBuildBlock.SetActive(true);
+
+        Vector3 localHit = TargetGameObject.transform.InverseTransformPoint(OnRaycast.point - OnRaycast.normal * 0.01f);
+
+        Vector3Int grid = Vector3Int.RoundToInt(localHit);
+
+        ReadyToBuildBlock.transform.localPosition = grid;
     }
 
     public void SettingWhenChangeToPutWorld()
@@ -469,9 +455,8 @@ public class InputManager : MonoBehaviour
 
         GameManager.Instance.BuildManager.RequestBuild
             (new WorldAndBlock 
-            { world = TargetGameObject.GetComponent<WorldBaseCode>(), 
-            blockposition = ReadyToBuildBlock.transform.localPosition,
-            blockcolor = SpawnedColor,
-            collider = true});
+            { world = TargetGameObject.GetComponent<ChunkCode>(), 
+            blockposition = TargetGameObject.transform.InverseTransformPoint(OnRaycast.point + OnRaycast.normal * 0.01f),
+            blockcolor = SpawnedColor});
     }
 }

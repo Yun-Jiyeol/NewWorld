@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class WorldAndBlock
 {
-    public WorldBaseCode world;
+    public ChunkCode world;
     public Vector3 blockposition;
     public Color blockcolor;
-    public bool collider;
 }
 
 public class BuildManager : MonoBehaviour
@@ -28,7 +27,7 @@ public class BuildManager : MonoBehaviour
     ParetteUI paretteUI = null;
     SaveUI saveUI = null;
 
-    public float maxFrameTime = 1f;
+    public float maxFrameTime = 3f;
     Queue<WorldAndBlock> buildQueue = new();
 
     private void Awake()
@@ -44,6 +43,11 @@ public class BuildManager : MonoBehaviour
     public void RequestBuild(WorldAndBlock requests)
     {
         buildQueue.Enqueue(requests);
+    }
+
+    public int Checkcountofbuild()
+    {
+        return buildQueue.Count;
     }
 
     IEnumerator BuildRoutine()
@@ -67,10 +71,10 @@ public class BuildManager : MonoBehaviour
     void BuildBlock(WorldAndBlock _wab)
     {
         Color _color = _wab.blockcolor;
-        _color.a = 1;
-        float _alfar = _wab.blockcolor.a;
 
-        _wab.world.MakeNewBlocks(_wab.blockposition, _color, alfar, _wab.collider);
+        _wab.world.MakeBlockData(_wab.blockposition, _color);
+
+        if (buildQueue.Count == 0) _wab.world.FinishSettingBlock();
     }
 
     public void AddPreColor(Color _color)

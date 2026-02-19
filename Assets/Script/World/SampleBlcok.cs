@@ -15,7 +15,7 @@ public class SampleBlcok : MonoBehaviour
 
     private void Start()
     {
-        Color _rcoloc = new Color(0f, 0f, 0f, 0.4f);
+        Color _rcoloc = new Color(0f, 0f, 0f, 0.7f);
         SetColor(_rcoloc);
     }
 

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEditor.UI;
+using UnityEngine;
 
 public class ChooseHowToMake : BasicUI
 {
@@ -11,6 +12,10 @@ public class ChooseHowToMake : BasicUI
     public TMP_InputField Ytext;
     public TMP_InputField Ztext;
 
+    bool canchangevalue = true;
+
+    public GameObject blockImage;
+
     public override void OnSetting()
     {
         x = 3;
@@ -20,6 +25,34 @@ public class ChooseHowToMake : BasicUI
         Xtext.text = x.ToString();
         Ytext.text = y.ToString();
         Ztext.text = z.ToString();
+
+        check();
+    }
+
+    public void check()
+    {
+        if(GameManager.Instance.BuildManager.Checkcountofbuild() == 0)
+        {
+            ChangeboolValue(true);
+        }
+        else
+        {
+            ChangeboolValue(false);
+        }
+    }
+
+    void ChangeboolValue(bool iscan)
+    {
+        canchangevalue = iscan;
+
+        if (canchangevalue)
+        {
+            blockImage.SetActive(false);
+        }
+        else
+        {
+            blockImage.SetActive(true);
+        }
     }
 
     public void ChageXValue()
@@ -123,6 +156,8 @@ public class ChooseHowToMake : BasicUI
 
     void MakeNewWorld()
     {
+        ChangeboolValue(false);
+
         ChunkCode _world = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>();
 
         _world.MakeNewWorld(x, y, z);

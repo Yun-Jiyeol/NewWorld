@@ -75,14 +75,14 @@ public class WorldBaseCode : MonoBehaviour
                     }
                     else
                     {
-                        GameManager.Instance.BuildManager.RequestBuild
+                       /* GameManager.Instance.BuildManager.RequestBuild
                             (new WorldAndBlock
                             {
                                 world = this,
                                 blockposition = new Vector3(x, y, z),
                                 blockcolor = Color.white,
                                 collider = true
-                            });
+                            });*/
                     }
 
                     if(CheckBlocks.Contains(v3)) CheckBlocks.Remove(v3);
