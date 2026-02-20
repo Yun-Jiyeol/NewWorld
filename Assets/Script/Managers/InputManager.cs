@@ -83,10 +83,11 @@ public class InputManager : MonoBehaviour
 
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
-                    Transform cam = Camera.main.transform;
+                    GameObject cam = GameManager.Instance.MainCamera.gameObject;
 
-                    TargetGameObject.transform.SetParent(cam);
-                    TargetGameObject.GetComponent<WorldBaseCode>().StartChangeEveryThingSmooth(0.5f, 1f, cam.position + cam.forward * 5f + cam.up * -3f, Quaternion.Euler(0f,0f,0f));
+                    TargetGameObject.transform.SetParent(cam.transform);
+                    TargetGameObject.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, 1f, true ,cam.transform.position + cam.transform.forward * 25f + cam.transform.up * 1f, true, Quaternion.Euler(0f,0f,0f));
+                    Invoke("ChangeToPutWorldInSpace", 0.7f);
                 }
                 //임시 코드
 
@@ -160,9 +161,9 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
-                TargetScale(ReadyToBuildBlock);
-                TargetTurn(ReadyToBuildBlock);
-                TargetMove(ReadyToBuildBlock, false);
+                TargetScale(TargetGameObject);
+                TargetTurn(TargetGameObject);
+                TargetMove(TargetGameObject, false);
 
                 if (Input.GetMouseButtonDown(0)) GameManager.Instance.MainCamera.stopCamera = true;
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
@@ -172,10 +173,8 @@ public class InputManager : MonoBehaviour
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
-                    ReadyToBuildBlock.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
 
-                    TargetGameObject.GetComponent<WorldBaseCode>().StartChangeEveryThingSmooth(0.5f, ReadyToBuildBlock.transform.lossyScale.x, ReadyToBuildBlock.transform.position, ReadyToBuildBlock.transform.rotation, true);
-                    TargetGameObject.GetComponent<WorldBaseCode>().PutThisWorld();  
+                    TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();  
 
                     ChangeToWatchAllWorld();
                 }
@@ -203,6 +202,11 @@ public class InputManager : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    void ChangeToPutWorldInSpace()
+    {
+        GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
     }
 
     void ChangeToWatchAllWorld()
@@ -239,13 +243,6 @@ public class InputManager : MonoBehaviour
         Vector3Int grid = Vector3Int.RoundToInt(localHit);
 
         ReadyToBuildBlock.transform.localPosition = grid;
-    }
-
-    public void SettingWhenChangeToPutWorld()
-    {
-        ReadyToBuildBlock = TargetGameObject.GetComponent<WorldBaseCode>().MakePreview(7);
-
-        ReadyToBuildBlock.transform.position = Camera.main.transform.forward * 5f;
     }
 
     void SaveAndLoadColor()

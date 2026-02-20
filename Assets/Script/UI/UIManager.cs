@@ -12,16 +12,4 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance.UIManager = this;
     }
-
-    public void OnThePreviewWorld()
-    {
-        PreviewWorld.SetActive(true);
-        GameManager.Instance.MainCamera.SubCamera.SetActive(true);
-    }
-
-    public void OffThePreviewWorld()
-    {
-        PreviewWorld.SetActive(false);
-        GameManager.Instance.MainCamera.SubCamera.SetActive(false);
-    }
 }

@@ -12,7 +12,6 @@ public class MainCamera : MonoBehaviour
     float pitch; // ªÛ«œ
 
     public bool stopCamera = false;
-    public GameObject SubCamera;
 
     void Start()
     {

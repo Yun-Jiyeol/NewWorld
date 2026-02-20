@@ -241,19 +241,6 @@ public class ChunkCode : MonoBehaviour
             var col = chunk.GetComponent<Collider>();
             if (col != null)
                 col.enabled = true; // ²ô±â
-        } 
-
-        foreach (var chunk in BlocksinChunk.Values)
-        {
-            foreach (var block in chunk.Values)
-            {
-                if (block._go == null)
-                    continue;
-
-                var col = block._go.GetComponent<BoxCollider>();
-                if (col != null)
-                    col.enabled = true; // ²ô±â
-            }
         }
     }
 
@@ -277,19 +264,6 @@ public class ChunkCode : MonoBehaviour
             var col = chunk.GetComponent<Collider>();
             if (col != null)
                 col.enabled = false; // ²ô±â
-        }
-
-        foreach (var chunk in BlocksinChunk.Values)
-        {
-            foreach (var block in chunk.Values)
-            {
-                if (block._go == null)
-                    continue;
-
-                var col = block._go.GetComponent<BoxCollider>();
-                if (col != null)
-                    col.enabled = false; // ²ô±â
-            }
         }
     }
 
