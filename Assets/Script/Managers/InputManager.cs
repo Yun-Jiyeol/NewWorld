@@ -370,12 +370,10 @@ public class InputManager : MonoBehaviour
         TargetGameObject.GetComponent<ChunkCode>().MoveMiddle();
 
         Transform cam = Camera.main.transform;
-        BoxCollider box = TargetGameObject.GetComponent<BoxCollider>();
 
         float baseDistance = 2f; // 최소 거리
-        float radius = box.bounds.extents.magnitude;
 
-        Vector3 targetPos = cam.position + cam.forward * (baseDistance + radius);
+        Vector3 targetPos = cam.position + cam.forward * (baseDistance);
 
         // 최종 위치 계산 (한 번만)
         Vector3 startPos = TargetGameObject.transform.position;
@@ -422,6 +420,7 @@ public class InputManager : MonoBehaviour
     IEnumerator DestroyThisBlock()
     {
         block = TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(ReadyToBuildBlock.transform.localPosition);
+        if (block == null) yield break;
         Vector3 normal = OnRaycast.normal.normalized;
 
         Quaternion startRotationInDestroy = block._go.transform.localRotation;

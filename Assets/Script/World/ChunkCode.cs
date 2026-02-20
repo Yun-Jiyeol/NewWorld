@@ -234,7 +234,7 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
-        gameObject.GetComponent<BoxCollider>().enabled = false;
+        gameObject.GetComponent<Collider>().enabled = false;
 
         foreach(GameObject chunk in Chunks.Values)
         {
@@ -257,7 +257,26 @@ public class ChunkCode : MonoBehaviour
 
     public void PutThisWorld()
     {
-        gameObject.GetComponent<BoxCollider>().enabled = true;
+        gameObject.GetComponent<Collider>().enabled = true;
+
+        List<MeshFilter> meshfilter = new List<MeshFilter>();
+        foreach(GameObject chunk in Chunks.Values)
+        {
+            meshfilter.Add(chunk.GetComponent<MeshFilter>());
+        }
+
+        CombineInstance[] combine = new CombineInstance[meshfilter.Count];
+
+        for (int i = 0; i < meshfilter.Count; i++)
+        {
+            combine[i].mesh = meshfilter[i].sharedMesh;
+            combine[i].transform = transform.worldToLocalMatrix * meshfilter[i].transform.localToWorldMatrix;
+        }
+
+        Mesh combinedMesh = new Mesh();
+        combinedMesh.CombineMeshes(combine);
+
+        gameObject.GetComponent<MeshCollider>().sharedMesh = combinedMesh;
 
         foreach (GameObject chunk in Chunks.Values)
         {
@@ -269,8 +288,6 @@ public class ChunkCode : MonoBehaviour
 
     void CheckSize(Vector3 position)
     {
-        BoxCollider col = gameObject.GetComponent<BoxCollider>();
-
         if (position.x > maxX) maxX = position.x;
         if (position.y > maxY) maxY = position.y;
         if (position.z > maxZ) maxZ = position.z;
@@ -278,17 +295,6 @@ public class ChunkCode : MonoBehaviour
         if (position.x < minX) minX = position.x;
         if (position.y < minY) minY = position.y;
         if (position.z < minZ) minZ = position.z;
-
-        col.size = new Vector3(maxX - minX + 1, maxY - minY + 1, maxZ - minZ + 1);
-        col.center = new Vector3((maxX + minX)/2, (maxY + minY)/2, (maxZ + minZ)/2);
-    }
-
-    void updatesize()
-    {
-        BoxCollider col = gameObject.GetComponent<BoxCollider>();
-
-        col.size = new Vector3(maxX - minX + 1, maxY - minY + 1, maxZ - minZ + 1);
-        col.center = new Vector3((maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2);
     }
 
     Vector3Int GetLocalPos(Vector3Int worldPos)
@@ -380,8 +386,6 @@ public class ChunkCode : MonoBehaviour
 
         mc.sharedMesh = null; // Áß¿ä
         mc.sharedMesh = colliderMesh;
-
-        updatesize();
     }
 
     void AddCube(
