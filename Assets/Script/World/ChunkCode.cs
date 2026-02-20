@@ -100,7 +100,7 @@ public class ChunkCode : MonoBehaviour
         }
         else
         {
-            BlocksinChunk[ChunkPos].Add(LocalPos, new BlockInChunkData { _position = LocalPos, _color = color }); //데이터 저장
+            BlocksinChunk[ChunkPos].Add(LocalPos, new BlockInChunkData { _position = gridPos, _color = color }); //데이터 저장
         }
 
         if (color.a < 1)
@@ -118,8 +118,72 @@ public class ChunkCode : MonoBehaviour
             UpdateBlockMesh(gridPos);
             foreach (var dir in directions) UpdateBlockMesh(gridPos + dir);
         }
-
+        
         BuildMesh(gridPos);
+        trytoBuildMesh(gridPos);
+    }
+
+    public BlockInChunkData DestroyBlockData(Vector3 _position)
+    {
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+
+        Vector3Int gridPos = Vector3Int.RoundToInt(_position);
+        Vector3Int ChunkPos = GetChunkCoord(gridPos);
+        Vector3Int LocalPos = GetLocalPos(gridPos);
+
+        if(!BlocksinChunk.ContainsKey(ChunkPos)) return null;
+        if (!BlocksinChunk[ChunkPos].ContainsKey(LocalPos)) return null;
+
+        BlocksinChunk[ChunkPos].TryGetValue(LocalPos, out BlockInChunkData value);
+        BlocksinChunk[ChunkPos].Remove(LocalPos);
+
+        if (value._color.a == 1) //색블럭이면 없는 블럭 생성
+        {
+            GameObject block = new GameObject();
+            block.transform.parent = transform;
+
+            block.transform.localPosition = gridPos;
+
+            MeshFilter mf = block.AddComponent<MeshFilter>();
+            mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
+
+            MeshRenderer mr = block.AddComponent<MeshRenderer>();
+            mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
+
+            block.transform.localScale = Vector3.one;
+            block.transform.rotation = new Quaternion(0, 0, 0, 0);
+
+            block.GetComponent<Renderer>().material.color = value._color;
+            block.tag = "Block";
+
+            value._go = block;
+        }
+        else
+        {
+            foreach (var dir in directions) UpdateBlockMesh(gridPos + dir);
+        }
+
+        if (BlocksinChunk[ChunkPos].Count == 0)
+        {
+            BlocksinChunk.Remove(ChunkPos);
+
+            Destroy(Chunks[ChunkPos]);
+            Chunks.Remove(ChunkPos);
+        }
+        else
+        {
+            BuildMesh(gridPos);
+        }
+        trytoBuildMesh(gridPos);
+
+        return value;
+    }
+
+    void trytoBuildMesh(Vector3Int gridPos)
+    {
+        Vector3Int LocalPos = GetLocalPos(gridPos);
+        Vector3Int ChunkPos = GetChunkCoord(gridPos);
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -360,8 +424,8 @@ public class ChunkCode : MonoBehaviour
      ref int colliderVertexIndex
  )
     {
-        Vector3Int localPos = block._position;
-        Vector3Int worldPos = chunkCoord * ChunkSize + localPos;
+        Vector3Int localPos = GetLocalPos(block._position);
+        Vector3Int worldPos = block._position;
 
         bool currentOpaque = block._color.a >= 1f;
 

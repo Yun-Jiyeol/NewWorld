@@ -121,7 +121,19 @@ public class InputManager : MonoBehaviour
                             StopCoroutine(DestroyCoroutine);
                             DestroyCoroutine = null;
 
-                            if(destroyBlockInDestroy != null) destroyBlockInDestroy.gameObject.transform.localRotation = startRotationInDestroy;
+                            if(block != null)
+                            {
+                                GameManager.Instance.BuildManager.RequestBuild
+                                    (new WorldAndBlock
+                                    {
+                                        world = TargetGameObject.GetComponent<ChunkCode>(),
+                                        blockposition = block._position,
+                                        blockcolor = block._color
+                                    });
+
+                                Destroy(block._go);
+                                block = null;
+                            }
                         }
                     }
 
@@ -408,19 +420,18 @@ public class InputManager : MonoBehaviour
         }
     } */
 
-    Quaternion startRotationInDestroy;
-    GameObject destroyBlockInDestroy;
+    BlockInChunkData block = null;
 
     IEnumerator DestroyThisBlock()
     {
-        destroyBlockInDestroy = OnRaycast.collider.gameObject;
+        block = TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(ReadyToBuildBlock.transform.localPosition);
         Vector3 normal = OnRaycast.normal.normalized;
 
-        startRotationInDestroy = destroyBlockInDestroy.transform.localRotation;
+        Quaternion startRotationInDestroy = block._go.transform.localRotation;
 
-        float duration = 0.2f;
-        float frequency = 8f;   // 흔들리는 속도
-        float angle = 5f;      // 고개 꺾이는 각도
+        float duration = 0.3f;
+        float frequency = 7f;   // 흔들리는 속도
+        float angle = 25f;      // 고개 꺾이는 각도
 
         float time = 0f;
 
@@ -437,13 +448,13 @@ public class InputManager : MonoBehaviour
             // -angle ~ +angle
             float swing = Mathf.Sin(time * frequency) * angle * (1f - t);
 
-            destroyBlockInDestroy.transform.localRotation = startRotationInDestroy * Quaternion.AngleAxis(swing, normal);
+            block._go.transform.localRotation = startRotationInDestroy * Quaternion.AngleAxis(swing, normal);
 
             yield return null;
         }
 
-        TargetGameObject.GetComponent<WorldBaseCode>().DestroyBlock(destroyBlockInDestroy);
-        destroyBlockInDestroy = null;
+        Destroy(block._go);
+        block = null;
         showpreviewblock = true;
     }
 
