@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,6 +26,8 @@ public class ChunkCode : MonoBehaviour
     float maxY = int.MinValue;
     float maxZ = int.MinValue;
 
+    Queue<BlockInChunkData> MakeWorldQueue = new();
+
     Vector3Int[] directions = new Vector3Int[]
 {
     new Vector3Int(0,0,1),  // Front
@@ -39,34 +42,94 @@ public class ChunkCode : MonoBehaviour
     {
         if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
         if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+        ClearAll();
 
-        for (int _x =0; _x < x; _x++)
+        for (int _x = 0; _x < x; _x++)
         {
-            for(int _y = 0; _y < y; _y++)
+            for (int _y = 0; _y < y; _y++)
             {
                 for (int _z = 0; _z < z; _z++)
                 {
-                    Vector3 pos = new Vector3(_x, _y, _z);
-                    Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+                    Vector3Int gridpos = new Vector3Int(_x, _y, _z);
 
-                    CheckSize(gridPos);
-
-                    if (BlocksinChunk.ContainsKey(GetChunkCoord(gridPos)))
-                    {
-                        if (BlocksinChunk[GetChunkCoord(gridPos)].ContainsKey(GetLocalPos(gridPos)))
-                            continue;
-                    }
-
-                    GameManager.Instance.BuildManager.RequestBuild
-                        (new WorldAndBlock
-                        {
-                            world = this,
-                            blockposition = pos,
-                            blockcolor = Color.white
-                        });
+                    CheckSize(gridpos);
+                    MakeWorldQueue.Enqueue(new BlockInChunkData{_color = Color.white, _position = gridpos});
                 }
             }
         }
+
+        StartCoroutine(BuildRoutine());
+    }
+
+    IEnumerator BuildRoutine()
+    {
+        while (MakeWorldQueue.Count > 0)
+        {
+            float start = Time.realtimeSinceStartup;
+
+            while (MakeWorldQueue.Count > 0)
+            {
+                BlockInChunkData newblock = MakeWorldQueue.Dequeue();
+                Vector3Int chunkpos = GetChunkCoord(newblock._position);
+
+                if (!BlocksinChunk.ContainsKey(chunkpos))
+                {
+                    MakeNewChunk(chunkpos);
+                }
+
+                var localPos = GetLocalPos(newblock._position);
+
+                if (!BlocksinChunk[chunkpos].ContainsKey(localPos))
+                {
+                    if(newblock._color.a != 1)
+                    {
+                        MakeBlockData(newblock._position, newblock._color);
+                    }
+                    else
+                    {
+                        BlocksinChunk[chunkpos].Add(localPos,
+                            new BlockInChunkData
+                            {
+                                _position = newblock._position,
+                                _color = newblock._color
+                            });
+                    }
+                }
+
+                if ((Time.realtimeSinceStartup - start) * 1000f > 10f)
+                    break;
+            }
+
+            yield return null;
+        }
+
+        foreach (var pos in Chunks.Keys.ToList())
+        {
+            BuildMesh(pos * ChunkSize);
+        }
+
+        FinishSettingBlock();
+    }
+
+    void ClearAll()
+    {
+        foreach (var chunk in BlocksinChunk.Values)
+        {
+            foreach(BlockInChunkData block in chunk.Values)
+            {
+                if(block._go != null)
+                {
+                    Destroy(block._go);
+                }
+            }
+        }
+        BlocksinChunk.Clear();
+
+        foreach(GameObject chunk in Chunks.Values)
+        {
+            Destroy(chunk);
+        }
+        Chunks.Clear();
     }
 
     public bool ishaveblock(Vector3 _position)
@@ -252,7 +315,7 @@ public class ChunkCode : MonoBehaviour
             (minZ + maxZ) / 2f
         );
 
-        StartChangeEveryThingSmooth(0.5f,true ,1 /(Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 2),false, Vector3.zero ,false, new Quaternion(0,0,0,0));
+        StartChangeEveryThingSmooth(0.5f,false ,0 ,true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ)+ 20f), false, new Quaternion(0,0,0,0));
     }
 
     public void PutThisWorld()

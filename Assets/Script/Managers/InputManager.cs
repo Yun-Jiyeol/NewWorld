@@ -51,7 +51,10 @@ public class InputManager : MonoBehaviour
                 if (Input.GetKeyDown(BuildNewWorld))
                 {
                     GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
-                    StartCoroutine(MoveBlockOnMe(newworld, GameFlow.MakeOneWorld));
+
+                    TargetGameObject = newworld;
+                    TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
+                    GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
                 }
 
                 if (!isSomethingHit) return;

@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.MakeOneWorld:
-                BuildManager.maxFrameTime = 1f;
+                BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);

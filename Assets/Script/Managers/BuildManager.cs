@@ -73,8 +73,6 @@ public class BuildManager : MonoBehaviour
         Color _color = _wab.blockcolor;
 
         _wab.world.MakeBlockData(_wab.blockposition, _color);
-
-        if (buildQueue.Count == 0) _wab.world.FinishSettingBlock();
     }
 
     public void AddPreColor(Color _color)
