@@ -53,7 +53,7 @@ public class ChunkCode : MonoBehaviour
                     Vector3Int gridpos = new Vector3Int(_x, _y, _z);
 
                     CheckSize(gridpos);
-                    MakeWorldQueue.Enqueue(new BlockInChunkData{_color = Color.white, _position = gridpos});
+                    MakeWorldQueue.Enqueue(new BlockInChunkData{_color = new Color(1,1,1,0.5f), _position = gridpos});
                 }
             }
         }
@@ -314,6 +314,22 @@ public class ChunkCode : MonoBehaviour
             (minY + maxY) / 2f,
             (minZ + maxZ) / 2f
         );
+
+        foreach(var blocks in BlocksinChunk.Values)
+        {
+            foreach(var block in blocks.Values)
+            {
+                if(block._go != null)
+                {
+                    block._go.transform.localPosition -= centerChunkCoord;
+                }
+            }
+        }
+
+        foreach (var chunk in Chunks.Values)
+        {
+            chunk.transform.localPosition -= centerChunkCoord;
+        }
 
         StartChangeEveryThingSmooth(0.5f,false ,0 ,true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ)+ 20f), false, new Quaternion(0,0,0,0));
     }
