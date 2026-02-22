@@ -49,13 +49,17 @@ public class MoveOneWorldUI : BasicUI
 
     public void ChangeBlockInWorld()
     {
-        inputManager.StartCoroutine(inputManager.MoveBlockOnMe(target, GameFlow.WatchOneWorld));
+        target.GetComponent<ChunkCode>().ChooseThisWorld();
+        GameManager.Instance.ChangeFlow(GameFlow.WatchOneWorld);
+
         target = null;
     }
 
     public void MoveOneOriginalPosition()
     {
-        target.GetComponent<WorldBaseCode>().StartChangeEveryThingSmooth(0.5f, SaveScale, SaveVector3, SaveRotation, true);
+        GameObject cam = Camera.main.gameObject;
+
+        target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, SaveScale,true, SaveVector3,true, SaveRotation);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
     }
@@ -68,7 +72,8 @@ public class MoveOneWorldUI : BasicUI
 
     public void DestroyWorld()
     {
-        target.GetComponent<WorldBaseCode>().DestroyAllBlocks(true);
+        target.GetComponent<ChunkCode>().DestroyAllBlocks();
+        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
     }
 }

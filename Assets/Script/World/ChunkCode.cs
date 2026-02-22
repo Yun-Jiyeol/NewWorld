@@ -157,7 +157,7 @@ public class ChunkCode : MonoBehaviour
 
     public void SetName(int Num)
     {
-        _name += _name + Num.ToString();
+        _name += Num.ToString();
         SavedNum = Num;
     }
 
@@ -166,7 +166,6 @@ public class ChunkCode : MonoBehaviour
         if(BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> ();
         if(Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject> ();
 
-        Debug.Log(_position);
         Vector3Int gridPos = Vector3Int.RoundToInt(_position);
         Vector3Int ChunkPos = GetChunkCoord(gridPos);
         Vector3Int LocalPos = GetLocalPos(gridPos);
@@ -726,5 +725,12 @@ public class ChunkCode : MonoBehaviour
     {
         if (LightBlock != null)
             LightBlock.transform.position = gameObject.transform.position;
+    }
+
+    public void DestroyAllBlocks()
+    {
+        GameManager.Instance.SaveAndLoadManager.DeleteData(this);
+
+        Destroy(gameObject);
     }
 }
