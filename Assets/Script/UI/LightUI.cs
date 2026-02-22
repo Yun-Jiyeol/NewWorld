@@ -39,7 +39,7 @@ public class LightUI : BasicUI
     public override void OnSetting() 
     {
         if (GameManager.Instance.InputManager.TargetGameObject == null) return;
-        target = GameManager.Instance.InputManager.TargetGameObject.GetComponent<WorldBaseCode>().ChangeLightPower();
+        target = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().ChangeLightPower();
         SettingLight = (int)target.intensity;
         _color = target.color;
         targettype = target.type;
@@ -96,7 +96,7 @@ public class LightUI : BasicUI
         }
 
         ShowLight.layer = 6;
-        ShowLight.transform.localScale = Vector3.one * GameManager.Instance.InputManager.TargetGameObject.GetComponent<BoxCollider>().size.x * 0.15f;
+        ShowLight.transform.localScale = Vector3.one  * 0.15f;
         SettingColor();
     }
 
@@ -212,6 +212,6 @@ public class LightUI : BasicUI
 
     public void ResetPosition()
     {
-        GameManager.Instance.InputManager.TargetGameObject.GetComponent<WorldBaseCode>().SetLightPosition();
+        GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().SetLightPosition();
     }
 }

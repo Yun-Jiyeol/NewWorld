@@ -267,7 +267,7 @@ public class WorldBaseCode : MonoBehaviour
 
         transform.localScale = endScale;
 
-        GameManager.Instance.SaveAndLoadManager.SaveWorldData(this);
+        //GameManager.Instance.SaveAndLoadManager.SaveWorldData(this);
 
         if (!isFollow) GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
     }

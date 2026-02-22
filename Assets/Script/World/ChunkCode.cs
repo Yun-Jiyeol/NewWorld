@@ -14,6 +14,11 @@ public class BlockInChunkData
 
 public class ChunkCode : MonoBehaviour
 {
+    public string _name = "NewWorld_";
+    public int SavedNum = 0;
+
+    public GameObject LightBlock;
+
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
@@ -26,7 +31,7 @@ public class ChunkCode : MonoBehaviour
     float maxY = int.MinValue;
     float maxZ = int.MinValue;
 
-    Queue<BlockInChunkData> MakeWorldQueue = new();
+    public Queue<BlockInChunkData> MakeWorldQueue = new();
 
     Vector3Int[] directions = new Vector3Int[]
 {
@@ -44,19 +49,25 @@ public class ChunkCode : MonoBehaviour
         if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
         ClearAll();
 
-        for (int _x = 0; _x < x; _x++)
+        for (int _x = -((x/2) + (x%2)); _x < (x / 2); _x++)
         {
-            for (int _y = 0; _y < y; _y++)
+            for (int _y = -((y / 2) + (y % 2)); _y < (y / 2); _y++)
             {
-                for (int _z = 0; _z < z; _z++)
+                for (int _z = -((z / 2) + (z % 2)); _z < (z / 2); _z++)
                 {
                     Vector3Int gridpos = new Vector3Int(_x, _y, _z);
 
-                    CheckSize(gridpos);
-                    MakeWorldQueue.Enqueue(new BlockInChunkData{_color = new Color(1,1,1,0.5f), _position = gridpos});
+                    MakeWorldQueue.Enqueue(new BlockInChunkData{_color = Color.white, _position = gridpos});
                 }
             }
         }
+        StartBuildRoutine();
+    }
+
+    public void StartBuildRoutine()
+    {
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
 
         StartCoroutine(BuildRoutine());
     }
@@ -94,6 +105,8 @@ public class ChunkCode : MonoBehaviour
                                 _color = newblock._color
                             });
                     }
+
+                    CheckSize(newblock._position);
                 }
 
                 if ((Time.realtimeSinceStartup - start) * 1000f > 10f)
@@ -142,11 +155,18 @@ public class ChunkCode : MonoBehaviour
         return true;
     }
 
+    public void SetName(int Num)
+    {
+        _name += _name + Num.ToString();
+        SavedNum = Num;
+    }
+
     public void MakeBlockData(Vector3 _position, Color color)
     {
         if(BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> ();
         if(Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject> ();
 
+        Debug.Log(_position);
         Vector3Int gridPos = Vector3Int.RoundToInt(_position);
         Vector3Int ChunkPos = GetChunkCoord(gridPos);
         Vector3Int LocalPos = GetLocalPos(gridPos);
@@ -277,9 +297,12 @@ public class ChunkCode : MonoBehaviour
     {
         switch (GameManager.Instance.flow)
         {
+            case GameFlow.WatchAllWorld:
+                PutThisWorld();
+                break;
             case GameFlow.MakeOneWorld:
-                MoveMiddle();
                 findselect();
+                StartChangeEveryThingSmooth(0.5f, false, 0, true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 20f), false, new Quaternion(0, 0, 0, 0));
                 break;
         }
     }
@@ -307,55 +330,34 @@ public class ChunkCode : MonoBehaviour
         }
     }
 
-    public void MoveMiddle()
-    {
-        Vector3 centerChunkCoord = new Vector3(
-            (minX + maxX) / 2f,
-            (minY + maxY) / 2f,
-            (minZ + maxZ) / 2f
-        );
-
-        foreach(var blocks in BlocksinChunk.Values)
-        {
-            foreach(var block in blocks.Values)
-            {
-                if(block._go != null)
-                {
-                    block._go.transform.localPosition -= centerChunkCoord;
-                }
-            }
-        }
-
-        foreach (var chunk in Chunks.Values)
-        {
-            chunk.transform.localPosition -= centerChunkCoord;
-        }
-
-        StartChangeEveryThingSmooth(0.5f,false ,0 ,true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ)+ 20f), false, new Quaternion(0,0,0,0));
-    }
-
     public void PutThisWorld()
     {
-        gameObject.GetComponent<Collider>().enabled = true;
+        if(!gameObject.TryGetComponent<MeshCollider>(out MeshCollider mc)) mc = gameObject.AddComponent<MeshCollider>();
+        mc.enabled = true;
 
-        List<MeshFilter> meshfilter = new List<MeshFilter>();
-        foreach(GameObject chunk in Chunks.Values)
+        List<CombineInstance> combineList = new List<CombineInstance>();
+
+        foreach (GameObject chunk in Chunks.Values)
         {
-            meshfilter.Add(chunk.GetComponent<MeshFilter>());
-        }
+            var chunkCollider = chunk.GetComponent<MeshCollider>();
+            if (chunkCollider == null || chunkCollider.sharedMesh == null)
+                continue;
 
-        CombineInstance[] combine = new CombineInstance[meshfilter.Count];
+            CombineInstance ci = new CombineInstance();
+            ci.mesh = chunkCollider.sharedMesh;
+            ci.transform =
+                transform.worldToLocalMatrix *
+                chunk.transform.localToWorldMatrix;
 
-        for (int i = 0; i < meshfilter.Count; i++)
-        {
-            combine[i].mesh = meshfilter[i].sharedMesh;
-            combine[i].transform = transform.worldToLocalMatrix * meshfilter[i].transform.localToWorldMatrix;
+            combineList.Add(ci);
         }
 
         Mesh combinedMesh = new Mesh();
-        combinedMesh.CombineMeshes(combine);
+        combinedMesh.CombineMeshes(combineList.ToArray(), true, true);
+        combinedMesh.RecalculateBounds();
 
-        gameObject.GetComponent<MeshCollider>().sharedMesh = combinedMesh;
+        mc.sharedMesh = null;
+        mc.sharedMesh = combinedMesh;
 
         foreach (GameObject chunk in Chunks.Values)
         {
@@ -700,5 +702,29 @@ public class ChunkCode : MonoBehaviour
             if (changerotation) transform.localRotation = Quaternion.Lerp(startRotation, endRotation, time / duration);
             yield return null;
         }
+    }
+
+    public Light ChangeLightPower()
+    {
+        if (LightBlock == null) LightBlock = Instantiate(new GameObject("LightObject"), gameObject.transform);
+
+        Light light;
+        LightBlock.TryGetComponent<Light>(out light);
+        if (light == null)
+        {
+            light = LightBlock.AddComponent<Light>();
+            light.type = UnityEngine.LightType.Point;
+            light.range = 0;
+            light.intensity = 0;
+            LightBlock.transform.position = gameObject.transform.position;
+        }
+
+        return light;
+    }
+
+    public void SetLightPosition()
+    {
+        if (LightBlock != null)
+            LightBlock.transform.position = gameObject.transform.position;
     }
 }

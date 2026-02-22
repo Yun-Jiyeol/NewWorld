@@ -22,6 +22,7 @@ public class WorldManager : MonoBehaviour
         newWorld.transform.position = SpawnNewWorldPosition.position;
         newWorld.AddComponent<MeshCollider>();
         newWorld.AddComponent<ChunkCode>().MakeNewWorld(3, 3, 3);
+        newWorld.GetComponent<ChunkCode>().SetName(HowManyYouMakeWorld);
         Worlds.Add(newWorld);
 
         return newWorld;
@@ -31,7 +32,7 @@ public class WorldManager : MonoBehaviour
     {
         if(!Worlds.Contains(_world)) Debug.Log("It Doesn;t Save");
 
-        GameManager.Instance.SaveAndLoadManager.DeleteData(_world.GetComponent<WorldBaseCode>());
+        GameManager.Instance.SaveAndLoadManager.DeleteData(_world.GetComponent<ChunkCode>());
 
         Worlds.Remove(_world);
         Destroy(_world);
@@ -43,7 +44,7 @@ public class WorldManager : MonoBehaviour
         newWorld.transform.parent = SpawnedWorlds;
         newWorld.transform.tag = "World";
         newWorld.layer = 6;
-        newWorld.AddComponent<WorldBaseCode>();
+        newWorld.AddComponent<ChunkCode>();
         Worlds.Add(newWorld);
 
         return newWorld;

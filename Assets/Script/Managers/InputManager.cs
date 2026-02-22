@@ -63,7 +63,7 @@ public class InputManager : MonoBehaviour
                     if (OnRaycast.transform.CompareTag("World"))
                     {
                         TargetGameObject = OnRaycast.transform.gameObject;
-                        Camera.main.transform.LookAt(TargetGameObject.GetComponent<BoxCollider>().bounds.center);
+                        Camera.main.transform.LookAt(TargetGameObject.transform.position);
                         GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
                     }
                 }
@@ -369,8 +369,6 @@ public class InputManager : MonoBehaviour
         GameManager.Instance.ChangeFlow(GameFlow.None);
 
         TargetGameObject = _targetobject;
-
-        TargetGameObject.GetComponent<ChunkCode>().MoveMiddle();
 
         Transform cam = Camera.main.transform;
 

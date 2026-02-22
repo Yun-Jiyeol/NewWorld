@@ -6,6 +6,7 @@ using UnityEngine;
 public class WorldSaveData
 {
     //¹øÈ£
+    public string Name;
     public int Num;
 
     //ÁÂÇ¥
@@ -32,9 +33,9 @@ public class WorldSaveData
 public class BlockSaveData
 {
     //ÁÂÇ¥
-    public float x;
-    public float y;
-    public float z;
+    public int x;
+    public int y;
+    public int z;
 
     //»ö
     public float r;
@@ -135,22 +136,23 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
-    public void SaveWorldData(WorldBaseCode _world)
+    public void SaveWorldData(ChunkCode _world)
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{_world.Num.ToString()}.json";
+        string fileName = $"World_{_world._name}_{_world.SavedNum}.json";
 
         string path = System.IO.Path.Combine(SaveFolder, fileName);
         if (File.Exists(path))
         {
             File.Delete(path);
-            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world.Num);
+            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world._name);
         }
 
         WorldSaveData worldsave = new WorldSaveData() 
         {
-            Num = _world.Num,
+            Name = _world._name,
+            Num = _world.SavedNum,
 
             x = _world.gameObject.transform.position.x,
             y = _world.gameObject.transform.position.y,
@@ -166,21 +168,24 @@ public class SaveAndLoadManager : MonoBehaviour
             blocks = new List<BlockSaveData>()
         };
 
-        foreach(Vector3Int blockposition in _world.Blocks.Keys)
+        foreach(var blocks in _world.BlocksinChunk.Values)
         {
-            BlockSaveData blocksave = new BlockSaveData()
+            foreach(BlockInChunkData block in blocks.Values)
             {
-                x= blockposition.x,
-                y= blockposition.y,
-                z= blockposition.z,
+                BlockSaveData blocksave = new BlockSaveData()
+                {
+                    x = Mathf.RoundToInt(block._position.x),
+                    y = Mathf.RoundToInt(block._position.y),
+                    z = Mathf.RoundToInt(block._position.z),
 
-                r = _world.Blocks[blockposition].go.GetComponent<MeshRenderer>().material.color.r,
-                g = _world.Blocks[blockposition].go.GetComponent<MeshRenderer>().material.color.g,
-                b = _world.Blocks[blockposition].go.GetComponent<MeshRenderer>().material.color.b,
-                a = _world.Blocks[blockposition].go.GetComponent<MeshRenderer>().material.color.a
-            };
+                    r = block._color.r,
+                    g = block._color.g,
+                    b = block._color.b,
+                    a = block._color.a
+                };
 
-            worldsave.blocks.Add(blocksave);
+                worldsave.blocks.Add(blocksave);
+            }
         }
 
         if(_world.LightBlock != null)
@@ -226,17 +231,17 @@ public class SaveAndLoadManager : MonoBehaviour
         File.WriteAllText(path, json);
     }
 
-    public void DeleteData(WorldBaseCode _world)
+    public void DeleteData(ChunkCode _world)
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{_world.Num.ToString()}.json";
+        string fileName = $"World_{_world._name}_{_world.SavedNum}.json";
 
         string path = System.IO.Path.Combine(SaveFolder, fileName);
         if (File.Exists(path))
         {
             File.Delete(path);
-            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world.Num);
+            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world.name);
         }
     }
 
@@ -258,23 +263,18 @@ public class SaveAndLoadManager : MonoBehaviour
         );
         world.transform.localScale = Vector3.one * worldsave.size;
 
-        WorldBaseCode worldBaseCode = world.GetComponent<WorldBaseCode>();
+        ChunkCode worldBaseCode = world.GetComponent<ChunkCode>();
 
-        worldBaseCode.Num = worldsave.Num;
+        worldBaseCode._name = worldsave.Name;
+        worldBaseCode.SavedNum = worldsave.Num;
+
         foreach (BlockSaveData block in worldsave.blocks)
         {
-
-           /* GameManager.Instance.BuildManager.RequestBuild
-                (new WorldAndBlock
-                {
-                    world = worldBaseCode,
-                    blockposition = new Vector3(block.x, block.y, block.z),
-                    blockcolor = new Color(block.r, block.g, block.b, block.a),
-                    collider = false
-                });*/
+            worldBaseCode.MakeWorldQueue.Enqueue(new BlockInChunkData { _color = new Color(block.r, block.g, block.b, block.a), _position = new Vector3Int(block.x, block.y, block.z) });
         }
+        worldBaseCode.StartBuildRoutine();
 
-        if(worldsave.isLightBlock)
+        if (worldsave.isLightBlock)
         {
             Light light = worldBaseCode.ChangeLightPower();
             light.gameObject.transform.position = new Vector3(worldsave.lightblock.x, worldsave.lightblock.y, worldsave.lightblock.z);
@@ -388,7 +388,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         foreach(GameObject wb in GameManager.Instance.WorldManager.Worlds)
         {
-            //SaveWorldData(wb.GetComponent<WorldBaseCode>());
+            SaveWorldData(wb.GetComponent<ChunkCode>());
         }
     }
 }
