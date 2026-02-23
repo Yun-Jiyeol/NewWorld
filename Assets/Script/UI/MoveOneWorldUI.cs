@@ -72,7 +72,7 @@ public class MoveOneWorldUI : BasicUI
 
     public void DestroyWorld()
     {
-        target.GetComponent<ChunkCode>().DestroyAllBlocks();
+        GameManager.Instance.WorldManager.DestroyWorld(target);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
     }

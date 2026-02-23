@@ -25,6 +25,9 @@ public class InputManager : MonoBehaviour
     public float TargetMoveSensitive = 1f;
 
     public GameObject ReadyToBuildBlock;
+    GameObject ReadyToDestroyBlock;
+    Vector3? BeforeDestroyBlockPos;
+    Vector3? AfterDestroyBlockPos;
     public GameObject SelectWorldPosition;
 
     Coroutine BuildCoroutine;
@@ -101,6 +104,11 @@ public class InputManager : MonoBehaviour
                 TargetMove(TargetGameObject);
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
+                if (Input.GetKey(KeyCode.Delete))
+                {
+                    TryToDestroy();
+                    ResetDestroyRange();
+                }
 
                 if (!isSomethingHit)
                 {
@@ -111,6 +119,29 @@ public class InputManager : MonoBehaviour
                 {
                     SeeChooseBlock();
 
+                    if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    {
+                        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
+                        {
+                            if(BeforeDestroyBlockPos == null)
+                            {
+                                SettingDestroyRange();
+                            }
+                            else
+                            {
+                                SettingDestroyRangeAfter();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
+                        {
+                            SettingDestroyRange();
+                        }
+                    }
+
+                    /*
                     if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
                     {
                         if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
@@ -139,10 +170,11 @@ public class InputManager : MonoBehaviour
                                 block = null;
                             }
                         }
-                    }
+                    }*/
 
                     if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0))
                     {
+                        ResetDestroyRange();
                         SpawnNewBlock();
 
                         Color addcolor = GameManager.Instance.BuildManager.MainColor.color;
@@ -153,6 +185,7 @@ public class InputManager : MonoBehaviour
 
                     if (Input.GetMouseButtonDown(2))
                     {
+                        ResetDestroyRange();
                         GameManager.Instance.BuildManager.SetColor(OnRaycast.transform.GetComponent<MeshRenderer>().material.color);
                     }
                 }
@@ -207,6 +240,106 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    public void WhenComeintoWatchOneWorld()
+    {
+        ReadyToDestroyBlock = null;
+        BeforeDestroyBlockPos = null;
+        AfterDestroyBlockPos = null;
+    }
+
+    void ResetDestroyRange()
+    {
+        ReadyToDestroyBlock.SetActive(false);
+        BeforeDestroyBlockPos = null;
+        AfterDestroyBlockPos = null;
+    }
+
+    void SettingDestroyRange()
+    {
+        if (ReadyToDestroyBlock == null)
+        {
+            ReadyToDestroyBlock = Instantiate(ReadyToBuildBlock);
+            ReadyToDestroyBlock.transform.SetParent(
+                ReadyToBuildBlock.transform.parent,
+                true
+            );
+            ReadyToDestroyBlock.GetComponent<SampleBlcok>().SetColor(new Color(0.8f,0,0,0.7f));
+        }
+        ReadyToDestroyBlock.SetActive(true);
+        ReadyToDestroyBlock.transform.position = ReadyToBuildBlock.transform.position;
+        ReadyToDestroyBlock.transform.localScale = ReadyToBuildBlock.transform.localScale;
+        ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
+
+        BeforeDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
+    }
+
+    void SettingDestroyRangeAfter()
+    {
+        if(AfterDestroyBlockPos != null)
+        {
+            BeforeDestroyBlockPos = AfterDestroyBlockPos;
+        }
+
+        AfterDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
+        if(AfterDestroyBlockPos == BeforeDestroyBlockPos)
+        {
+            AfterDestroyBlockPos = null;
+            return;
+        }
+
+        Vector3 A = BeforeDestroyBlockPos.Value;
+        Vector3 B = AfterDestroyBlockPos.Value;
+        Vector3 center = (A + B) / 2f;
+        Vector3 size = new Vector3(
+        Mathf.Abs(B.x - A.x),
+        Mathf.Abs(B.y - A.y),
+        Mathf.Abs(B.z - A.z)
+         );
+
+        size += Vector3.one * 1.05f;
+
+        ReadyToDestroyBlock.transform.localPosition = center;
+        ReadyToDestroyBlock.transform.localScale = size;
+        ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
+    }
+
+    void TryToDestroy()
+    {
+        if (BeforeDestroyBlockPos == null) return;
+        if(AfterDestroyBlockPos == null)
+        {
+            TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(BeforeDestroyBlockPos.Value);
+        }
+        else
+        {
+            List<Vector3> saveddestroypos = new List<Vector3>();
+            Vector3 A = BeforeDestroyBlockPos.Value;
+            Vector3 B = AfterDestroyBlockPos.Value;
+
+            int minX = Mathf.Min(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+            int maxX = Mathf.Max(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+
+            int minY = Mathf.Min(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+            int maxY = Mathf.Max(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+
+            int minZ = Mathf.Min(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+            int maxZ = Mathf.Max(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    for (int z = minZ; z <= maxZ; z++)
+                    {
+                        saveddestroypos.Add(new Vector3Int(x, y, z));
+                    }
+                }
+            }
+
+            TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(saveddestroypos);
+        }
+    }
+
     void ChangeToPutWorldInSpace()
     {
         GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
@@ -228,7 +361,7 @@ public class InputManager : MonoBehaviour
             ReadyToBuildBlock = new GameObject();
             ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
 
-            ReadyToBuildBlock.transform.localScale = Vector3.one * 1.05f;
+            ReadyToBuildBlock.transform.localScale = Vector3.one * 1.03f;
             ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
 
             MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
@@ -237,7 +370,7 @@ public class InputManager : MonoBehaviour
             MeshRenderer mr = ReadyToBuildBlock.AddComponent<MeshRenderer>();
             mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
 
-            ReadyToBuildBlock.AddComponent<SampleBlcok>();
+            ReadyToBuildBlock.AddComponent<SampleBlcok>().SetColor(new Color(0f, 0, 0, 0.7f));
         }
         if (showpreviewblock) ReadyToBuildBlock.SetActive(true);
 
@@ -416,8 +549,9 @@ public class InputManager : MonoBehaviour
         }
     } */
 
-    BlockInChunkData block = null;
+    //BlockInChunkData block = null;
 
+    /*
     IEnumerator DestroyThisBlock()
     {
         block = TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(ReadyToBuildBlock.transform.localPosition);
@@ -453,7 +587,7 @@ public class InputManager : MonoBehaviour
         Destroy(block._go);
         block = null;
         showpreviewblock = true;
-    }
+    }*/
 
     void SpawnNewBlock()
     {

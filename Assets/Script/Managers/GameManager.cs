@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.WatchOneWorld:
+                InputManager.WhenComeintoWatchOneWorld();
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;

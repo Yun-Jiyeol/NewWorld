@@ -205,6 +205,96 @@ public class ChunkCode : MonoBehaviour
         trytoBuildMesh(gridPos);
     }
 
+    public void DestroyBlockData(Vector3 _position)
+    {
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+
+        Vector3Int gridPos = Vector3Int.RoundToInt(_position);
+        Vector3Int ChunkPos = GetChunkCoord(gridPos);
+        Vector3Int LocalPos = GetLocalPos(gridPos);
+
+        if (BlocksinChunk.TryGetValue(ChunkPos, out var value))
+        {
+            if (value.TryGetValue(LocalPos, out BlockInChunkData block))
+            {
+                if (block._go != null)
+                {
+                    Destroy(block._go);
+                }
+
+                value.Remove(LocalPos);
+                if(value.Count == 0)
+                {
+                    BlocksinChunk.Remove(ChunkPos);
+
+                    Destroy(Chunks[ChunkPos]);
+                    Chunks.Remove(ChunkPos);
+                }
+                else
+                {
+                    BuildMesh(gridPos);
+                }
+                trytoBuildMesh(gridPos);
+                CheckIsLive();
+            }
+        }
+    }
+
+    public void DestroyBlockData(List<Vector3> _position)
+    {
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+        List<Vector3Int> BuildMeshPos = new List<Vector3Int>();
+
+        foreach(Vector3 pos in _position)
+        {
+            Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+            Vector3Int ChunkPos = GetChunkCoord(gridPos);
+            Vector3Int LocalPos = GetLocalPos(gridPos);
+
+            if (BlocksinChunk.TryGetValue(ChunkPos, out var value))
+            {
+                if (value.TryGetValue(LocalPos, out BlockInChunkData block))
+                {
+                    if (block._go != null)
+                    {
+                        Destroy(block._go);
+                    }
+
+                    if (!BuildMeshPos.Contains(ChunkPos))
+                    {
+                        BuildMeshPos.Add(ChunkPos);
+                    }
+                    foreach (Vector3Int dir in directions)
+                    {
+                        if (!BuildMeshPos.Contains(ChunkPos+ dir))
+                        {
+                            BuildMeshPos.Add(ChunkPos+ dir);
+                        }
+                    }
+
+                    value.Remove(LocalPos);
+                    if (value.Count == 0)
+                    {
+                        BlocksinChunk.Remove(ChunkPos);
+
+                        Destroy(Chunks[ChunkPos]);
+                        Chunks.Remove(ChunkPos);
+                    }
+                }
+            }
+        }
+
+        foreach (Vector3Int pos in BuildMeshPos)
+        {
+            BuildMesh(pos * ChunkSize);
+        }
+
+        CheckIsLive();
+    }
+
+    /*
     public BlockInChunkData DestroyBlockData(Vector3 _position)
     {
         if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
@@ -260,7 +350,7 @@ public class ChunkCode : MonoBehaviour
         trytoBuildMesh(gridPos);
 
         return value;
-    }
+    }*/
 
     void trytoBuildMesh(Vector3Int gridPos)
     {
@@ -415,6 +505,7 @@ public class ChunkCode : MonoBehaviour
     public void BuildMesh(Vector3Int worldPos)
     {
         Vector3Int chunkCoord = GetChunkCoord(worldPos);
+        if(!BlocksinChunk.ContainsKey(chunkCoord)) return;
 
         List<Vector3> renderVertices = new();
         List<int> renderTriangles = new();
@@ -727,10 +818,17 @@ public class ChunkCode : MonoBehaviour
             LightBlock.transform.position = gameObject.transform.position;
     }
 
-    public void DestroyAllBlocks()
+    void CheckIsLive()
+    {
+        if(BlocksinChunk.Count == 0)
+        {
+            DestroyWorld();
+        }
+    }
+
+    public void DestroyWorld()
     {
         GameManager.Instance.SaveAndLoadManager.DeleteData(this);
-
-        Destroy(gameObject);
+        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
 }

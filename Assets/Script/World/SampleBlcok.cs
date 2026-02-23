@@ -13,12 +13,6 @@ public class SampleBlcok : MonoBehaviour
         mpb = new MaterialPropertyBlock();
     }
 
-    private void Start()
-    {
-        Color _rcoloc = new Color(0f, 0f, 0f, 0.7f);
-        SetColor(_rcoloc);
-    }
-
     public void SetColor(Color color)
     {
         ren.GetPropertyBlock(mpb);
