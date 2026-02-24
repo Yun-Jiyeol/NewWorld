@@ -86,6 +86,11 @@ public class InputManager : MonoBehaviour
                     {
                         Destroy(ReadyToBuildBlock);
                     }
+                    if(ReadyToDestroyBlock != null)
+                    {
+                        Destroy(ReadyToDestroyBlock);
+                        ReadyToDestroyBlock = null;
+                    }
 
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
@@ -271,6 +276,7 @@ public class InputManager : MonoBehaviour
         ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
 
         BeforeDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
+        AfterDestroyBlockPos = null;
     }
 
     void SettingDestroyRangeAfter()
