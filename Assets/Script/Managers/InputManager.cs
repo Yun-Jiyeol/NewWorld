@@ -23,6 +23,7 @@ public class InputManager : MonoBehaviour
 
     public GameObject TargetGameObject = null;
     public float TargetMoveSensitive = 1f;
+    public float PlayerMoveSpeed = 1f;
 
     public GameObject ReadyToBuildBlock;
     GameObject ReadyToDestroyBlock;
@@ -56,11 +57,13 @@ public class InputManager : MonoBehaviour
                         GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                         Cursor.visible = false;
                         Cursor.lockState = CursorLockMode.Locked;
+                        GameManager.Instance.MainCamera.stopCamera = false;
                     }
                 }
                 else
                 {
                     CheckRaycast(true);
+                    PlayerMove();
 
                     if (Input.GetKeyDown(BuildNewWorld))
                     {
@@ -75,6 +78,7 @@ public class InputManager : MonoBehaviour
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.Confined;
+                        GameManager.Instance.MainCamera.stopCamera = true;
                     }
 
                     if (!isSomethingHit) return;
@@ -272,7 +276,7 @@ public class InputManager : MonoBehaviour
 
     void ResetDestroyRange()
     {
-        ReadyToDestroyBlock.SetActive(false);
+        if(ReadyToDestroyBlock != null) ReadyToDestroyBlock.SetActive(false);
         BeforeDestroyBlockPos = null;
         AfterDestroyBlockPos = null;
     }
@@ -453,6 +457,17 @@ public class InputManager : MonoBehaviour
         {
             _target.transform.position += move.normalized * TargetMoveSensitive * Time.deltaTime;
         }
+    }
+
+    public void PlayerMove()
+    {
+        Vector3 move = Vector3.zero;
+        if (Input.GetKey(MoveUp)) move += Camera.main.transform.forward;
+        if (Input.GetKey(MoveDown)) move -= Camera.main.transform.forward;
+        if (Input.GetKey(MoveRight)) move += Camera.main.transform.right;
+        if (Input.GetKey(MoveLeft)) move -= Camera.main.transform.right;
+
+        Camera.main.transform.position += move.normalized * Time.deltaTime * PlayerMoveSpeed;
     }
 
     public void TargetScale(GameObject _target)
