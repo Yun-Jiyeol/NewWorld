@@ -6,4 +6,6 @@ public class LightManager : MonoBehaviour
 {
     public GameObject RayLight;
     public GameObject SphereLight;
+
+    public GameObject MainLight;
 }

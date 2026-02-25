@@ -19,7 +19,8 @@ public enum SelectionUIenum
     ChooseHowToMake,
     Color,
     LightOneWorld,
-    MoveOneWorld
+    MoveOneWorld,
+    MainLight
 }
 
 public class SelectionUI : MonoBehaviour
@@ -30,8 +31,11 @@ public class SelectionUI : MonoBehaviour
 
     public Image BackGround;
 
+    RectTransform thistransform;
+
     private void Start()
     {
+        thistransform = gameObject.GetComponent<RectTransform>();
         SettingAll();
     }
 
@@ -64,19 +68,22 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.Setting:
             case SelectionUIenum.LightOneWorld:
             case SelectionUIenum.MoveOneWorld:
+            case SelectionUIenum.MainLight:
                 PopUpSettingPanel();
                 break;
         }
     }
 
-    void PopUpSettingPanel()
+    public void PopUpSettingPanel()
     {
         UIBtnsSelectedUIMaterial _slect = Findnowenum();
-        if(_slect == null) return;
 
-        gameObject.GetComponent<RectTransform>().DOAnchorPosX(-350f, 0.5f);
+        thistransform.DOKill();
+        thistransform.DOAnchorPosX(-350f, 0.5f);
 
         OffAllUI();
+        if(_slect == null) return;
+
         _slect.UISelected.SetActive(true);
 
         _slect.UISelected.TryGetComponent<BasicUI>(out BasicUI _basic);
@@ -86,9 +93,10 @@ public class SelectionUI : MonoBehaviour
         }
     }
 
-    void PopInSettingPanel()
+    public void PopInSettingPanel()
     {
-        gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.25f);
+        thistransform.DOKill();
+        thistransform.DOAnchorPosX(0f, 0.25f);
 
         for (int i = 0; i < uIBtnsSelectedUIMaterials.Count; i++)
         {

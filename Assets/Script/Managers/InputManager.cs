@@ -49,25 +49,43 @@ public class InputManager : MonoBehaviour
         switch (GameManager.Instance.flow)
         {
             case GameFlow.WatchAllWorld:
-                CheckRaycast(true);
-
-                if (Input.GetKeyDown(BuildNewWorld))
+                if (Cursor.visible)
                 {
-                    GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
-
-                    TargetGameObject = newworld;
-                    TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
-                    GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
-                }
-
-                if (!isSomethingHit) return;
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if (OnRaycast.transform.CompareTag("World"))
+                    if (Input.GetKeyDown(KeyCode.F1))//나중 esc로 변경
                     {
-                        TargetGameObject = OnRaycast.transform.gameObject;
-                        Camera.main.transform.LookAt(TargetGameObject.transform.position);
-                        GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+                        GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
+                        Cursor.visible = false;
+                        Cursor.lockState = CursorLockMode.Locked;
+                    }
+                }
+                else
+                {
+                    CheckRaycast(true);
+
+                    if (Input.GetKeyDown(BuildNewWorld))
+                    {
+                        GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
+
+                        TargetGameObject = newworld;
+                        TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
+                        GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
+                    }
+                    if (Input.GetKeyDown(KeyCode.F1)) //나중 esc로 변경
+                    {
+                        GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
+                        Cursor.visible = true;
+                        Cursor.lockState = CursorLockMode.Confined;
+                    }
+
+                    if (!isSomethingHit) return;
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        if (OnRaycast.transform.CompareTag("World"))
+                        {
+                            TargetGameObject = OnRaycast.transform.gameObject;
+                            Camera.main.transform.LookAt(TargetGameObject.transform.position);
+                            GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+                        }
                     }
                 }
                 break;

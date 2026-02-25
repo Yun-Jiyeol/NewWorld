@@ -3,9 +3,10 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BtnClick : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class BtnClick : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
     public UnityEvent UnityEvent;
+    public UnityEvent UnityDownEvent;
     public bool ChangeColor = false;
     public Color _color;
     Color Originalcolor;
@@ -20,6 +21,11 @@ public class BtnClick : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     public void OnPointerClick(PointerEventData eventData)
     {
         UnityEvent.Invoke();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        UnityDownEvent.Invoke();
     }
 
     public void OnPointerEnter(PointerEventData eventData)

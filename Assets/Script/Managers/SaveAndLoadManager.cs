@@ -367,6 +367,7 @@ public class SaveAndLoadManager : MonoBehaviour
         BuildManager BM = GameManager.Instance.BuildManager;
 
         BM.MainColor.color =  new Color(worldsave.maincolor.r, worldsave.maincolor.g, worldsave.maincolor.b, worldsave.maincolor.a);
+        BM.alfar = worldsave.maincolor.a;
 
         if (worldsave.precolor.Count > 0)
         {

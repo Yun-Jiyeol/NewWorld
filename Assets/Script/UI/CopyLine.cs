@@ -19,7 +19,8 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     float Max = 150f;
     float Min = -150f;
 
-    LightUI lightUI;
+    LightUI lightUI = null;
+    MainLightUI MainLightUI = null;
 
     private void Awake()
     {
@@ -37,6 +38,19 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         _lightui.inLineChoose = GetColorFromPalette(new Vector2(value, 0));
         childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
         lightUI = _lightui;
+    }
+
+    public void Setting(MainLightUI _mainLightUI)
+    {
+        DrawPaletteLine();
+
+        Color.RGBToHSV(_mainLightUI._color, out float h, out float s, out float v);
+        float value = Mathf.Lerp(-150f, 150f, h);
+
+        childToMove.anchoredPosition = new Vector2(value, 35f);
+        _mainLightUI.inLineChoose = GetColorFromPalette(new Vector2(value, 0));
+        childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
+        MainLightUI = _mainLightUI;
     }
 
     void DrawPaletteLine()
@@ -141,9 +155,17 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             childToMove.anchoredPosition = new Vector2(localPoint.x, 35f);
 
-            lightUI.inLineChoose = GetColorFromPalette(new Vector2(localPoint.x, 0));
-            childToMove.gameObject.GetComponent<Image>().color = lightUI.inLineChoose;
-            lightUI.CopyChoose.DrawPaletteLine();
+            if(lightUI != null)
+            {
+                lightUI.inLineChoose = GetColorFromPalette(new Vector2(localPoint.x, 0));
+                childToMove.gameObject.GetComponent<Image>().color = lightUI.inLineChoose;
+                lightUI.CopyChoose.DrawPaletteLine();
+            }else if(MainLightUI != null)
+            {
+                MainLightUI.inLineChoose = GetColorFromPalette(new Vector2(localPoint.x, 0));
+                childToMove.gameObject.GetComponent<Image>().color = MainLightUI.inLineChoose;
+                MainLightUI.CopyChoose.DrawPaletteLine();
+            }
         }
         else if (Input.GetMouseButtonUp(0)) isPressed = false;
     }

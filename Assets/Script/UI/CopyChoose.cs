@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -18,7 +19,8 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     float Min = -150f;
 
     bool isPressed = false;
-    LightUI lightui;
+    LightUI lightui = null;
+    MainLightUI MainLightUI = null;
 
     private void Awake()
     {
@@ -30,6 +32,20 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         lightui = _lightUI;
 
         Color.RGBToHSV(lightui._color, out float h, out float s, out float v);
+
+        float svalue = Mathf.Lerp(-150f, 150f, s);
+        float vvalue = Mathf.Lerp(-150f, 150f, v);
+
+        childToMove.anchoredPosition = new Vector2(svalue, vvalue);
+
+        DrawPaletteLine();
+    }
+
+    public void Setting(MainLightUI _mainLightUI)
+    {
+        MainLightUI = _mainLightUI;
+
+        Color.RGBToHSV(MainLightUI._color, out float h, out float s, out float v);
 
         float svalue = Mathf.Lerp(-150f, 150f, s);
         float vvalue = Mathf.Lerp(-150f, 150f, v);
@@ -68,7 +84,15 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void DrawPaletteLine()
     {
-        Color baseColor = lightui.inLineChoose; // 선택된 기준 색
+        Color baseColor = new Color();
+        if(lightui != null)
+        {
+            baseColor = lightui.inLineChoose; // 선택된 기준 색
+        }else if(MainLightUI != null)
+        {
+            baseColor = MainLightUI.inLineChoose; // 선택된 기준 색
+        }
+            
 
         Image targetImage = GetComponent<Image>();
         RectTransform rt = targetImage.rectTransform;
@@ -111,9 +135,19 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         );
 
         targetImage.sprite = sprite;
-        lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-        childToMove.gameObject.GetComponent<Image>().color = lightui._color;
-        lightui.ChangeColor();
+
+        if (lightui != null)
+        {
+            lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
+            childToMove.gameObject.GetComponent<Image>().color = lightui._color;
+            lightui.ChangeColor();
+        }
+        else if (MainLightUI != null)
+        {
+            MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
+            childToMove.gameObject.GetComponent<Image>().color = MainLightUI._color;
+            MainLightUI.ChangeColor();
+        }
     }
 
     private void Update()
@@ -151,9 +185,18 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             childToMove.anchoredPosition = localPoint;
 
-            lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-            childToMove.gameObject.GetComponent<Image>().color = lightui._color;
-            lightui.ChangeColor();
+            if (lightui != null)
+            {
+                lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
+                childToMove.gameObject.GetComponent<Image>().color = lightui._color;
+                lightui.ChangeColor();
+            }
+            else if (MainLightUI != null)
+            {
+                MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
+                childToMove.gameObject.GetComponent<Image>().color = MainLightUI._color;
+                MainLightUI.ChangeColor();
+            }
         }
         else if (Input.GetMouseButtonUp(0)) isPressed = false;
     }

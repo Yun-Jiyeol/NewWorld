@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
                 Cursor.visible = false;
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight});
                 break;
 
             case GameFlow.PutWorldInSpace:
