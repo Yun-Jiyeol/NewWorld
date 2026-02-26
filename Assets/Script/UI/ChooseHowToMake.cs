@@ -14,7 +14,7 @@ public class ChooseHowToMake : BasicUI
 
     bool canchangevalue = true;
 
-    public GameObject blockImage;
+    GameObject spawnedimage = null;
 
     public override void OnSetting()
     {
@@ -47,11 +47,18 @@ public class ChooseHowToMake : BasicUI
 
         if (canchangevalue)
         {
-            blockImage.SetActive(false);
+            if (spawnedimage != null)
+            {
+                Destroy(spawnedimage);
+                spawnedimage = null;
+            }
         }
         else
         {
-            blockImage.SetActive(true);
+            if(spawnedimage == null)
+            {
+                spawnedimage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+            }
         }
     }
 

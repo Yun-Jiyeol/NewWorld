@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MainCamera : MonoBehaviour
@@ -15,9 +16,7 @@ public class MainCamera : MonoBehaviour
 
     void Start()
     {
-        Vector3 angles = transform.eulerAngles;
-        yaw = angles.y;
-        pitch = angles.x;
+        TryCheckrot();
     }
 
     void Update()
@@ -39,5 +38,43 @@ public class MainCamera : MonoBehaviour
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+    }
+
+    public void TryCheckrot()
+    {
+        Vector3 angles = transform.eulerAngles;
+        yaw = angles.y;
+        pitch = angles.x;
+    }
+
+    public void LookAt(Vector3 pos)
+    {
+        StartCoroutine(RotateTo(pos, 0.5f));
+    }
+
+    IEnumerator RotateTo(Vector3 targetPosition, float duration)
+    {
+        Transform cam = Camera.main.transform;
+
+        Quaternion startRot = cam.rotation;
+
+        Vector3 dir = (targetPosition - cam.position).normalized;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            // 부드러운 보간
+            cam.rotation = Quaternion.Slerp(startRot, targetRot, t);
+
+            yield return null;
+        }
+
+        cam.rotation = targetRot; // 마지막 보정
+        TryCheckrot();
     }
 }

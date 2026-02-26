@@ -14,6 +14,8 @@ public class MainLightUI : BasicUI
     public Color inLineChoose;
     GameObject ML = null;
 
+    GameObject blockImage= null;
+
     public override void OnSetting()
     {
         ML = GameManager.Instance.LightManager.MainLight;
@@ -56,5 +58,38 @@ public class MainLightUI : BasicUI
     public void ChangeColor()
     {
         ML.GetComponent<Light>().color = _color;
+    }
+
+    public void ResetMainLight()
+    {
+        StartCoroutine(ResetRotOfMainLight());
+    }
+
+    IEnumerator ResetRotOfMainLight()
+    {
+        blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+
+        Transform light = ML.transform;
+
+        Quaternion startRot = light.rotation;
+        Quaternion endRot = Quaternion.Euler(90f, 0f, 0f);
+
+        float duration = 0.5f;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            light.rotation = Quaternion.Slerp(startRot, endRot, t);
+
+            yield return null;
+        }
+
+        // 마지막 오차 보정
+        light.rotation = endRot;
+        Destroy(blockImage);
+        blockImage = null;
     }
 }

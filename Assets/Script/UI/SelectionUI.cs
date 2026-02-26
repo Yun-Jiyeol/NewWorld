@@ -20,7 +20,8 @@ public enum SelectionUIenum
     Color,
     LightOneWorld,
     MoveOneWorld,
-    MainLight
+    MainLight,
+    PlayerPos
 }
 
 public class SelectionUI : MonoBehaviour
@@ -69,6 +70,7 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.LightOneWorld:
             case SelectionUIenum.MoveOneWorld:
             case SelectionUIenum.MainLight:
+            case SelectionUIenum.PlayerPos:
                 PopUpSettingPanel();
                 break;
         }
