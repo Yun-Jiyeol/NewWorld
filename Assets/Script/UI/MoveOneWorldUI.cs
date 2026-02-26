@@ -50,6 +50,7 @@ public class MoveOneWorldUI : BasicUI
     public void ChangeBlockInWorld()
     {
         target.GetComponent<ChunkCode>().ChooseThisWorld();
+        GameManager.Instance.InputManager.ChooseWorld();
         GameManager.Instance.ChangeFlow(GameFlow.WatchOneWorld);
 
         target = null;

@@ -18,7 +18,7 @@ public class WorldManager : MonoBehaviour
         GameObject newWorld = new GameObject();
         newWorld.transform.parent = SpawnedWorlds;
         newWorld.transform.tag = "World";
-        newWorld.layer = 6;
+        newWorld.layer = 7;
         newWorld.transform.position = SpawnNewWorldPosition.position;
         newWorld.AddComponent<MeshCollider>();
         newWorld.AddComponent<ChunkCode>().MakeNewWorld(3, 3, 3);
@@ -33,6 +33,7 @@ public class WorldManager : MonoBehaviour
         if(!Worlds.Contains(_world)) Debug.Log("It Doesn;t Save");
 
         GameManager.Instance.SaveAndLoadManager.DeleteData(_world.GetComponent<ChunkCode>());
+        GameManager.Instance.InputManager.UnChooseWorld();
 
         Worlds.Remove(_world);
         Destroy(_world);

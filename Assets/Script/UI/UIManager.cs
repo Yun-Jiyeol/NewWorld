@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public GameObject Compass;
     public SelectionUI SelectionUI;
     public GameObject BlockImage;
+    public WorldSeenUI WorldSeenUI;
 
     private void Start()
     {

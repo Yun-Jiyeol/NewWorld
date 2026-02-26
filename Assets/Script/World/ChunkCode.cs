@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class BlockInChunkData
 {
@@ -191,6 +192,7 @@ public class ChunkCode : MonoBehaviour
             block.transform.localPosition = gridPos;
             block.GetComponent<Renderer>().material.color = color;
             block.tag = "Block";
+            block.layer = gameObject.layer;
 
             BlocksinChunk[ChunkPos].TryGetValue(LocalPos, out BlockInChunkData value);
             value._go = block;
@@ -493,6 +495,7 @@ public class ChunkCode : MonoBehaviour
         _chunk.transform.localRotation = Quaternion.identity;
         _chunk.transform.localScale = Vector3.one;
         _chunk.tag = "Block";
+        _chunk.layer = gameObject.layer;
 
         _chunk.AddComponent<MeshFilter>();
         _chunk.AddComponent<MeshRenderer>().material = new Material(GameManager.Instance.MaterialManager.MainMaterial);
@@ -824,6 +827,25 @@ public class ChunkCode : MonoBehaviour
         {
             DestroyWorld();
         }
+    }
+
+    public void ChangeWorldLayer(int num)
+    {
+        gameObject.layer = num;
+
+        foreach (Transform child in gameObject.transform)
+        {
+            child.gameObject.layer = num;
+        }
+    }
+
+    public Color CheckColor(Vector3 pos)
+    {
+        Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+        Vector3Int ChunkPos = GetChunkCoord(gridPos);
+        Vector3Int LocalPos = GetLocalPos(gridPos);
+
+        return BlocksinChunk[ChunkPos][LocalPos]._color;
     }
 
     public void DestroyWorld()

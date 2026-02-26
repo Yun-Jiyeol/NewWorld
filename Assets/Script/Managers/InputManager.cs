@@ -72,6 +72,7 @@ public class InputManager : MonoBehaviour
                         TargetGameObject = newworld;
                         TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
                         GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
+                        ChooseWorld();
                     }
                     if (Input.GetKeyDown(KeyCode.F1)) //나중 esc로 변경
                     {
@@ -120,6 +121,7 @@ public class InputManager : MonoBehaviour
 
                     TargetGameObject.transform.SetParent(cam.transform);
                     TargetGameObject.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, 1f, true ,cam.transform.position + cam.transform.forward * 25f + cam.transform.up * 1f, true, Quaternion.Euler(0f,0f,0f));
+                    GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
                     Invoke("ChangeToPutWorldInSpace", 0.7f);
                 }
                 //임시 코드
@@ -213,7 +215,8 @@ public class InputManager : MonoBehaviour
                     if (Input.GetMouseButtonDown(2))
                     {
                         ResetDestroyRange();
-                        GameManager.Instance.BuildManager.SetColor(OnRaycast.transform.GetComponent<MeshRenderer>().material.color);
+
+                        GameManager.Instance.BuildManager.SetColor(TargetGameObject.GetComponent<ChunkCode>().CheckColor(ReadyToBuildBlock.transform.localPosition));
                     }
                 }
                 else
@@ -291,6 +294,7 @@ public class InputManager : MonoBehaviour
                 true
             );
             ReadyToDestroyBlock.GetComponent<SampleBlcok>().SetColor(new Color(0.8f,0,0,0.7f));
+            ReadyToDestroyBlock.layer = 7;
         }
         ReadyToDestroyBlock.SetActive(true);
         ReadyToDestroyBlock.transform.position = ReadyToBuildBlock.transform.position;
@@ -370,6 +374,7 @@ public class InputManager : MonoBehaviour
 
     void ChangeToPutWorldInSpace()
     {
+        UnChooseWorld();
         GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
     }
 
@@ -391,6 +396,7 @@ public class InputManager : MonoBehaviour
 
             ReadyToBuildBlock.transform.localScale = Vector3.one * 1.03f;
             ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
+            ReadyToBuildBlock.layer = 7;
 
             MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
             mf.sharedMesh = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshFilter>().sharedMesh;
@@ -639,5 +645,16 @@ public class InputManager : MonoBehaviour
             { world = TargetGameObject.GetComponent<ChunkCode>(), 
             blockposition = TargetGameObject.transform.InverseTransformPoint(OnRaycast.point + OnRaycast.normal * 0.01f),
             blockcolor = SpawnedColor});
+    }
+
+    public void ChooseWorld()
+    {
+        TargetGameObject.GetComponent<ChunkCode>().ChangeWorldLayer(7);
+        GameManager.Instance.UIManager.WorldSeenUI.OnScreen();
+    }
+
+    public void UnChooseWorld()
+    {
+        TargetGameObject.GetComponent<ChunkCode>().ChangeWorldLayer(6);
     }
 }

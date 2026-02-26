@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MainCamera : MonoBehaviour
 {
+    public GameObject SubCamera;
+
     public float sensitivity = 3f;
     public float minPitch = -90f;
     public float maxPitch = 90f;
