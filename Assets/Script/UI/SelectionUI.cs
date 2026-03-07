@@ -21,7 +21,8 @@ public enum SelectionUIenum
     LightOneWorld,
     MoveOneWorld,
     MainLight,
-    PlayerPos
+    PlayerPos,
+    WorldSetting
 }
 
 public class SelectionUI : MonoBehaviour
@@ -33,6 +34,8 @@ public class SelectionUI : MonoBehaviour
     public Image BackGround;
 
     RectTransform thistransform;
+
+    public List<GameObject> AdditionalUI = new List<GameObject>();
 
     private void Start()
     {
@@ -71,6 +74,7 @@ public class SelectionUI : MonoBehaviour
             case SelectionUIenum.MoveOneWorld:
             case SelectionUIenum.MainLight:
             case SelectionUIenum.PlayerPos:
+            case SelectionUIenum.WorldSetting:
                 PopUpSettingPanel();
                 break;
         }
@@ -82,6 +86,7 @@ public class SelectionUI : MonoBehaviour
 
         thistransform.DOKill();
         thistransform.DOAnchorPosX(-350f, 0.5f);
+        DestroyAllAdditionalUi();
 
         OffAllUI();
         if(_slect == null) return;
@@ -99,6 +104,7 @@ public class SelectionUI : MonoBehaviour
     {
         thistransform.DOKill();
         thistransform.DOAnchorPosX(0f, 0.25f);
+        DestroyAllAdditionalUi();
 
         for (int i = 0; i < uIBtnsSelectedUIMaterials.Count; i++)
         {
@@ -155,5 +161,15 @@ public class SelectionUI : MonoBehaviour
                 _select.Btn.SetActive(false);
             }
         }
+    }
+
+    public void DestroyAllAdditionalUi()
+    {
+        if(AdditionalUI.Count == 0) return;
+        foreach(GameObject go in AdditionalUI)
+        {
+            Destroy(go);
+        }
+        AdditionalUI.Clear();
     }
 }
