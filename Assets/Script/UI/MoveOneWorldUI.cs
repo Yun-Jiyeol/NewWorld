@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 public class MoveOneWorldUI : BasicUI
@@ -58,8 +59,6 @@ public class MoveOneWorldUI : BasicUI
 
     public void MoveOneOriginalPosition()
     {
-        GameObject cam = Camera.main.gameObject;
-
         target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, SaveScale,true, SaveVector3,true, SaveRotation);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
@@ -76,5 +75,33 @@ public class MoveOneWorldUI : BasicUI
         GameManager.Instance.WorldManager.DestroyWorld(target);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
+    }
+
+    public void CopyWorld()
+    {
+        target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f, true, SaveScale, true, SaveVector3, true, SaveRotation);
+
+        GameObject newCopied = GameManager.Instance.WorldManager.MakeNewWorld(0, 0, 0);
+        newCopied.transform.position = target.transform.position;
+        newCopied.transform.rotation = target.transform.rotation;
+        newCopied.transform.localScale = target.transform.localScale;
+
+        var targetChunk = target.GetComponent<ChunkCode>();
+        var newChunk = newCopied.GetComponent<ChunkCode>();
+
+        foreach (var blocks in targetChunk.BlocksinChunk.Values)
+        {
+            foreach(BlockInChunkData block in blocks.Values)
+            {
+                newChunk.MakeWorldQueue.Enqueue(new BlockInChunkData{ _color = block._color, _position = block._position});
+            }
+        }
+
+        inputManager.TargetGameObject = newCopied;
+
+        GameObject blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+        GameManager.Instance.UIManager.SelectionUI.AdditionalUI.Add(blockImage);
+
+        newChunk.StartBuildRoutine();
     }
 }

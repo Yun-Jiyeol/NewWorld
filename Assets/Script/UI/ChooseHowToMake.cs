@@ -18,9 +18,12 @@ public class ChooseHowToMake : BasicUI
 
     public override void OnSetting()
     {
-        x = 3;
-        y = 3;
-        z = 3;
+        if(GameManager.Instance.InputManager.TargetGameObject == null) return;
+        Vector3Int TS = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().GiveThreeSize();
+
+        x = TS.x;
+        y = TS.y;
+        z = TS.z;
 
         Xtext.text = x.ToString();
         Ytext.text = y.ToString();

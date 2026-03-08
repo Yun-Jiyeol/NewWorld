@@ -146,7 +146,6 @@ public class SaveAndLoadManager : MonoBehaviour
         if (File.Exists(path))
         {
             File.Delete(path);
-            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world._name);
         }
 
         WorldSaveData worldsave = new WorldSaveData() 
@@ -241,7 +240,6 @@ public class SaveAndLoadManager : MonoBehaviour
         if (File.Exists(path))
         {
             File.Delete(path);
-            Debug.Log($"[Save] ¿ùµå »èÁ¦µÊ: " + _world.name);
         }
     }
 

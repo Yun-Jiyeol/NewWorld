@@ -25,13 +25,13 @@ public class ChunkCode : MonoBehaviour
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
 
-    float minX = int.MaxValue;
-    float minY = int.MaxValue;
-    float minZ = int.MaxValue;
+    int minX = int.MaxValue;
+    int minY = int.MaxValue;
+    int minZ = int.MaxValue;
 
-    float maxX = int.MinValue;
-    float maxY = int.MinValue;
-    float maxZ = int.MinValue;
+    int maxX = int.MinValue;
+    int maxY = int.MinValue;
+    int maxZ = int.MinValue;
 
     public Queue<BlockInChunkData> MakeWorldQueue = new();
 
@@ -50,6 +50,8 @@ public class ChunkCode : MonoBehaviour
         if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
         if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
         ClearAll();
+
+        if(x == 0 &  y == 0 & z == 0) return;
 
         for (int _x = -((x/2) + (x%2)); _x < (x / 2); _x++)
         {
@@ -391,9 +393,16 @@ public class ChunkCode : MonoBehaviour
             case GameFlow.WatchAllWorld:
                 PutThisWorld();
                 break;
+
             case GameFlow.MakeOneWorld:
                 findselect();
                 StartChangeEveryThingSmooth(0.5f, false, 0, true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 20f), false, new Quaternion(0, 0, 0, 0));
+                break;
+
+            case GameFlow.SelectOneWorld:
+                GameManager.Instance.UIManager.SelectionUI.DestroyAllAdditionalUi();
+                GameManager.Instance.InputManager.ChooseWorld();
+                GameManager.Instance.ChangeFlow(GameFlow.WatchOneWorld);
                 break;
         }
     }
@@ -460,13 +469,18 @@ public class ChunkCode : MonoBehaviour
 
     void CheckSize(Vector3 position)
     {
-        if (position.x > maxX) maxX = position.x;
-        if (position.y > maxY) maxY = position.y;
-        if (position.z > maxZ) maxZ = position.z;
+        if (position.x > maxX) maxX = (int)position.x;
+        if (position.y > maxY) maxY = (int)position.y;
+        if (position.z > maxZ) maxZ = (int)position.z;
 
-        if (position.x < minX) minX = position.x;
-        if (position.y < minY) minY = position.y;
-        if (position.z < minZ) minZ = position.z;
+        if (position.x < minX) minX = (int)position.x;
+        if (position.y < minY) minY = (int)position.y;
+        if (position.z < minZ) minZ = (int)position.z;
+    }
+
+    public Vector3Int GiveThreeSize()
+    {
+        return new Vector3Int(maxX - minX +1, maxY - minY + 1, maxZ - minZ + 1);
     }
 
     Vector3Int GetLocalPos(Vector3Int worldPos)

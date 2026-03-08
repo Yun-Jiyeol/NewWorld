@@ -21,7 +21,7 @@ public class WorldManager : MonoBehaviour
         newWorld.layer = 7;
         newWorld.transform.position = SpawnNewWorldPosition.position;
         newWorld.AddComponent<MeshCollider>();
-        newWorld.AddComponent<ChunkCode>().MakeNewWorld(3, 3, 3);
+        newWorld.AddComponent<ChunkCode>().MakeNewWorld(_x, _y, _z);
         newWorld.GetComponent<ChunkCode>().SetName();
         Worlds.Add(newWorld);
 
