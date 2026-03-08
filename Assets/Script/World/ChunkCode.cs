@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ public class BlockInChunkData
 
 public class ChunkCode : MonoBehaviour
 {
-    public string _name = "NewWorld_";
-    public int SavedNum = 0;
+    public string _name = "NewWorld";
+    public string Savedtime;
 
     public GameObject LightBlock;
 
@@ -156,10 +157,9 @@ public class ChunkCode : MonoBehaviour
         return true;
     }
 
-    public void SetName(int Num)
+    public void SetName()
     {
-        _name += Num.ToString();
-        SavedNum = Num;
+        Savedtime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
     }
 
     public void MakeBlockData(Vector3 _position, Color color)

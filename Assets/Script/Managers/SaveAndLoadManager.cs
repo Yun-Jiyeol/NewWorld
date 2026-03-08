@@ -7,7 +7,7 @@ public class WorldSaveData
 {
     //¹øÈ£
     public string Name;
-    public int Num;
+    public string Time;
 
     //ÁÂÇ¥
     public float x;
@@ -140,7 +140,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{_world._name}_{_world.SavedNum}.json";
+        string fileName = $"World_{_world.Savedtime}.json";
 
         string path = System.IO.Path.Combine(SaveFolder, fileName);
         if (File.Exists(path))
@@ -152,7 +152,7 @@ public class SaveAndLoadManager : MonoBehaviour
         WorldSaveData worldsave = new WorldSaveData() 
         {
             Name = _world._name,
-            Num = _world.SavedNum,
+            Time = _world.Savedtime,
 
             x = _world.gameObject.transform.position.x,
             y = _world.gameObject.transform.position.y,
@@ -235,7 +235,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{_world._name}_{_world.SavedNum}.json";
+        string fileName = $"World_{_world.Savedtime}.json";
 
         string path = System.IO.Path.Combine(SaveFolder, fileName);
         if (File.Exists(path))
@@ -266,7 +266,7 @@ public class SaveAndLoadManager : MonoBehaviour
         ChunkCode worldBaseCode = world.GetComponent<ChunkCode>();
 
         worldBaseCode._name = worldsave.Name;
-        worldBaseCode.SavedNum = worldsave.Num;
+        worldBaseCode.Savedtime = worldsave.Time;
 
         foreach (BlockSaveData block in worldsave.blocks)
         {
@@ -391,5 +391,24 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             SaveWorldData(wb.GetComponent<ChunkCode>());
         }
+    }
+
+    public void ChangeName(string Time, string changedName)
+    {
+        EnsureSaveFolder();
+
+        string fileName = $"World_{Time}.json";
+
+        string path = System.IO.Path.Combine(SaveFolder, fileName);
+
+        if (!File.Exists(path)) return;
+
+        string json = File.ReadAllText(path);
+        WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
+
+        worldsave.Name = changedName;
+
+        json = JsonUtility.ToJson(worldsave, true);
+        File.WriteAllText(path, json);
     }
 }

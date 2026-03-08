@@ -28,13 +28,13 @@ public class WorldSettingUI : BasicUI
 
         Instantiate(GameManager.Instance.UIManager.SavedImage, gameObject.transform);
 
+        GameManager.Instance.SaveAndLoadManager.ChangeName(TargetObject._name, Inputname);
+
         TargetObject._name = Inputname;
         SaveBN = TargetObject._name;
         BeforeName.text = SaveBN;
         
         TextBox.text = "";
-
-
     }
 
     public void ResetName()
