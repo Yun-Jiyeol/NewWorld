@@ -18,14 +18,17 @@ public class LightUI : BasicUI
     public ClickImageToChangeRange LeftRangeClick;
 
     public TextMeshProUGUI showSettingLight;
+    public TMP_InputField showSettingLightInput;
+
     public TextMeshProUGUI showSettingRange;
+    public TMP_InputField showSettingRangeInput;
 
     public ChangeLightTypeButton Spot;
     public ChangeLightTypeButton Point;
 
     float SettingLight;
     float SettingRange;
-    int MaxLight = 99;
+    int MaxLight = 999;
     int MinLight = 0;
 
     public Light target;
@@ -96,13 +99,40 @@ public class LightUI : BasicUI
         }
 
         ShowLight.layer = 6;
-        ShowLight.transform.localScale = Vector3.one  * 0.15f;
+
+        Vector3Int SZ = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().GiveThreeSize();
+        float maxSZ = Mathf.Max(SZ.x, SZ.y, SZ.z);
+
+        ShowLight.transform.localScale = Vector3.one  * (maxSZ / 10f);
         SettingColor();
     }
 
     public void ChangeSettingLight(float i)
     {
         SettingLight += i;
+
+        if (SettingLight < MinLight)
+        {
+            SettingLight = MinLight;
+        }
+        if (SettingLight > MaxLight)
+        {
+            SettingLight = MaxLight;
+        }
+
+        target.intensity = SettingLight;
+        ShowSettingLight();
+    }
+
+    public void ChangeSettingLightNum()
+    {
+        if (!float.TryParse(showSettingLightInput.text, out float x))
+        {
+            showSettingLightInput.text = "";
+            return;
+        }
+
+        SettingLight = x;
 
         if (SettingLight < MinLight)
         {
@@ -128,6 +158,7 @@ public class LightUI : BasicUI
             target.enabled = true;
         }
 
+        showSettingLightInput.text = "";
         showSettingLight.text = SettingLight.ToString("F1");
     }
 
@@ -144,7 +175,30 @@ public class LightUI : BasicUI
             SettingRange = MaxLight;
         }
 
-        target.range = SettingRange;
+        target.range = SettingRange * 10f;
+        ShowSettingLightRange();
+    }
+
+    public void ChangeSettingLightRangeNum()
+    {
+        if(!float.TryParse(showSettingRangeInput.text, out float x))
+        {
+            showSettingRangeInput.text = "";
+            return;
+        }
+
+        SettingRange = x;
+
+        if (SettingRange < MinLight)
+        {
+            SettingRange = MinLight;
+        }
+        if (SettingRange > MaxLight)
+        {
+            SettingRange = MaxLight;
+        }
+
+        target.range = SettingRange * 10f;
         ShowSettingLightRange();
     }
 
@@ -159,6 +213,7 @@ public class LightUI : BasicUI
             target.enabled = true;
         }
 
+        showSettingRangeInput.text = "";
         showSettingRange.text = SettingRange.ToString("F1");
     }
 
