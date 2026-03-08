@@ -62,10 +62,15 @@ public class WorldSeenUI : MonoBehaviour
 
         if (isoff)
         {
-            GameManager.Instance.MainCamera.SubCamera.SetActive(false);
-            gameObject.SetActive(false);
-            BG.SetActive(false);
-            SelectWorld.SetActive(false);
+            offScreenDirect();
         }
+    }
+
+    public void offScreenDirect()
+    {
+        GameManager.Instance.MainCamera.SubCamera.SetActive(false);
+        gameObject.SetActive(false);
+        BG.SetActive(false);
+        SelectWorld.SetActive(false);
     }
 }

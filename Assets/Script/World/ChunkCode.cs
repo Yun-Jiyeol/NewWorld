@@ -864,7 +864,8 @@ public class ChunkCode : MonoBehaviour
 
     public void DestroyWorld()
     {
-        GameManager.Instance.SaveAndLoadManager.DeleteData(this);
+        GameManager.Instance.WorldManager.DestroyWorld(gameObject);
+        GameManager.Instance.UIManager.WorldSeenUI.offScreenDirect();
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
 }
