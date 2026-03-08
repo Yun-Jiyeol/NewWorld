@@ -9,6 +9,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class InputManager : MonoBehaviour
 {
+    Transform _cam;
+
     public KeyCode MoveUp = KeyCode.W;
     public KeyCode MoveDown = KeyCode.S;
     public KeyCode MoveLeft = KeyCode.A;
@@ -22,8 +24,9 @@ public class InputManager : MonoBehaviour
     bool isSomethingHit = false;
 
     public GameObject TargetGameObject = null;
-    public float TargetMoveSensitive = 1f;
-    public float PlayerMoveSpeed = 1f;
+    float TargetMoveSensitive = 0f;
+    float PlayerMoveSpeed = 0f;
+    float accelate = 5f;
 
     public GameObject ReadyToBuildBlock;
     GameObject ReadyToDestroyBlock;
@@ -42,6 +45,11 @@ public class InputManager : MonoBehaviour
     public float scaleSpeed = 0.05f;
 
     public bool isTouchingUI = false;
+
+    private void Awake()
+    {
+        _cam = Camera.main.transform;
+    }
 
     private void Update()
     {
@@ -88,7 +96,7 @@ public class InputManager : MonoBehaviour
                         if (OnRaycast.transform.CompareTag("World"))
                         {
                             TargetGameObject = OnRaycast.transform.gameObject;
-                            Camera.main.transform.LookAt(TargetGameObject.transform.position);
+                            _cam.LookAt(TargetGameObject.transform.position);
                             GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
                         }
                     }
@@ -452,28 +460,46 @@ public class InputManager : MonoBehaviour
         Vector3 move = Vector3.zero;
         if (isMoveSide)
         {
-            if (Input.GetKey(MoveUp)) move += Camera.main.transform.up;
-            if (Input.GetKey(MoveDown)) move -= Camera.main.transform.up;
-            if (Input.GetKey(MoveRight)) move += Camera.main.transform.right;
-            if (Input.GetKey(MoveLeft)) move -= Camera.main.transform.right;
+            if (Input.GetKey(MoveUp)) move += _cam.up;
+            if (Input.GetKey(MoveDown)) move -= _cam.up;
+            if (Input.GetKey(MoveRight)) move += _cam.right;
+            if (Input.GetKey(MoveLeft)) move -= _cam.right;
         }
-        if (Input.GetKey(MoveFar)) move += Camera.main.transform.forward;
-        if (Input.GetKey(MoveClose)) move -= Camera.main.transform.forward;
+        if (Input.GetKey(MoveFar)) move += _cam.forward;
+        if (Input.GetKey(MoveClose)) move -= _cam.forward;
+
         if (move != Vector3.zero)
         {
+            TargetMoveSensitive += accelate * Time.deltaTime;
+            TargetMoveSensitive = Mathf.Clamp(TargetMoveSensitive, 0, TargetMoveSensitive);
+
             _target.transform.position += move.normalized * TargetMoveSensitive * Time.deltaTime;
+        }
+        else
+        {
+            TargetMoveSensitive = 0f;
         }
     }
 
     public void PlayerMove()
     {
         Vector3 move = Vector3.zero;
-        if (Input.GetKey(MoveUp)) move += Camera.main.transform.forward;
-        if (Input.GetKey(MoveDown)) move -= Camera.main.transform.forward;
-        if (Input.GetKey(MoveRight)) move += Camera.main.transform.right;
-        if (Input.GetKey(MoveLeft)) move -= Camera.main.transform.right;
+        if (Input.GetKey(MoveUp)) move += _cam.forward;
+        if (Input.GetKey(MoveDown)) move -= _cam.forward;
+        if (Input.GetKey(MoveRight)) move += _cam.right;
+        if (Input.GetKey(MoveLeft)) move -= _cam.right;
 
-        Camera.main.transform.position += move.normalized * Time.deltaTime * PlayerMoveSpeed;
+        if (move != Vector3.zero)
+        {
+            PlayerMoveSpeed += accelate * Time.deltaTime;
+            PlayerMoveSpeed = Mathf.Clamp(PlayerMoveSpeed, 0, PlayerMoveSpeed);
+
+            _cam.position += move.normalized * PlayerMoveSpeed * Time.deltaTime;
+        }
+        else
+        {
+            PlayerMoveSpeed = 0f;
+        }
     }
 
     public void TargetScale(GameObject _target)
