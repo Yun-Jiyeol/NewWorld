@@ -43,9 +43,10 @@ public class MainLightUI : BasicUI
 
     IEnumerator ChangeRotOfMainLight()
     {
+        float RollingSpeed = 3f;
+
         Transform light = ML.transform;
-        Quaternion delta =
-            Quaternion.Euler(changVectorrot.x, changVectorrot.y, 0f);
+        Quaternion delta =  Quaternion.Euler(changVectorrot.x/ RollingSpeed, changVectorrot.y/ RollingSpeed, 0f);
 
         while (Input.GetMouseButton(0))
         {
@@ -74,7 +75,7 @@ public class MainLightUI : BasicUI
         Quaternion startRot = light.rotation;
         Quaternion endRot = Quaternion.Euler(90f, 0f, 0f);
 
-        float duration = 0.5f;
+        float duration = 1f;
         float time = 0f;
 
         while (time < duration)
