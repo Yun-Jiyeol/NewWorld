@@ -77,6 +77,8 @@ public class SaveAllData
     public ColorSaveData maincolor;
     public List<ColorSaveData> precolor;
     public List<ColorSaveData> savecolor;
+
+    public LightBlockSaveData MainLight;
 }
 
 [System.Serializable]
@@ -349,6 +351,19 @@ public class SaveAndLoadManager : MonoBehaviour
             }
         }
 
+        GameObject ML = GameManager.Instance.LightManager.MainLight;
+        savedata.MainLight = new LightBlockSaveData()
+        {
+            xrot = ML.transform.rotation.x,
+            yrot = ML.transform.rotation.y,
+            zrot = ML.transform.rotation.z,
+            wrot = ML.transform.rotation.w,
+
+            r = ML.GetComponent<Light>().color.r,
+            g = ML.GetComponent<Light>().color.g,
+            b = ML.GetComponent<Light>().color.b
+        };
+
         string json = JsonUtility.ToJson(savedata, true);
         File.WriteAllText(path, json);
     }
@@ -381,6 +396,10 @@ public class SaveAndLoadManager : MonoBehaviour
                 BM.AddSaveColor(new Color(worldsave.savecolor[i].r, worldsave.savecolor[i].g, worldsave.savecolor[i].b, worldsave.savecolor[i].a), i);
             }
         }
+
+        GameObject ML = GameManager.Instance.LightManager.MainLight;
+        ML.transform.rotation = new Quaternion(worldsave.MainLight.xrot, worldsave.MainLight.yrot, worldsave.MainLight.zrot, worldsave.MainLight.wrot);
+        ML.GetComponent<Light>().color = new Color(worldsave.MainLight.r, worldsave.MainLight.g, worldsave.MainLight.b);
     }
 
     public void SaveAllWorld()
