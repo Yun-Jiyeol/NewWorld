@@ -17,17 +17,25 @@ public class LightUI : BasicUI
     public ClickImageToChangeRange RightRangeClick;
     public ClickImageToChangeRange LeftRangeClick;
 
+    public ClickingImageToCoroutine RightAngleClick;
+    public ClickingImageToCoroutine LeftAngleClick;
+
     public TextMeshProUGUI showSettingLight;
     public TMP_InputField showSettingLightInput;
 
     public TextMeshProUGUI showSettingRange;
     public TMP_InputField showSettingRangeInput;
 
+    public GameObject SettingAngleGo;
+    public TextMeshProUGUI showSettingAngle;
+    public TMP_InputField showSettingAngleInput;
+
     public ChangeLightTypeButton Spot;
     public ChangeLightTypeButton Point;
 
     float SettingLight;
     float SettingRange;
+    float SettingAngle;
     int MaxLight = 999;
     int MinLight = 0;
 
@@ -47,6 +55,7 @@ public class LightUI : BasicUI
         _color = target.color;
         targettype = target.type;
         SettingRange = target.range;
+        SettingAngle = target.spotAngle;
 
         CopyLine.Setting(this);
         CopyChoose.Setting(this);
@@ -54,12 +63,15 @@ public class LightUI : BasicUI
         LeftClick.Setting(this);
         RightRangeClick.Setting(this);
         LeftRangeClick.Setting(this);
+        RightAngleClick.Setting(this);
+        LeftAngleClick.Setting(this);
         Spot.Setting(this);
         Point.Setting(this);
 
         SettingType();
         ShowSettingLightRange();
         ShowSettingLight();
+        ShowSettingLightAngle();
     }
 
     private void Update()
@@ -82,6 +94,8 @@ public class LightUI : BasicUI
         if (scroll != 0)
         {
             target.spotAngle += scroll * 1f;
+            SettingAngle = target.spotAngle;
+            ShowSettingLightAngle();
         }
     }
 
@@ -181,7 +195,7 @@ public class LightUI : BasicUI
 
     public void ChangeSettingLightRangeNum()
     {
-        if(!float.TryParse(showSettingRangeInput.text, out float x))
+        if (!float.TryParse(showSettingRangeInput.text, out float x))
         {
             showSettingRangeInput.text = "";
             return;
@@ -217,6 +231,61 @@ public class LightUI : BasicUI
         showSettingRange.text = SettingRange.ToString("F1");
     }
 
+    public void ChangeSettingLightAngle(float i)
+    {
+        SettingAngle += i;
+
+        if (SettingAngle < 0)
+        {
+            SettingAngle = 0;
+        }
+        if (SettingAngle > 179)
+        {
+            SettingAngle = 179;
+        }
+
+        target.spotAngle = SettingAngle;
+        ShowSettingLightAngle();
+    }
+
+    public void ChangeSettingLightAngleNum()
+    {
+        if (!float.TryParse(showSettingAngleInput.text, out float x))
+        {
+            showSettingAngleInput.text = "";
+            return;
+        }
+
+        SettingAngle = x;
+
+        if (SettingAngle < 0)
+        {
+            SettingAngle = 0;
+        }
+        if (SettingAngle > 179)
+        {
+            SettingAngle = 179;
+        }
+
+        target.spotAngle = SettingAngle;
+        ShowSettingLightAngle();
+    }
+
+    void ShowSettingLightAngle()
+    {
+        if (SettingAngle == 0)
+        {
+            target.enabled = false;
+        }
+        else
+        {
+            target.enabled = true;
+        }
+
+        showSettingAngleInput.text = "";
+        showSettingAngle.text = SettingAngle.ToString("F1");
+    }
+
     public void ChangeColor()
     {
         target.color = _color;
@@ -247,6 +316,7 @@ public class LightUI : BasicUI
             case (LightType.Spot):
                 Spot.gameObject.GetComponent<Image>().color = new Color(1, 0.5f, 0.5f);
                 Point.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
+                SettingAngleGo.SetActive(true);
                 MakeSpere();
                 SettingColor();
                 break;
@@ -254,6 +324,7 @@ public class LightUI : BasicUI
             case (LightType.Point):
                 Spot.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
                 Point.gameObject.GetComponent<Image>().color = new Color(0.5f, 1, 0.5f);
+                SettingAngleGo.SetActive(false);
                 MakeSpere();
                 SettingColor();
                 break;
