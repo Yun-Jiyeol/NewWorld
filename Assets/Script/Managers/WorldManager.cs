@@ -50,4 +50,41 @@ public class WorldManager : MonoBehaviour
 
         return newWorld;
     }
-}
+
+    public void LoadAllWorld()
+    {
+        GameObject maincam = Camera.main.gameObject;
+        SortWorldsByDistance(maincam);
+
+        StartCoroutine(LoadAllworld());
+    }
+
+    void SortWorldsByDistance(GameObject go)
+    {
+        Worlds.Sort((a, b) =>
+        {
+            float distA = Vector3.Distance(go.transform.position, a.transform.position);
+            float distB = Vector3.Distance(go.transform.position, b.transform.position);
+            return distA.CompareTo(distB);
+        });
+    }
+
+    bool loadButton = false;
+    IEnumerator LoadAllworld()
+    {
+        for(int i = 0;i<Worlds.Count; i++)
+        {
+            loadButton = false;
+            Worlds[i].GetComponent<ChunkCode>().StartBuildRoutine();
+            while (!loadButton)
+            {
+                yield return null;
+            }
+        }
+    }
+
+    public void ClickLoadBtn()
+    {
+        loadButton = true;
+    }
+}   

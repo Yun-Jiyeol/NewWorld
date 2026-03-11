@@ -8,6 +8,8 @@ public class ChooseHowToMake : BasicUI
     int y = 3;
     int z = 3;
 
+    int maxValue = 128;
+
     public TMP_InputField Xtext;
     public TMP_InputField Ytext;
     public TMP_InputField Ztext;
@@ -73,13 +75,17 @@ public class ChooseHowToMake : BasicUI
             Xtext.text = x.ToString();
             return;
         }
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Xtext.text = x.ToString();
             return;
+        }else if(value > maxValue)
+        {
+            value = maxValue;
         }
 
         x = value;
+        Xtext.text = x.ToString();
         MakeNewWorld();
     }
 
@@ -87,10 +93,14 @@ public class ChooseHowToMake : BasicUI
     {
         int value = x + i;
 
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Xtext.text = x.ToString();
             return;
+        }
+        else if (value > maxValue)
+        {
+            value = maxValue;
         }
 
         x = value;
@@ -106,13 +116,18 @@ public class ChooseHowToMake : BasicUI
             Ytext.text = y.ToString();
             return;
         }
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Ytext.text = y.ToString();
             return;
         }
+        else if (value > maxValue)
+        {
+            value = maxValue;
+        }
 
         y = value;
+        Ytext.text = y.ToString();
         MakeNewWorld();
     }
 
@@ -120,10 +135,14 @@ public class ChooseHowToMake : BasicUI
     {
         int value = y + i;
 
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Ytext.text = y.ToString();
             return;
+        }
+        else if (value > maxValue)
+        {
+            value = maxValue;
         }
 
         y = value;
@@ -139,13 +158,18 @@ public class ChooseHowToMake : BasicUI
             Ztext.text = z.ToString();
             return;
         }
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Ztext.text = z.ToString();
             return;
         }
+        else if (value > maxValue)
+        {
+            value = maxValue;
+        }
 
         z = value;
+        Ztext.text = z.ToString();
         MakeNewWorld();
     }
 
@@ -153,10 +177,14 @@ public class ChooseHowToMake : BasicUI
     {
         int value = z + i;
 
-        if (value <= 0 || value > 100)
+        if (value <= 0)
         {
             Ztext.text = z.ToString();
             return;
+        }
+        else if (value > maxValue)
+        {
+            value = maxValue;
         }
 
         z = value;

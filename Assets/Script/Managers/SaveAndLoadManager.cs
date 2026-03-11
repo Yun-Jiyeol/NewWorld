@@ -135,6 +135,8 @@ public class SaveAndLoadManager : MonoBehaviour
             {
                 LoadWorldData(file);
             }
+
+            GameManager.Instance.WorldManager.LoadAllWorld();
         }
     }
 
@@ -272,7 +274,6 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             worldBaseCode.MakeWorldQueue.Enqueue(new BlockInChunkData { _color = new Color(block.r, block.g, block.b, block.a), _position = new Vector3Int(block.x, block.y, block.z) });
         }
-        worldBaseCode.StartBuildRoutine();
 
         if (worldsave.isLightBlock)
         {
