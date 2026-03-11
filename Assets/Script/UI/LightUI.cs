@@ -81,22 +81,6 @@ public class LightUI : BasicUI
 
         GameManager.Instance.InputManager.TargetMove(target.gameObject);
         GameManager.Instance.InputManager.TargetTurn(target.gameObject);
-
-        if(targettype == LightType.Spot)
-        {
-            ChangeAngle();
-        }
-    }
-
-    void ChangeAngle()
-    {
-        float scroll = Input.mouseScrollDelta.y;
-        if (scroll != 0)
-        {
-            target.spotAngle += scroll * 1f;
-            SettingAngle = target.spotAngle;
-            ShowSettingLightAngle();
-        }
     }
 
     void MakeSpere()

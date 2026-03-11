@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
@@ -37,7 +38,7 @@ public class MoveOneWorldUI : BasicUI
 
         while (gameObject.activeSelf)
         {
-            if (target != null)
+            if (target != null && !EventSystem.current.IsPointerOverGameObject())
             {
                 inputManager.TargetMove(target);
                 inputManager.TargetScale(target);

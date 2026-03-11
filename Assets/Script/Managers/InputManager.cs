@@ -235,6 +235,7 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
+                if (EventSystem.current.IsPointerOverGameObject()) return;
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
                 TargetMove(TargetGameObject, false);
@@ -256,6 +257,7 @@ public class InputManager : MonoBehaviour
 
             case GameFlow.MakeOneWorld:
                 CheckRaycast(false);
+                if (EventSystem.current.IsPointerOverGameObject()) return;
                 TargetMove(TargetGameObject);
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
