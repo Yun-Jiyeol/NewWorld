@@ -11,7 +11,8 @@ public class PlayerPosUI : BasicUI
     List<GameObject> worldexuis;
     GameObject blockImage;
 
-    GameObject LastLook;
+    WorldExUI LastLook;
+    public GameObject SelectBtn;
 
     public override void OnSetting()
     {
@@ -25,6 +26,8 @@ public class PlayerPosUI : BasicUI
 
             worldexuis.Add(ui);
         }
+
+        SelectBtn.SetActive(false);
     }
 
     void Clearworldexui()
@@ -82,11 +85,19 @@ public class PlayerPosUI : BasicUI
 
     public void TryToLookAt(WorldExUI _give)
     {
-        if(LastLook != _give.gameObject)
+        if(LastLook != _give)
         {
-            LastLook = _give.gameObject;
+            LastLook = _give;
 
             _give.LooAtThis();
+            SelectBtn.SetActive(true);
         }
+    }
+
+    public void ClickSelectBtn()
+    {
+        GameManager.Instance.InputManager.TargetGameObject = LastLook.getChunkCode().gameObject;
+
+        GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
     }
 }
