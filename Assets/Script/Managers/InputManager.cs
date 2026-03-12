@@ -108,32 +108,6 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.WatchOneWorld:
-                //임시 코드
-                if (Input.GetKeyDown(KeyCode.P))
-                {
-                    GameManager.Instance.SaveAndLoadManager.SaveData();
-
-                    if (ReadyToBuildBlock != null)
-                    {
-                        Destroy(ReadyToBuildBlock);
-                    }
-                    if(ReadyToDestroyBlock != null)
-                    {
-                        Destroy(ReadyToDestroyBlock);
-                        ReadyToDestroyBlock = null;
-                    }
-
-                    GameManager.Instance.ChangeFlow(GameFlow.None);
-
-                    GameObject cam = GameManager.Instance.MainCamera.gameObject;
-
-                    TargetGameObject.transform.SetParent(cam.transform);
-                    TargetGameObject.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, 1f, true ,cam.transform.position + cam.transform.forward * 25f + cam.transform.up * 1f, true, Quaternion.Euler(0f,0f,0f));
-                    GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
-                    Invoke("ChangeToPutWorldInSpace", 0.7f);
-                }
-                //임시 코드
-
                 CheckRaycast(false);
                 SaveAndLoadColor();
 
@@ -684,5 +658,28 @@ public class InputManager : MonoBehaviour
     public void UnChooseWorld()
     {
         TargetGameObject.GetComponent<ChunkCode>().ChangeWorldLayer(6);
+    }
+
+    public void PutThisWorldInSpace()
+    {
+        GameManager.Instance.SaveAndLoadManager.SaveData();
+
+        if (ReadyToBuildBlock != null)
+        {
+            Destroy(ReadyToBuildBlock);
+        }
+        if (ReadyToDestroyBlock != null)
+        {
+            Destroy(ReadyToDestroyBlock);
+            ReadyToDestroyBlock = null;
+        }
+
+        GameManager.Instance.ChangeFlow(GameFlow.None);
+
+        GameObject cam = GameManager.Instance.MainCamera.gameObject;
+
+        TargetGameObject.transform.SetParent(cam.transform);
+        GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
+        Invoke("ChangeToPutWorldInSpace", 0.7f);
     }
 }

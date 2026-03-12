@@ -26,7 +26,7 @@ public class WorldSeenUI : MonoBehaviour
         BGImage.color = new Color(0, 0, 0, 0);
 
         if(NowCorountine != null) StopCoroutine(NowCorountine);
-        NowCorountine = StartCoroutine(ChangeScreenCoroutine(4/5f));
+        NowCorountine = StartCoroutine(ChangeScreenCoroutine(9/10f));
     }
 
     public void OffScreen()
