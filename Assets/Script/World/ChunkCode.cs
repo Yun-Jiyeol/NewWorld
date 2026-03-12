@@ -120,7 +120,7 @@ public class ChunkCode : MonoBehaviour
             yield return null;
         }
 
-        foreach (var pos in Chunks.Keys.ToList())
+        foreach (var pos in Chunks.Keys.ToList())  //이거 나중에 프레임 단위로 바꿔야함 중요
         {
             BuildMesh(pos * ChunkSize);
         }

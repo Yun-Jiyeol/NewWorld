@@ -11,13 +11,17 @@ public class PlayerPosUI : BasicUI
     List<GameObject> worldexuis;
     GameObject blockImage;
 
+    GameObject LastLook;
+
     public override void OnSetting()
     {
         Clearworldexui();
+        LastLook = null;
+
         for (int i = 0; i< GameManager.Instance.WorldManager.Worlds.Count; i++)
         {
             GameObject ui = Instantiate(WorldExUI, WorldsCheckUI.transform);
-            ui.GetComponent<WorldExUI>().Setting(GameManager.Instance.WorldManager.Worlds[i]);
+            ui.GetComponent<WorldExUI>().Setting(GameManager.Instance.WorldManager.Worlds[i], this);
 
             worldexuis.Add(ui);
         }
@@ -74,5 +78,15 @@ public class PlayerPosUI : BasicUI
 
         Destroy(blockImage);
         blockImage = null;
+    }
+
+    public void TryToLookAt(WorldExUI _give)
+    {
+        if(LastLook != _give.gameObject)
+        {
+            LastLook = _give.gameObject;
+
+            _give.LooAtThis();
+        }
     }
 }

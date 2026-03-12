@@ -12,14 +12,16 @@ public class WorldExUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public TextMeshProUGUI pos;
 
     Image thisImage;
+    PlayerPosUI PPUI;
 
     private void Start()
     {
         thisImage = gameObject.GetComponent<Image>();
     }
 
-    public void Setting(GameObject _world)
+    public void Setting(GameObject _world, PlayerPosUI _ppui)
     {
+        PPUI = _ppui;
         ChunkCode = _world.GetComponent<ChunkCode>();
         Name.text = ChunkCode._name;
         pos.text = "x = " + _world.transform.position.x.ToString("F1") + "y = " + _world.transform.position.y.ToString("F1") + "z = " + _world.transform.position.z.ToString("F1");
@@ -36,6 +38,11 @@ public class WorldExUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     }
 
     public void OnPointerClick(PointerEventData eventData)
+    {
+        PPUI.TryToLookAt(this);
+    }
+
+    public void LooAtThis()
     {
         GameManager.Instance.MainCamera.LookAt(ChunkCode.gameObject.transform.position);
     }
