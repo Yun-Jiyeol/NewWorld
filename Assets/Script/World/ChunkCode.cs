@@ -823,7 +823,8 @@ public class ChunkCode : MonoBehaviour
             light = LightBlock.AddComponent<Light>();
             light.type = UnityEngine.LightType.Point;
             light.range = 0;
-            light.intensity = 0;
+            light.intensity = 0; 
+            light.cullingMask = ~(1 << 7);
             LightBlock.transform.position = gameObject.transform.position;
         }
 
