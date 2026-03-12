@@ -8,4 +8,6 @@ public class LightManager : MonoBehaviour
     public GameObject SphereLight;
 
     public GameObject MainLight;
+
+    public Material Shader;
 }
