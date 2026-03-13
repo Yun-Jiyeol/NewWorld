@@ -95,7 +95,7 @@ public class InputManager : MonoBehaviour
                     {
                         if (OnRaycast.transform.CompareTag("World"))
                         {
-                            TargetGameObject = OnRaycast.transform.gameObject;
+                            TargetGameObject = OnRaycast.transform.GetComponentInParent<ChunkCode>().gameObject;
                             _cam.LookAt(TargetGameObject.transform.position);
                             GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
                         }

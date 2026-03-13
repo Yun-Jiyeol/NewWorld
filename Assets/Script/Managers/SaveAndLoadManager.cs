@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -95,6 +96,11 @@ public class SaveAndLoadManager : MonoBehaviour
     public static string RootPath => Application.persistentDataPath;
     public static string SaveFolder => System.IO.Path.Combine(RootPath, "Saves");
 
+    Queue<ChunkCode> saveQueue = new Queue<ChunkCode>();
+    HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
+    HashSet<ChunkCode> dirtyWorlds = new HashSet<ChunkCode>();
+    bool isSaving = false;
+
     public static void EnsureSaveFolder()
     {
         if (!Directory.Exists(SaveFolder))
@@ -142,38 +148,89 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void SaveWorldData(ChunkCode _world)
     {
+        // 이미 저장 중이면 dirty 처리
+        if (isSaving && currentSavingWorld == _world)
+        {
+            dirtyWorlds.Add(_world);
+            return;
+        }
+
+        // 이미 Queue에 있으면 덮어쓰기
+        if (queuedWorlds.Contains(_world))
+        {
+            dirtyWorlds.Add(_world);
+            return;
+        }
+
+        saveQueue.Enqueue(_world);
+        queuedWorlds.Add(_world);
+
+        if (!isSaving)
+            StartCoroutine(SaveWorker());
+    }
+
+    ChunkCode currentSavingWorld;
+
+    IEnumerator SaveWorker()
+    {
+        isSaving = true;
+
+        while (saveQueue.Count > 0)
+        {
+            ChunkCode world = saveQueue.Dequeue();
+            queuedWorlds.Remove(world);
+
+            currentSavingWorld = world;
+
+            yield return StartCoroutine(SaveWorldCoroutine(world));
+
+            // 저장 중 추가 요청이 있었다면 다시 Queue
+            if (dirtyWorlds.Contains(world))
+            {
+                dirtyWorlds.Remove(world);
+
+                saveQueue.Enqueue(world);
+                queuedWorlds.Add(world);
+            }
+        }
+
+        isSaving = false;
+    }
+
+    IEnumerator SaveWorldCoroutine(ChunkCode _world)
+    {
         EnsureSaveFolder();
 
         string fileName = $"World_{_world.Savedtime}.json";
+        string path = Path.Combine(SaveFolder, fileName);
 
-        string path = System.IO.Path.Combine(SaveFolder, fileName);
         if (File.Exists(path))
-        {
             File.Delete(path);
-        }
 
-        WorldSaveData worldsave = new WorldSaveData() 
+        WorldSaveData worldsave = new WorldSaveData()
         {
             Name = _world._name,
             Time = _world.Savedtime,
 
-            x = _world.gameObject.transform.position.x,
-            y = _world.gameObject.transform.position.y,
-            z = _world.gameObject.transform.position.z,
+            x = _world.transform.position.x,
+            y = _world.transform.position.y,
+            z = _world.transform.position.z,
 
-            xrot = _world.gameObject.transform.rotation.x,
-            yrot = _world.gameObject.transform.rotation.y,
-            zrot = _world.gameObject.transform.rotation.z,
-            wrot = _world.gameObject.transform.rotation.w,
+            xrot = _world.transform.rotation.x,
+            yrot = _world.transform.rotation.y,
+            zrot = _world.transform.rotation.z,
+            wrot = _world.transform.rotation.w,
 
-            size = _world.gameObject.transform.localScale.x,
+            size = _world.transform.localScale.x,
 
             blocks = new List<BlockSaveData>()
         };
 
-        foreach(var blocks in _world.BlocksinChunk.Values)
+        float start = Time.realtimeSinceStartup;
+
+        foreach (var blocks in _world.BlocksinChunk.Values)
         {
-            foreach(BlockInChunkData block in blocks.Values)
+            foreach (BlockInChunkData block in blocks.Values)
             {
                 BlockSaveData blocksave = new BlockSaveData()
                 {
@@ -188,31 +245,32 @@ public class SaveAndLoadManager : MonoBehaviour
                 };
 
                 worldsave.blocks.Add(blocksave);
+
+                // 시간 초과 체크
+                if ((Time.realtimeSinceStartup - start) * 1000f > 3f)
+                {
+                    yield return null;
+                    start = Time.realtimeSinceStartup;
+                }
             }
         }
 
-        if(_world.LightBlock != null)
+        if (_world.LightBlock != null)
         {
             worldsave.isLightBlock = true;
 
             GameObject LB = _world.LightBlock.gameObject;
             Light L = LB.GetComponent<Light>();
-            int _type = 0;
-            if (L.type == LightType.Spot)
-            {
-                _type = 1;
-            }
-            if (L.type == LightType.Point)
-            {
-                _type = 2;
-            }
 
+            int type = 0;
+            if (L.type == LightType.Spot) type = 1;
+            if (L.type == LightType.Point) type = 2;
 
             worldsave.lightblock = new LightBlockSaveData()
             {
-                x= LB.transform.position.x,
-                y= LB.transform.position.y,
-                z= LB.transform.position.z,
+                x = LB.transform.position.x,
+                y = LB.transform.position.y,
+                z = LB.transform.position.z,
 
                 xrot = LB.transform.rotation.x,
                 yrot = LB.transform.rotation.y,
@@ -223,14 +281,17 @@ public class SaveAndLoadManager : MonoBehaviour
                 g = L.color.g,
                 b = L.color.b,
 
-                type = _type,
+                type = type,
                 SpotAngle = L.spotAngle,
                 Range = L.range,
                 Intensive = L.intensity,
             };
         }
 
+        yield return null;
+
         string json = JsonUtility.ToJson(worldsave, true);
+
         File.WriteAllText(path, json);
     }
 

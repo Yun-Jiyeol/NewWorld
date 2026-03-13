@@ -421,50 +421,17 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
-        gameObject.GetComponent<Collider>().enabled = false;
-
         foreach(GameObject chunk in Chunks.Values)
         {
-            var col = chunk.GetComponent<Collider>();
-            if (col != null)
-                col.enabled = true; // ²ô±â
+            chunk.tag = "Block";
         }
     }
 
     public void PutThisWorld()
     {
-        if(!gameObject.TryGetComponent<MeshCollider>(out MeshCollider mc)) mc = gameObject.AddComponent<MeshCollider>();
-        mc.enabled = true;
-
-        List<CombineInstance> combineList = new List<CombineInstance>();
-
         foreach (GameObject chunk in Chunks.Values)
         {
-            var chunkCollider = chunk.GetComponent<MeshCollider>();
-            if (chunkCollider == null || chunkCollider.sharedMesh == null)
-                continue;
-
-            CombineInstance ci = new CombineInstance();
-            ci.mesh = chunkCollider.sharedMesh;
-            ci.transform =
-                transform.worldToLocalMatrix *
-                chunk.transform.localToWorldMatrix;
-
-            combineList.Add(ci);
-        }
-
-        Mesh combinedMesh = new Mesh();
-        combinedMesh.CombineMeshes(combineList.ToArray(), true, true);
-        combinedMesh.RecalculateBounds();
-
-        mc.sharedMesh = null;
-        mc.sharedMesh = combinedMesh;
-
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            var col = chunk.GetComponent<Collider>();
-            if (col != null)
-                col.enabled = false; // ²ô±â
+            chunk.tag = "World";
         }
     }
 
