@@ -199,6 +199,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     IEnumerator SaveWorldCoroutine(ChunkCode _world)
     {
+        Debug.Log("저장중");
+
         EnsureSaveFolder();
 
         string fileName = $"World_{_world.Savedtime}.json";
@@ -207,92 +209,105 @@ public class SaveAndLoadManager : MonoBehaviour
         if (File.Exists(path))
             File.Delete(path);
 
-        WorldSaveData worldsave = new WorldSaveData()
-        {
-            Name = _world._name,
-            Time = _world.Savedtime,
-
-            x = _world.transform.position.x,
-            y = _world.transform.position.y,
-            z = _world.transform.position.z,
-
-            xrot = _world.transform.rotation.x,
-            yrot = _world.transform.rotation.y,
-            zrot = _world.transform.rotation.z,
-            wrot = _world.transform.rotation.w,
-
-            size = _world.transform.localScale.x,
-
-            blocks = new List<BlockSaveData>()
-        };
-
         float start = Time.realtimeSinceStartup;
 
-        foreach (var blocks in _world.BlocksinChunk.Values)
+        using (StreamWriter writer = new StreamWriter(path, false, System.Text.Encoding.UTF8, 65536))
         {
-            foreach (BlockInChunkData block in blocks.Values)
+            // World Header
+            writer.Write("{");
+
+            writer.Write($"\"Name\":\"{_world._name}\",");
+            writer.Write($"\"Time\":\"{_world.Savedtime}\",");
+
+            writer.Write($"\"x\":{_world.transform.position.x},");
+            writer.Write($"\"y\":{_world.transform.position.y},");
+            writer.Write($"\"z\":{_world.transform.position.z},");
+
+            writer.Write($"\"xrot\":{_world.transform.rotation.x},");
+            writer.Write($"\"yrot\":{_world.transform.rotation.y},");
+            writer.Write($"\"zrot\":{_world.transform.rotation.z},");
+            writer.Write($"\"wrot\":{_world.transform.rotation.w},");
+
+            writer.Write($"\"size\":{_world.transform.localScale.x},");
+
+            writer.Write("\"blocks\":[");
+
+            bool first = true;
+
+            foreach (var blocks in _world.BlocksinChunk.Values)
             {
-                BlockSaveData blocksave = new BlockSaveData()
+                foreach (BlockInChunkData block in blocks.Values)
                 {
-                    x = Mathf.RoundToInt(block._position.x),
-                    y = Mathf.RoundToInt(block._position.y),
-                    z = Mathf.RoundToInt(block._position.z),
+                    if (!first)
+                        writer.Write(",");
 
-                    r = block._color.r,
-                    g = block._color.g,
-                    b = block._color.b,
-                    a = block._color.a
-                };
+                    first = false;
 
-                worldsave.blocks.Add(blocksave);
+                    writer.Write("{");
+                    writer.Write($"\"x\":{Mathf.RoundToInt(block._position.x)},");
+                    writer.Write($"\"y\":{Mathf.RoundToInt(block._position.y)},");
+                    writer.Write($"\"z\":{Mathf.RoundToInt(block._position.z)},");
+                    writer.Write($"\"r\":{block._color.r},");
+                    writer.Write($"\"g\":{block._color.g},");
+                    writer.Write($"\"b\":{block._color.b},");
+                    writer.Write($"\"a\":{block._color.a}");
+                    writer.Write("}\n");
 
-                // 시간 초과 체크
-                if ((Time.realtimeSinceStartup - start) * 1000f > 3f)
-                {
-                    yield return null;
-                    start = Time.realtimeSinceStartup;
+                    // Time slicing
+                    if ((Time.realtimeSinceStartup - start) * 1000f > 3f)
+                    {
+                        writer.Flush();
+                        yield return null;
+                        start = Time.realtimeSinceStartup;
+                    }
                 }
             }
-        }
 
-        if (_world.LightBlock != null)
-        {
-            worldsave.isLightBlock = true;
+            writer.Write("]");
 
-            GameObject LB = _world.LightBlock.gameObject;
-            Light L = LB.GetComponent<Light>();
-
-            int type = 0;
-            if (L.type == LightType.Spot) type = 1;
-            if (L.type == LightType.Point) type = 2;
-
-            worldsave.lightblock = new LightBlockSaveData()
+            // LightBlock
+            if (_world.LightBlock != null)
             {
-                x = LB.transform.position.x,
-                y = LB.transform.position.y,
-                z = LB.transform.position.z,
+                GameObject LB = _world.LightBlock.gameObject;
+                Light L = LB.GetComponent<Light>();
 
-                xrot = LB.transform.rotation.x,
-                yrot = LB.transform.rotation.y,
-                zrot = LB.transform.rotation.z,
-                wrot = LB.transform.rotation.w,
+                int type = 0;
+                if (L.type == LightType.Spot) type = 1;
+                if (L.type == LightType.Point) type = 2;
 
-                r = L.color.r,
-                g = L.color.g,
-                b = L.color.b,
+                writer.Write(",\"isLightBlock\":true");
 
-                type = type,
-                SpotAngle = L.spotAngle,
-                Range = L.range,
-                Intensive = L.intensity,
-            };
+                writer.Write(",\"lightblock\":{");
+
+                writer.Write($"\"x\":{LB.transform.position.x},");
+                writer.Write($"\"y\":{LB.transform.position.y},");
+                writer.Write($"\"z\":{LB.transform.position.z},");
+
+                writer.Write($"\"xrot\":{LB.transform.rotation.x},");
+                writer.Write($"\"yrot\":{LB.transform.rotation.y},");
+                writer.Write($"\"zrot\":{LB.transform.rotation.z},");
+                writer.Write($"\"wrot\":{LB.transform.rotation.w},");
+
+                writer.Write($"\"r\":{L.color.r},");
+                writer.Write($"\"g\":{L.color.g},");
+                writer.Write($"\"b\":{L.color.b},");
+
+                writer.Write($"\"type\":{type},");
+                writer.Write($"\"SpotAngle\":{L.spotAngle},");
+                writer.Write($"\"Range\":{L.range},");
+                writer.Write($"\"Intensive\":{L.intensity}");
+
+                writer.Write("}");
+            }
+            else
+            {
+                writer.Write(",\"isLightBlock\":false");
+            }
+
+            writer.Write("}");
         }
 
-        yield return null;
-
-        string json = JsonUtility.ToJson(worldsave, true);
-
-        File.WriteAllText(path, json);
+        Debug.Log("저장끝");
     }
 
     public void DeleteData(ChunkCode _world)

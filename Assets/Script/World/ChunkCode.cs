@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEditor.Experimental.GraphView.GraphView;
@@ -78,9 +79,11 @@ public class ChunkCode : MonoBehaviour
 
     IEnumerator BuildRoutine()
     {
+        float start = Time.realtimeSinceStartup;
+
         while (MakeWorldQueue.Count > 0)
         {
-            float start = Time.realtimeSinceStartup;
+            start = Time.realtimeSinceStartup;
 
             while (MakeWorldQueue.Count > 0)
             {
@@ -120,10 +123,21 @@ public class ChunkCode : MonoBehaviour
             yield return null;
         }
 
-        foreach (var pos in Chunks.Keys.ToList())  //이거 나중에 프레임 단위로 바꿔야함 중요
+        start = Time.realtimeSinceStartup;
+
+        var chunkList = Chunks.Keys.ToList();
+
+        for (int i = 0; i < chunkList.Count; i++)
         {
-            BuildMesh(pos * ChunkSize);
+            BuildMesh(chunkList[i] * ChunkSize);
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 10f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
         }
+
 
         FinishSettingBlock();
     }

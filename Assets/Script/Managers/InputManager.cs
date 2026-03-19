@@ -219,6 +219,7 @@ public class InputManager : MonoBehaviour
                 if (Input.GetMouseButtonUp(1))
                 {
                     GameManager.Instance.SaveAndLoadManager.SaveData();
+                    GameManager.Instance.SaveAndLoadManager.SaveWorldData(TargetGameObject.GetComponent<ChunkCode>());
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
