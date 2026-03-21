@@ -217,6 +217,7 @@ public class InputManager : MonoBehaviour
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
                 TargetMove(TargetGameObject, false);
+                PlayerMove();
 
                 if (Input.GetMouseButtonDown(0)) GameManager.Instance.MainCamera.stopCamera = true;
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;

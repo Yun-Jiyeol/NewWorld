@@ -411,7 +411,8 @@ public class ChunkCode : MonoBehaviour
 
             case GameFlow.MakeOneWorld:
                 findselect();
-                StartChangeEveryThingSmooth(0.5f, false, 0, true, Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 20f), false, new Quaternion(0, 0, 0, 0));
+                StartChangeEveryThingSmooth(0.5f, false, 0, true, Camera.main.transform.position + Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 20f),
+                    false, new Quaternion(0, 0, 0, 0));
                 break;
 
             case GameFlow.SelectOneWorld:

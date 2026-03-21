@@ -203,6 +203,7 @@ public class ChooseHowToMake : BasicUI
 
     public void DestroyWorld()
     {
+        GameManager.Instance.UIManager.WorldSeenUI.offScreenDirect();
         GameManager.Instance.WorldManager.DestroyWorld(GameManager.Instance.InputManager.TargetGameObject);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
