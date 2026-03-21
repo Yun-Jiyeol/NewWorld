@@ -66,6 +66,7 @@ public class InputManager : MonoBehaviour
                         Cursor.visible = false;
                         Cursor.lockState = CursorLockMode.Locked;
                         GameManager.Instance.MainCamera.stopCamera = false;
+                        GameManager.Instance.SaveAndLoadManager.SaveData();
                     }
                 }
                 else
@@ -88,6 +89,7 @@ public class InputManager : MonoBehaviour
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.Confined;
                         GameManager.Instance.MainCamera.stopCamera = true;
+                        GameManager.Instance.SaveAndLoadManager.SaveData();
                     }
 
                     if (!isSomethingHit) return;

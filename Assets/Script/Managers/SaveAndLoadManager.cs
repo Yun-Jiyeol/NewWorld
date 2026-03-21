@@ -73,6 +73,7 @@ public class LightBlockSaveData
 [System.Serializable]
 public class SaveAllData
 {
+    public PlayerPositionSave playerPositionSave;
     public int NumberOfWorld;
 
     public ColorSaveData maincolor;
@@ -89,6 +90,21 @@ public class ColorSaveData
     public float g;
     public float b;
     public float a;
+}
+
+[System.Serializable]
+public class PlayerPositionSave
+{
+    //ÁÂÇ¥
+    public float x;
+    public float y;
+    public float z;
+
+    //¹æÇâ
+    public float xrot;
+    public float yrot;
+    public float zrot;
+    public float wrot;
 }
 
 public class SaveAndLoadManager : MonoBehaviour
@@ -122,6 +138,8 @@ public class SaveAndLoadManager : MonoBehaviour
             {
                 LoadData(file);
             }
+
+            GameManager.Instance.MainCamera.stopCamera = false;
         }
 
         string[] worldFolders = Directory.GetDirectories(SaveFolder);
@@ -404,9 +422,22 @@ public class SaveAndLoadManager : MonoBehaviour
         }
 
         BuildManager BM = GameManager.Instance.BuildManager;
+        Transform Player = GameManager.Instance.MainCamera.gameObject.transform;
 
         SaveAllData savedata = new SaveAllData()
         {
+            playerPositionSave = new PlayerPositionSave()
+            {
+                x = Player.position.x,
+                y = Player.position.y,
+                z = Player.position.z,
+
+                xrot = Player.rotation.x,
+                yrot = Player.rotation.y,
+                zrot = Player.rotation.z,
+                wrot = Player.rotation.w
+            },
+
             NumberOfWorld = GameManager.Instance.WorldManager.HowManyYouMakeWorld,
 
             maincolor = new ColorSaveData()
@@ -473,6 +504,10 @@ public class SaveAndLoadManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveAllData worldsave = JsonUtility.FromJson<SaveAllData>(json);
 
+        Transform player = GameManager.Instance.MainCamera.gameObject.transform;
+        player.position = new Vector3(worldsave.playerPositionSave.x, worldsave.playerPositionSave.y, worldsave.playerPositionSave.z);
+        GameManager.Instance.MainCamera.LookAt(new Quaternion(worldsave.playerPositionSave.xrot, worldsave.playerPositionSave.yrot, worldsave.playerPositionSave.zrot, worldsave.playerPositionSave.wrot));
+
         GameManager.Instance.WorldManager.HowManyYouMakeWorld = worldsave.NumberOfWorld;
 
         BuildManager BM = GameManager.Instance.BuildManager;
@@ -512,9 +547,8 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{Time}.json";
-
-        string path = System.IO.Path.Combine(SaveFolder, fileName);
+        string folder = Path.Combine(SaveFolder, $"World_{Time}");
+        string path = Path.Combine(folder, "world.json");
 
         if (!File.Exists(path)) return;
 

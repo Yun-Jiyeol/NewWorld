@@ -14,12 +14,7 @@ public class MainCamera : MonoBehaviour
     float yaw;   // 좌우
     float pitch; // 상하
 
-    public bool stopCamera = false;
-
-    void Start()
-    {
-        TryCheckrot();
-    }
+    public bool stopCamera = true;
 
     void Update()
     {
@@ -29,7 +24,7 @@ public class MainCamera : MonoBehaviour
             || GameManager.Instance.flow == GameFlow.MakeOneWorld
             || GameManager.Instance.flow == GameFlow.SelectOneWorld) return;
         if (stopCamera) return;
-
+        if (isRotating) return;
 
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * 100f * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * 100f * Time.deltaTime;
@@ -42,21 +37,35 @@ public class MainCamera : MonoBehaviour
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
     }
 
+    public void LookAt(Quaternion quaternion)
+    {
+        Vector3 angles = quaternion.eulerAngles;
+
+        yaw = angles.y;
+
+        pitch = angles.x > 180f ? angles.x - 360f : angles.x;
+    }
+
     public void TryCheckrot()
     {
         Vector3 angles = transform.eulerAngles;
+
         yaw = angles.y;
-        pitch = angles.x;
+
+        pitch = angles.x > 180f ? angles.x - 360f : angles.x;
     }
 
-    public void LookAt(Vector3 pos)
+    public void LookAt(Vector3 pos, float dur = 0.5f)
     {
-        StartCoroutine(RotateTo(pos, 0.5f));
+        StartCoroutine(RotateTo(pos, dur));
     }
 
+    bool isRotating = false;
     IEnumerator RotateTo(Vector3 targetPosition, float duration)
     {
-        Transform cam = Camera.main.transform;
+        isRotating = true;
+
+        Transform cam = transform;
 
         Quaternion startRot = cam.rotation;
 
@@ -70,13 +79,15 @@ public class MainCamera : MonoBehaviour
             time += Time.deltaTime;
             float t = time / duration;
 
-            // 부드러운 보간
             cam.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
             yield return null;
         }
 
-        cam.rotation = targetRot; // 마지막 보정
+        cam.rotation = targetRot;
+
         TryCheckrot();
+
+        isRotating = false;
     }
 }
