@@ -86,6 +86,7 @@ public class InputManager : MonoBehaviour
                     }
                     if (Input.GetKeyDown(KeyCode.F1)) //나중 esc로 변경
                     {
+                        GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.Confined;
