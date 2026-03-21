@@ -16,6 +16,9 @@ public class MainCamera : MonoBehaviour
 
     public bool stopCamera = true;
 
+    public Vector3 PlayerBeforePos;
+    public Quaternion PlayerBeforeRot;
+
     void Update()
     {
         if(GameManager.Instance.flow == GameFlow.WatchOneWorld
@@ -53,6 +56,12 @@ public class MainCamera : MonoBehaviour
         yaw = angles.y;
 
         pitch = angles.x > 180f ? angles.x - 360f : angles.x;
+    }
+
+    public void SavePos()
+    {
+        PlayerBeforePos = gameObject.transform.position;
+        PlayerBeforeRot = gameObject.transform.rotation;
     }
 
     public void LookAt(Vector3 pos, float dur = 0.5f)

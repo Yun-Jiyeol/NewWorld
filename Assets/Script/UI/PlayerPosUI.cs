@@ -55,10 +55,10 @@ public class PlayerPosUI : BasicUI
         Transform Cam = GameManager.Instance.MainCamera.transform;
 
         Vector3 StartPos = Cam.position;
-        Vector3 TargetPos = Vector3.zero;
+        Vector3 TargetPos = GameManager.Instance.MainCamera.PlayerBeforePos;
 
         Quaternion StartRot = Cam.rotation;
-        Quaternion TargetRot = Quaternion.Euler(0, 0, 0);
+        Quaternion TargetRot = GameManager.Instance.MainCamera.PlayerBeforeRot;
 
         float duration = 0.5f;
         float time = 0f;
