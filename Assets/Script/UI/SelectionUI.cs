@@ -23,7 +23,8 @@ public enum SelectionUIenum
     MainLight,
     PlayerPos,
     WorldSetting,
-    PutWorld
+    PutWorld,
+    CameraSetting
 }
 
 public class SelectionUI : MonoBehaviour

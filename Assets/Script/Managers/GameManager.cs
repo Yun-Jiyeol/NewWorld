@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
                 Cursor.visible = false;
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight, SelectionUIenum.PlayerPos});
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight, SelectionUIenum.PlayerPos, SelectionUIenum.CameraSetting });
                 break;
 
             case GameFlow.PutWorldInSpace:
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
                 Cursor.visible = false;
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.CameraSetting });
                 break;
 
             case GameFlow.WatchOneWorld:
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.Color, SelectionUIenum.PutWorld });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.Color, SelectionUIenum.PutWorld, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
 
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake});
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.ChooseHowToMake);
                 break;
 
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 UIManager.Compass.SetActive(false);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld, SelectionUIenum.MoveOneWorld, SelectionUIenum.WorldSetting });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld, SelectionUIenum.MoveOneWorld, SelectionUIenum.WorldSetting, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
                 break;
         }

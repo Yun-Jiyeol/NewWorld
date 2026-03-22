@@ -27,7 +27,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _BlackWhite: 0
+    - _CRT: 0
+    - _CRTStrength: 0.2
+    - _Contrast: 0
     - _ContrastThreshold: 0.5
+    - _Edge: 0
+    - _EdgeStrength: 1
+    - _Noise: 0
+    - _NoiseStrength: 0.1
     - _OnContrast: 0
     - _PixelSize: 256
     - _Pixelate: 0
