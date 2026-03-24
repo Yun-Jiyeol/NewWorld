@@ -3,6 +3,28 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+public enum SystemName
+{
+    _Reverse,
+    _NoneReverse,
+    _BlackWhite,
+    _NoneBlackWhite,
+    _Contrast,
+    _ContrastThreshold,
+    _Posterize,
+    _PosterizeSteps,
+    _Pixelate,
+    _PixelSize,
+    _Vignette,
+    _VignetteStrength,
+    _Edge,
+    _EdgeStrength,
+    _Noise,
+    _NoiseStrength,
+    _CRT,
+    _CRTStrength
+}
+
 public class MainCamera : MonoBehaviour
 {
     public GameObject SubCamera;

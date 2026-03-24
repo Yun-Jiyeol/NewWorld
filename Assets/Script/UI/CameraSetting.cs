@@ -29,18 +29,23 @@ public class CameraState
 
 public class CameraSetting : BasicUI
 {
+    MainCamera mainCamera;
     Material CameraMaterial;
-    Dictionary<CameraEffect, CameraState> CameraNowSetting;
+    public Dictionary<CameraEffect, CameraState> CameraNowSetting;
 
     public List<Image> CameraNowShow;
     public Sprite OnSprite;
     public Sprite OffSprite;
 
+    public Transform SpawnPos;
+    public GameObject Slider;
+
     public override void OnSetting()
     {
         if(GameManager.Instance == null) return;
 
-        CameraMaterial = GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().CamMaterial;
+        mainCamera = GameManager.Instance.MainCamera;
+        CameraMaterial = mainCamera.GetComponent<CameraShaderPutter>().CamMaterial;
         if (CameraNowSetting == null) MakeNewSetting();
     }
 
@@ -63,17 +68,45 @@ public class CameraSetting : BasicUI
         CameraEffect clickedtype = (CameraEffect)type;
         CameraNowSetting[clickedtype].isOn = !CameraNowSetting[clickedtype].isOn;
 
+        string Name = ((SystemName)(type * 2)).ToString();
+        string Value = ((SystemName)(type * 2 + 1)).ToString();
+
         if (CameraNowSetting[clickedtype].isOn) //킬때
         {
+            CameraMaterial.SetFloat(Name, 1f);
+
             CameraNowShow[type].sprite = OnSprite;
+            Transform parent = CameraNowShow[type].transform.parent.parent.transform;
+            int index = parent.transform.GetSiblingIndex();
+
             if (CameraNowSetting[clickedtype].MakeLine) //조절기 제작
             {
-
+                GameObject slider = Instantiate(Slider, SpawnPos);
+                slider.transform.SetSiblingIndex(index + 1);
+                SpawnPos.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 300f);
+                slider.GetComponent<CameraSettingSlider>().Init(clickedtype, this);
             }
         }
         else //끌때
         {
+            CameraMaterial.SetFloat(Name, 0f);
+
             CameraNowShow[type].sprite = OffSprite;
+
+            if (CameraNowSetting[clickedtype].MakeLine) //조절기 삭제
+            {
+                Transform parent = CameraNowShow[type].transform.parent.parent;
+
+                int index = parent.transform.GetSiblingIndex();
+
+                GameObject nextObj = null;
+                if (index + 1 < parent.parent.childCount)
+                {
+                    nextObj = parent.parent.GetChild(index + 1).gameObject;
+                }
+
+                Destroy(nextObj);
+            }
         }
     }
 }
