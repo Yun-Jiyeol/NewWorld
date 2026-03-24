@@ -24,7 +24,8 @@ public enum SelectionUIenum
     PlayerPos,
     WorldSetting,
     PutWorld,
-    CameraSetting
+    CameraSetting,
+    HelpingInMake
 }
 
 public class SelectionUI : MonoBehaviour

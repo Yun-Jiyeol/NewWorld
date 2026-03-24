@@ -5,10 +5,18 @@ using UnityEngine;
 public class CameraShaderPutter : MonoBehaviour
 {
     public Material CamMaterial;
+    public bool isUsingEffect = true;
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        Graphics.Blit(source, destination, CamMaterial);
+        if (isUsingEffect)
+        {
+            Graphics.Blit(source, destination, CamMaterial);
+        }
+        else
+        {
+            Graphics.Blit(source, destination);
+        }
     }
 
     public void ResetMaterial()
