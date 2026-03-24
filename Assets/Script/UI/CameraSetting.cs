@@ -46,11 +46,13 @@ public class CameraSetting : BasicUI
 
         mainCamera = GameManager.Instance.MainCamera;
         CameraMaterial = mainCamera.GetComponent<CameraShaderPutter>().CamMaterial;
-        if (CameraNowSetting == null) MakeNewSetting();
+        SettingCameraNowSetting();
     }
 
     void MakeNewSetting()
     {
+        mainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+
         CameraNowSetting = new Dictionary<CameraEffect, CameraState>();
         CameraNowSetting.Add(CameraEffect.Reverse, new CameraState() { isOn = false, MakeLine = false });
         CameraNowSetting.Add(CameraEffect.BlackWhite, new CameraState() { isOn = false, MakeLine = false });
@@ -61,6 +63,19 @@ public class CameraSetting : BasicUI
         CameraNowSetting.Add(CameraEffect.EdgeDetect, new CameraState() { isOn = false, MakeLine = true, NowPower = 1f, MinPower = 0f, MaxPower = 5f });
         CameraNowSetting.Add(CameraEffect.FilmNoise, new CameraState() { isOn = false, MakeLine = true, NowPower = 0.1f, MinPower = 0f, MaxPower = 1f });
         CameraNowSetting.Add(CameraEffect.CRTScanline, new CameraState() { isOn = false, MakeLine = true, NowPower = 0.2f, MinPower = 0f, MaxPower = 1f });
+    }
+
+    void SettingCameraNowSetting()
+    {
+        if (CameraNowSetting == null) MakeNewSetting();
+
+        CameraNowSetting[CameraEffect.ContrastThreshold].NowPower = CameraMaterial.GetFloat(((SystemName)5).ToString());
+        CameraNowSetting[CameraEffect.Posterize].NowPower = CameraMaterial.GetFloat(((SystemName)7).ToString());
+        CameraNowSetting[CameraEffect.Pixelate].NowPower = CameraMaterial.GetFloat(((SystemName)9).ToString());
+        CameraNowSetting[CameraEffect.Vignette].NowPower = CameraMaterial.GetFloat(((SystemName)11).ToString());
+        CameraNowSetting[CameraEffect.EdgeDetect].NowPower = CameraMaterial.GetFloat(((SystemName)13).ToString());
+        CameraNowSetting[CameraEffect.FilmNoise].NowPower = CameraMaterial.GetFloat(((SystemName)15).ToString());
+        CameraNowSetting[CameraEffect.CRTScanline].NowPower = CameraMaterial.GetFloat(((SystemName)17).ToString());
     }
 
     public void ClickThisBtn(int type)
