@@ -40,7 +40,7 @@ Material:
     - _Pixelate: 0
     - _Posterize: 0
     - _PosterizeSteps: 4
-    - _Reverse: 1
+    - _Reverse: 0
     - _Vignette: 0
     - _VignetteStrength: 1
     m_Colors: []

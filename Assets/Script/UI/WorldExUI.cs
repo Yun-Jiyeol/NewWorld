@@ -44,7 +44,7 @@ public class WorldExUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void LooAtThis()
     {
-        GameManager.Instance.MainCamera.LookAt(ChunkCode.gameObject.transform.position);
+        GameManager.Instance.MainCamera.LookAt(ChunkCode.gameObject.transform);
     }
 
     public ChunkCode getChunkCode()
