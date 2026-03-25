@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
 
     public WorldSeenUI WorldSeenUI;
 
+    public SavingEffectUI SavingEffectUI;
+
     private void Start()
     {
         GameManager.Instance.UIManager = this;

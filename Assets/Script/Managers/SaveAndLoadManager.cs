@@ -203,6 +203,7 @@ public class SaveAndLoadManager : MonoBehaviour
     IEnumerator SaveWorker()
     {
         isSaving = true;
+        GameManager.Instance.UIManager.SavingEffectUI.StartSaving();
 
         while (saveQueue.Count > 0)
         {
@@ -224,6 +225,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
 
         isSaving = false;
+        GameManager.Instance.UIManager.SavingEffectUI.EndSaving();
     }
 
     IEnumerator SaveWorldCoroutine(ChunkCode _world)
