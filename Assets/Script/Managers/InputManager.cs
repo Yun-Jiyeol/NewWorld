@@ -298,13 +298,21 @@ public class InputManager : MonoBehaviour
 
     void SettingDestroyRangeAfter()
     {
-        if(AfterDestroyBlockPos != null)
+        Vector3 NowVector = ReadyToBuildBlock.transform.localPosition;
+
+        if (AfterDestroyBlockPos != null)
         {
-            BeforeDestroyBlockPos = AfterDestroyBlockPos;
+            float beforeDist = Vector3.Distance(NowVector, BeforeDestroyBlockPos.Value);
+            float afterDist = Vector3.Distance(NowVector, AfterDestroyBlockPos.Value);
+
+            if (afterDist > beforeDist)
+            {
+                BeforeDestroyBlockPos = AfterDestroyBlockPos.Value;
+            }
         }
 
-        AfterDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
-        if(AfterDestroyBlockPos == BeforeDestroyBlockPos)
+        AfterDestroyBlockPos = NowVector;
+        if (AfterDestroyBlockPos == BeforeDestroyBlockPos)
         {
             AfterDestroyBlockPos = null;
             return;
