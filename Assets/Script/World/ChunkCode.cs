@@ -223,39 +223,21 @@ public class ChunkCode : MonoBehaviour
         trytoBuildMesh(gridPos);
     }
 
+    Queue<Vector3> destroyQueue = new Queue<Vector3>();
+    HashSet<Vector3Int> buildMeshSet = new HashSet<Vector3Int>();
+
+    bool isDestroyRunning = false;
+
     public void DestroyBlockData(Vector3 _position)
     {
         if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
         if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
 
-        Vector3Int gridPos = Vector3Int.RoundToInt(_position);
-        Vector3Int ChunkPos = GetChunkCoord(gridPos);
-        Vector3Int LocalPos = GetLocalPos(gridPos);
+        destroyQueue.Enqueue(_position);
 
-        if (BlocksinChunk.TryGetValue(ChunkPos, out var value))
+        if (!isDestroyRunning)
         {
-            if (value.TryGetValue(LocalPos, out BlockInChunkData block))
-            {
-                if (block._go != null)
-                {
-                    Destroy(block._go);
-                }
-
-                value.Remove(LocalPos);
-                if(value.Count == 0)
-                {
-                    BlocksinChunk.Remove(ChunkPos);
-
-                    Destroy(Chunks[ChunkPos]);
-                    Chunks.Remove(ChunkPos);
-                }
-                else
-                {
-                    BuildMesh(gridPos);
-                }
-                trytoBuildMesh(gridPos);
-                CheckIsLive();
-            }
+            StartCoroutine(DestroyWorker());
         }
     }
 
@@ -263,55 +245,95 @@ public class ChunkCode : MonoBehaviour
     {
         if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
         if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
-        List<Vector3Int> BuildMeshPos = new List<Vector3Int>();
 
-        foreach(Vector3 pos in _position)
+        foreach (var pos in _position)
         {
-            Vector3Int gridPos = Vector3Int.RoundToInt(pos);
-            Vector3Int ChunkPos = GetChunkCoord(gridPos);
-            Vector3Int LocalPos = GetLocalPos(gridPos);
+            destroyQueue.Enqueue(pos);
+        }
 
-            if (BlocksinChunk.TryGetValue(ChunkPos, out var value))
+        if (!isDestroyRunning)
+        {
+            StartCoroutine(DestroyWorker());
+        }
+    }
+    IEnumerator DestroyWorker()
+    {
+        isDestroyRunning = true;
+
+        while (destroyQueue.Count > 0)
+        {
+            float start = Time.realtimeSinceStartup;
+
+            while (destroyQueue.Count > 0)
             {
-                if (value.TryGetValue(LocalPos, out BlockInChunkData block))
-                {
-                    if (block._go != null)
-                    {
-                        Destroy(block._go);
-                    }
+                Vector3 pos = destroyQueue.Dequeue();
 
-                    if (!BuildMeshPos.Contains(ChunkPos))
+                Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+                Vector3Int chunkPos = GetChunkCoord(gridPos);
+                Vector3Int localPos = GetLocalPos(gridPos);
+
+                if (BlocksinChunk.TryGetValue(chunkPos, out var value))
+                {
+                    if (value.TryGetValue(localPos, out BlockInChunkData block))
                     {
-                        BuildMeshPos.Add(ChunkPos);
-                    }
-                    foreach (Vector3Int dir in directions)
-                    {
-                        if (!BuildMeshPos.Contains(ChunkPos+ dir))
+                        if (block._go != null)
                         {
-                            BuildMeshPos.Add(ChunkPos+ dir);
+                            Destroy(block._go);
+                        }
+
+                        buildMeshSet.Add(chunkPos);
+
+                        foreach (Vector3Int dir in directions)
+                        {
+                            buildMeshSet.Add(chunkPos + dir);
+                        }
+
+                        value.Remove(localPos);
+
+                        if (value.Count == 0)
+                        {
+                            BlocksinChunk.Remove(chunkPos);
+
+                            if (Chunks.TryGetValue(chunkPos, out GameObject chunkObj))
+                            {
+                                Destroy(chunkObj);
+                                Chunks.Remove(chunkPos);
+                            }
                         }
                     }
-
-                    value.Remove(LocalPos);
-                    if (value.Count == 0)
-                    {
-                        BlocksinChunk.Remove(ChunkPos);
-
-                        Destroy(Chunks[ChunkPos]);
-                        Chunks.Remove(ChunkPos);
-                    }
                 }
+
+                if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+                    break;
+            }
+
+            yield return null;
+        }
+
+        yield return StartCoroutine(BuildMeshWorker());
+
+        isDestroyRunning = false;
+    }
+
+    IEnumerator BuildMeshWorker()
+    {
+        float start = Time.realtimeSinceStartup;
+
+        foreach (var pos in buildMeshSet)
+        {
+            BuildMesh(pos * ChunkSize);
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
             }
         }
 
-        foreach (Vector3Int pos in BuildMeshPos)
-        {
-            BuildMesh(pos * ChunkSize);
-        }
+        buildMeshSet.Clear();
 
         CheckIsLive();
     }
-
     /*
     public BlockInChunkData DestroyBlockData(Vector3 _position)
     {
