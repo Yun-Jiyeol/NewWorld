@@ -37,6 +37,9 @@ public class SelectionUI : MonoBehaviour
     public Image BackGround;
 
     RectTransform thistransform;
+    public RectTransform Seletions;
+    public RectTransform SelectPage;
+    float size = 350f;
 
     public List<GameObject> AdditionalUI = new List<GameObject>();
 
@@ -81,7 +84,7 @@ public class SelectionUI : MonoBehaviour
         UIBtnsSelectedUIMaterial _slect = Findnowenum();
 
         thistransform.DOKill();
-        thistransform.DOAnchorPosX(-350f, 0.5f);
+        thistransform.DOAnchorPosX(-size, 0.5f);
         DestroyAllAdditionalUi();
 
         OffAllUI();
@@ -167,5 +170,16 @@ public class SelectionUI : MonoBehaviour
             Destroy(go);
         }
         AdditionalUI.Clear();
+    }
+
+    public void OnChangeUISize(Vector2 _size)
+    {
+        size = _size.x;
+
+        SelectPage.sizeDelta = _size;
+
+        thistransform.anchoredPosition = new Vector2(-size, 0);
+
+        SelectPage.anchoredPosition = new Vector2(size, 0);
     }
 }
