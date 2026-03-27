@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -172,6 +173,10 @@ public class SelectionUI : MonoBehaviour
         AdditionalUI.Clear();
     }
 
+    public float scaleratio = 1f;
+    float Originalsize = 350f;
+    public Action OnChangeUIScale;
+
     public void OnChangeUISize(Vector2 _size)
     {
         size = _size.x;
@@ -181,5 +186,9 @@ public class SelectionUI : MonoBehaviour
         thistransform.anchoredPosition = new Vector2(-size, 0);
 
         SelectPage.anchoredPosition = new Vector2(size, 0);
+
+        scaleratio = size/Originalsize;
+
+        OnChangeUIScale?.Invoke();
     }
 }
