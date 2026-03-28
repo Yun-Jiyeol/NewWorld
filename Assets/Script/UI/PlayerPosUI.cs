@@ -23,6 +23,7 @@ public class PlayerPosUI : BasicUI
         {
             GameObject ui = Instantiate(WorldExUI, WorldsCheckUI.transform);
             ui.GetComponent<WorldExUI>().Setting(GameManager.Instance.WorldManager.Worlds[i], this);
+            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 250f);
 
             worldexuis.Add(ui);
         }
@@ -37,6 +38,7 @@ public class PlayerPosUI : BasicUI
         if(worldexuis.Count == 0) return;
         foreach(GameObject go in worldexuis)
         {
+            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta -= new Vector2(0, 250f);
             Destroy(go);
         }
 
