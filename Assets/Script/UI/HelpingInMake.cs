@@ -15,8 +15,8 @@ public class HelpingInMake : BasicUI
     public Sprite OnSprite;
     public Sprite OffSprite;
 
-    bool isLight = true;
-    bool isFilter = true;
+    public bool isLight = true;
+    public bool isFilter = true;
 
     public override void OnSetting()
     {

@@ -46,6 +46,21 @@ public class BlockSaveData
 }
 
 [System.Serializable]
+public class SettingValue
+{
+    public CameraEffect type;
+    public bool isOn;
+    public float NowValue;
+}
+
+[System.Serializable]
+public class CameraSettingSave
+{
+    public List<SettingValue> CameraAdditionalEffect;
+    public List<bool> IsSubCameraUse;
+}
+
+[System.Serializable]
 public class LightBlockSaveData
 {
     //좌표
@@ -71,16 +86,23 @@ public class LightBlockSaveData
 }
 
 [System.Serializable]
-public class SaveAllData
+public class MainLightSave
 {
-    public PlayerPositionSave playerPositionSave;
-    public int NumberOfWorld;
+    public LightBlockSaveData MainLightColor;
+}
 
+[System.Serializable]
+public class BlockColorsSave
+{
     public ColorSaveData maincolor;
     public List<ColorSaveData> precolor;
     public List<ColorSaveData> savecolor;
+}
 
-    public LightBlockSaveData MainLight;
+[System.Serializable]
+public class PlayerAchieve
+{
+    public int HowManyMakeWorld;
 }
 
 [System.Serializable]
@@ -128,18 +150,11 @@ public class SaveAndLoadManager : MonoBehaviour
 
     private void Start()
     {
-        string[] files = Directory.GetFiles(SaveFolder);
+        string saveDataFolder = Path.Combine(Application.persistentDataPath, "SaveData");
 
-        foreach (string file in files)
+        if (Directory.Exists(saveDataFolder))
         {
-            string fileName = Path.GetFileName(file);
-
-            if (fileName.StartsWith("Data_"))
-            {
-                LoadData(file);
-            }
-
-            GameManager.Instance.MainCamera.stopCamera = false;
+            LoadFile(saveDataFolder);
         }
 
         string[] worldFolders = Directory.GetDirectories(SaveFolder);
@@ -175,7 +190,7 @@ public class SaveAndLoadManager : MonoBehaviour
         return Path.Combine(SaveFolder, "World_" + time);
     }
 
-    public void SaveWorldData(ChunkCode _world)
+    public void SaveWorldData(ChunkCode _world) //설치 한 이후 1회, 제작 중 1분 단위로 1회
     {
         // 이미 저장 중이면 dirty 처리
         if (isSaving && currentSavingWorld == _world)
@@ -413,35 +428,71 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
-    public void SaveData()
+    string TryMakeDataFolder()
     {
-        string fileName = $"Data_personal.json";
+        string path = Path.Combine(Application.persistentDataPath, "SaveData");
+        Directory.CreateDirectory(path);
 
-        string path = System.IO.Path.Combine(SaveFolder, fileName);
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
+        return path;
+    }
 
-        BuildManager BM = GameManager.Instance.BuildManager;
+    public void PlayerPosSave()
+    {
+        string _path = TryMakeDataFolder();
+        _path = Path.Combine(_path, "PlayerPos.json");
+
         Transform Player = GameManager.Instance.MainCamera.gameObject.transform;
 
-        SaveAllData savedata = new SaveAllData()
+        PlayerPositionSave playerPositionSave = new PlayerPositionSave()
         {
-            playerPositionSave = new PlayerPositionSave()
+            x = Player.position.x,
+            y = Player.position.y,
+            z = Player.position.z,
+
+            xrot = Player.rotation.x,
+            yrot = Player.rotation.y,
+            zrot = Player.rotation.z,
+            wrot = Player.rotation.w
+        };
+
+        File.WriteAllText(_path, JsonUtility.ToJson(playerPositionSave, true));
+    }
+
+    public void SaveMainLight()
+    {
+        string _path = TryMakeDataFolder();
+        _path = Path.Combine(_path, "MainLight.json");
+
+        GameObject MainLight = GameManager.Instance.LightManager.MainLight;
+        Light _mainlight = MainLight.GetComponent<Light>();
+
+        MainLightSave maincolor = new MainLightSave() 
+        {
+            MainLightColor = new LightBlockSaveData()
             {
-                x = Player.position.x,
-                y = Player.position.y,
-                z = Player.position.z,
+                xrot = MainLight.transform.rotation.x,
+                yrot = MainLight.transform.rotation.y,
+                zrot = MainLight.transform.rotation.z,
+                wrot = MainLight.transform.rotation.w,
 
-                xrot = Player.rotation.x,
-                yrot = Player.rotation.y,
-                zrot = Player.rotation.z,
-                wrot = Player.rotation.w
-            },
+                r = _mainlight.color.r,
+                g = _mainlight.color.g,
+                b = _mainlight.color.b
+            }
+        };
 
-            NumberOfWorld = GameManager.Instance.WorldManager.HowManyYouMakeWorld,
+        File.WriteAllText(_path, JsonUtility.ToJson(maincolor, true));
+    }
 
+    public void SaveBlockColors()
+    {
+        string _path = TryMakeDataFolder();
+        _path = Path.Combine(_path, "BlockColors.json");
+
+        BuildManager BM = GameManager.Instance.BuildManager;
+
+        BlockColorsSave blockcolors = new BlockColorsSave() 
+        {
             maincolor = new ColorSaveData()
             {
                 r = BM.MainColor.color.r,
@@ -458,7 +509,7 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             foreach (Color color in BM.PreColors)
             {
-                savedata.precolor.Add(new ColorSaveData()
+                blockcolors.precolor.Add(new ColorSaveData()
                 {
                     r = color.r,
                     g = color.g,
@@ -472,7 +523,7 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             foreach (Color color in BM.SaveColors)
             {
-                savedata.savecolor.Add(new ColorSaveData()
+                blockcolors.savecolor.Add(new ColorSaveData()
                 {
                     r = color.r,
                     g = color.g,
@@ -482,59 +533,272 @@ public class SaveAndLoadManager : MonoBehaviour
             }
         }
 
-        GameObject ML = GameManager.Instance.LightManager.MainLight;
-        savedata.MainLight = new LightBlockSaveData()
-        {
-            xrot = ML.transform.rotation.x,
-            yrot = ML.transform.rotation.y,
-            zrot = ML.transform.rotation.z,
-            wrot = ML.transform.rotation.w,
 
-            r = ML.GetComponent<Light>().color.r,
-            g = ML.GetComponent<Light>().color.g,
-            b = ML.GetComponent<Light>().color.b
-        };
-
-        string json = JsonUtility.ToJson(savedata, true);
-        File.WriteAllText(path, json);
+        File.WriteAllText(_path, JsonUtility.ToJson(blockcolors, true));
     }
 
-    public void LoadData(string path)
+    public void SavePlayerAchive()
     {
-        if (!File.Exists(path)) return;
+        string _path = TryMakeDataFolder();
+        _path = Path.Combine(_path, "PlayerAchive.json");
 
-        string json = File.ReadAllText(path);
-        SaveAllData worldsave = JsonUtility.FromJson<SaveAllData>(json);
+        PlayerAchieve PA = new PlayerAchieve()
+        {
+            HowManyMakeWorld = GameManager.Instance.WorldManager.HowManyYouMakeWorld
+        };
 
-        Transform player = GameManager.Instance.MainCamera.gameObject.transform;
-        player.position = new Vector3(worldsave.playerPositionSave.x, worldsave.playerPositionSave.y, worldsave.playerPositionSave.z);
-        GameManager.Instance.MainCamera.LookAt(new Quaternion(worldsave.playerPositionSave.xrot, worldsave.playerPositionSave.yrot, worldsave.playerPositionSave.zrot, worldsave.playerPositionSave.wrot));
+        File.WriteAllText(_path, JsonUtility.ToJson(PA, true));
+    }
 
-        GameManager.Instance.WorldManager.HowManyYouMakeWorld = worldsave.NumberOfWorld;
+    public void SaveCameraSetting()
+    {
+        string _path = TryMakeDataFolder();
+        _path = Path.Combine(_path, "CameraSetting.json");
+
+        Material CameraMaterial = GameManager.Instance.MainCamera.gameObject.GetComponent<CameraShaderPutter>().CamMaterial;
+
+        CameraSettingSave CSS = new CameraSettingSave()
+        {
+            CameraAdditionalEffect = new List<SettingValue>(),
+            IsSubCameraUse = new List<bool>()
+        };
+
+        CSS.CameraAdditionalEffect.Add(new SettingValue() {type = CameraEffect.Reverse, isOn = CameraMaterial.GetFloat(((SystemName)1).ToString()) == 1 });
+        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.BlackWhite, isOn = CameraMaterial.GetFloat(((SystemName)3).ToString()) == 1 });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.ContrastThreshold,
+            isOn = CameraMaterial.GetFloat(((SystemName)5).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)6).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Posterize,
+            isOn = CameraMaterial.GetFloat(((SystemName)7).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)8).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Pixelate,
+            isOn = CameraMaterial.GetFloat(((SystemName)9).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)10).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Vignette,
+            isOn = CameraMaterial.GetFloat(((SystemName)11).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)12).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.EdgeDetect,
+            isOn = CameraMaterial.GetFloat(((SystemName)13).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)14).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.FilmNoise,
+            isOn = CameraMaterial.GetFloat(((SystemName)15).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)16).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.CRTScanline,
+            isOn = CameraMaterial.GetFloat(((SystemName)17).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)18).ToString())
+        });
+
+        HelpingInMake HM = findHM();
+
+        CSS.IsSubCameraUse.Add(HM.isLight);
+        CSS.IsSubCameraUse.Add(HM.isFilter);
+
+        File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
+    }
+
+    void LoadFile(string _path)
+    {
+        string[] files = Directory.GetFiles(_path, "*.json");
+
+        foreach (string file in files)
+        {
+            string fileName = Path.GetFileName(file);
+
+            switch (fileName)
+            {
+                case "PlayerPos.json":
+                    LoadPlayer(file);
+                    break;
+
+                case "MainLight.json":
+                    LoadLight(file);
+                    break;
+
+                case "BlockColors.json":
+                    LoadBlockColors(file);
+                    break;
+
+                case "PlayerAchive.json":
+                    LoadPlayerAchive(file);
+                    break;
+
+                case "CameraSetting.json":
+                    LoadCameraSetting(file);
+                    break;
+            }
+        }
+
+        GameManager.Instance.MainCamera.stopCamera = false;
+    }
+
+    void LoadPlayer(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+
+        PlayerPositionSave data = JsonUtility.FromJson<PlayerPositionSave>(json);
+
+        Transform Player = GameManager.Instance.MainCamera.gameObject.transform;
+
+        Player.position = new Vector3(data.x, data.y, data.z);
+        Player.rotation = new Quaternion(data.xrot, data.yrot, data.zrot, data.wrot);
+    }
+
+    void LoadLight(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+
+        MainLightSave data = JsonUtility.FromJson<MainLightSave>(json);
+
+        GameObject MainLight = GameManager.Instance.LightManager.MainLight;
+        Light _mainlight = MainLight.GetComponent<Light>();
+
+        LightBlockSaveData LBSD = data.MainLightColor;
+        MainLight.transform.rotation = new Quaternion(LBSD.xrot, LBSD.yrot, LBSD.zrot, LBSD.wrot);
+        _mainlight.color = new Color(LBSD.r, LBSD.g, LBSD.b);
+    }
+
+    void LoadBlockColors(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+
+        BlockColorsSave data = JsonUtility.FromJson<BlockColorsSave>(json);
 
         BuildManager BM = GameManager.Instance.BuildManager;
 
-        BM.MainColor.color =  new Color(worldsave.maincolor.r, worldsave.maincolor.g, worldsave.maincolor.b, worldsave.maincolor.a);
-        BM.alfar = worldsave.maincolor.a;
-
-        if (worldsave.precolor.Count > 0)
+        BM.MainColor.color = new Color(data.maincolor.r, data.maincolor.g, data.maincolor.b);
+        BM.alfar = data.maincolor.a;
+        if (data.precolor.Count > 0)
         {
-            foreach (ColorSaveData color in worldsave.precolor)
+            foreach (ColorSaveData CSD in data.precolor)
             {
-                BM.AddPreColor(new Color(color.r, color.g, color.b, color.a));
+                BM.PreColors.Add(new Color(CSD.r, CSD.g, CSD.b));
             }
         }
-        if (worldsave.savecolor.Count > 0)
+        if (data.savecolor.Count > 0)
         {
-            for(int i = 0; i < worldsave.savecolor.Count; i++)
+            foreach (ColorSaveData CSD in data.savecolor)
             {
-                BM.AddSaveColor(new Color(worldsave.savecolor[i].r, worldsave.savecolor[i].g, worldsave.savecolor[i].b, worldsave.savecolor[i].a), i);
+                BM.SaveColors.Add(new Color(CSD.r, CSD.g, CSD.b));
+            }
+        }
+    }
+
+    void LoadPlayerAchive(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+
+        PlayerAchieve data = JsonUtility.FromJson<PlayerAchieve>(json);
+        GameManager.Instance.WorldManager.HowManyYouMakeWorld = data.HowManyMakeWorld;
+    }
+
+    void LoadCameraSetting(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+
+        CameraSettingSave data = JsonUtility.FromJson<CameraSettingSave>(json);
+        Material CameraMaterial = GameManager.Instance.MainCamera.gameObject.GetComponent<CameraShaderPutter>().CamMaterial;
+
+        CameraSettingSave CSS = new CameraSettingSave()
+        {
+            CameraAdditionalEffect = new List<SettingValue>(),
+            IsSubCameraUse = new List<bool>()
+        };
+
+        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.Reverse, isOn = CameraMaterial.GetFloat(((SystemName)1).ToString()) == 1 });
+        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.BlackWhite, isOn = CameraMaterial.GetFloat(((SystemName)3).ToString()) == 1 });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.ContrastThreshold,
+            isOn = CameraMaterial.GetFloat(((SystemName)5).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)6).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Posterize,
+            isOn = CameraMaterial.GetFloat(((SystemName)7).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)8).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Pixelate,
+            isOn = CameraMaterial.GetFloat(((SystemName)9).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)10).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.Vignette,
+            isOn = CameraMaterial.GetFloat(((SystemName)11).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)12).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.EdgeDetect,
+            isOn = CameraMaterial.GetFloat(((SystemName)13).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)14).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.FilmNoise,
+            isOn = CameraMaterial.GetFloat(((SystemName)15).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)16).ToString())
+        });
+        CSS.CameraAdditionalEffect.Add(new SettingValue()
+        {
+            type = CameraEffect.CRTScanline,
+            isOn = CameraMaterial.GetFloat(((SystemName)17).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)18).ToString())
+        });
+
+        HelpingInMake HM = findHM();
+
+        CSS.IsSubCameraUse.Add(HM.isLight);
+        CSS.IsSubCameraUse.Add(HM.isFilter);
+
+        File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
+    }
+
+
+    HelpingInMake findHM()
+    {
+        foreach (var find in GameManager.Instance.UIManager.SelectionUI.uIBtnsSelectedUIMaterials)
+        {
+            if (find.UIenum == SelectionUIenum.HelpingInMake)
+            {
+                return find.UISelected.GetComponent<HelpingInMake>();
             }
         }
 
-        GameObject ML = GameManager.Instance.LightManager.MainLight;
-        ML.transform.rotation = new Quaternion(worldsave.MainLight.xrot, worldsave.MainLight.yrot, worldsave.MainLight.zrot, worldsave.MainLight.wrot);
-        ML.GetComponent<Light>().color = new Color(worldsave.MainLight.r, worldsave.MainLight.g, worldsave.MainLight.b);
+        return null;
     }
 
     public void SaveAllWorld()

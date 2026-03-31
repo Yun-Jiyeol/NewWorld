@@ -54,15 +54,11 @@ public class MainLightUI : BasicUI
 
             yield return null;
         }
-
-        GameManager.Instance.SaveAndLoadManager.SaveData();
     }
 
     public void ChangeColor()
     {
         ML.GetComponent<Light>().color = _color;
-
-        GameManager.Instance.SaveAndLoadManager.SaveData();
     }
 
     public void ResetMainLight()
@@ -94,8 +90,6 @@ public class MainLightUI : BasicUI
 
         // 마지막 오차 보정
         light.rotation = endRot;
-
-        GameManager.Instance.SaveAndLoadManager.SaveData();
 
         Destroy(blockImage);
         blockImage = null;

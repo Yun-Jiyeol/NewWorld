@@ -86,8 +86,6 @@ public class BuildManager : MonoBehaviour
 
         if (paretteUI == null) paretteUI = FindColor();
         paretteUI._preColorUI.ChangePreColors();
-
-        GameManager.Instance.SaveAndLoadManager.SaveData();
     }
 
     ParetteUI FindColor()
@@ -125,7 +123,6 @@ public class BuildManager : MonoBehaviour
         SaveColors[_num] = _color;
 
         saveUI.ChangeColor(_num);
-        GameManager.Instance.SaveAndLoadManager.SaveData();
     }
 
     public void AddSaveColor(Color color, int _num)

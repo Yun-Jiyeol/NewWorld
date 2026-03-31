@@ -67,7 +67,6 @@ public class InputManager : MonoBehaviour
                         Cursor.lockState = CursorLockMode.Locked;
                         GameManager.Instance.MainCamera.stopCamera = false;
                         GameManager.Instance.MainCamera.SavePos();
-                        GameManager.Instance.SaveAndLoadManager.SaveData();
                     }
                 }
                 else
@@ -92,7 +91,6 @@ public class InputManager : MonoBehaviour
                         Cursor.lockState = CursorLockMode.Confined;
                         GameManager.Instance.MainCamera.stopCamera = true;
                         GameManager.Instance.MainCamera.SavePos();
-                        GameManager.Instance.SaveAndLoadManager.SaveData();
                     }
 
                     if (!isSomethingHit) return;
@@ -224,8 +222,6 @@ public class InputManager : MonoBehaviour
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
                 if (Input.GetMouseButtonUp(1))
                 {
-                    GameManager.Instance.SaveAndLoadManager.SaveData();
-                    GameManager.Instance.SaveAndLoadManager.SaveWorldData(TargetGameObject.GetComponent<ChunkCode>());
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
@@ -381,6 +377,8 @@ public class InputManager : MonoBehaviour
     {
         Destroy(ReadyToBuildBlock);
         ReadyToBuildBlock = null;
+
+        GameManager.Instance.SaveAndLoadManager.SaveWorldData(TargetGameObject.GetComponent<ChunkCode>());
         TargetGameObject = null;
 
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
@@ -677,8 +675,6 @@ public class InputManager : MonoBehaviour
 
     public void PutThisWorldInSpace()
     {
-        GameManager.Instance.SaveAndLoadManager.SaveData();
-
         if (ReadyToBuildBlock != null)
         {
             Destroy(ReadyToBuildBlock);
