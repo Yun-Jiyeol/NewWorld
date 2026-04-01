@@ -25,6 +25,9 @@ public class HelpingInMake : BasicUI
         MainLight = GameManager.Instance.LightManager.MainLight.GetComponent<Light>();
         SubLight = GameManager.Instance.LightManager.SubLight;
         subCamPutter = GameManager.Instance.MainCamera.SubCamera.GetComponent<CameraShaderPutter>();
+
+        UpdateLight();
+        UpdateFilter();
     }
 
     public void OnClick(int type)
@@ -33,40 +36,12 @@ public class HelpingInMake : BasicUI
         {
             case 0:
                 isLight = !isLight;
-                if (isLight)
-                {
-                    HelpingImages[0].sprite = OnSprite;
-                }
-                else
-                {
-                    HelpingImages[0].sprite = OffSprite;
-                }
                 UpdateLight();
                 break;
             case 1:
                 isFilter = !isFilter;
-                if (isFilter)
-                {
-                    HelpingImages[1].sprite = OnSprite;
-                }
-                else
-                {
-                    HelpingImages[1].sprite = OffSprite;
-                }
                 UpdateFilter();
                 break;
-        }
-    }
-
-    void UpdateFilter()
-    {
-        if (isFilter)
-        {
-            subCamPutter.isUsingEffect = true;
-        }
-        else
-        {
-            subCamPutter.isUsingEffect = false;
         }
     }
 
@@ -74,13 +49,29 @@ public class HelpingInMake : BasicUI
     {
         if (isLight)
         {
+            HelpingImages[0].sprite = OnSprite;
             MainLight.cullingMask = ~0;
             SubLight.SetActive(false);
         }
         else
         {
+            HelpingImages[0].sprite = OffSprite;
             MainLight.cullingMask &= ~(1 << PreviewWorldLayer);
             SubLight.SetActive(true);
+        }
+    }
+
+    void UpdateFilter()
+    {
+        if (isFilter)
+        {
+            HelpingImages[1].sprite = OnSprite;
+            subCamPutter.isUsingEffect = true;
+        }
+        else
+        {
+            HelpingImages[1].sprite = OffSprite;
+            subCamPutter.isUsingEffect = false;
         }
     }
 }

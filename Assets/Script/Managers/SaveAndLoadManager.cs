@@ -428,6 +428,23 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.K))
+        {
+            SaveAll();
+        }
+    }
+
+    public void SaveAll()
+    {
+        PlayerPosSave();
+        SaveMainLight();
+        SaveBlockColors();
+        SavePlayerAchive();
+        SaveCameraSetting();
+    }
+
     string TryMakeDataFolder()
     {
         string path = Path.Combine(Application.persistentDataPath, "SaveData");
@@ -563,49 +580,52 @@ public class SaveAndLoadManager : MonoBehaviour
             IsSubCameraUse = new List<bool>()
         };
 
-        CSS.CameraAdditionalEffect.Add(new SettingValue() {type = CameraEffect.Reverse, isOn = CameraMaterial.GetFloat(((SystemName)1).ToString()) == 1 });
-        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.BlackWhite, isOn = CameraMaterial.GetFloat(((SystemName)3).ToString()) == 1 });
+        int num = 0;
+        CSS.CameraAdditionalEffect.Add(new SettingValue() {type = CameraEffect.Reverse, isOn = CameraMaterial.GetFloat(((SystemName)num).ToString()) == 1 });
+        num += 2;
+        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.BlackWhite, isOn = CameraMaterial.GetFloat(((SystemName)num).ToString()) == 1 });
+        num += 2;
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.ContrastThreshold,
-            isOn = CameraMaterial.GetFloat(((SystemName)5).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)6).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.Posterize,
-            isOn = CameraMaterial.GetFloat(((SystemName)7).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)8).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.Pixelate,
-            isOn = CameraMaterial.GetFloat(((SystemName)9).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)10).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.Vignette,
-            isOn = CameraMaterial.GetFloat(((SystemName)11).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)12).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.EdgeDetect,
-            isOn = CameraMaterial.GetFloat(((SystemName)13).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)14).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.FilmNoise,
-            isOn = CameraMaterial.GetFloat(((SystemName)15).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)16).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
         CSS.CameraAdditionalEffect.Add(new SettingValue()
         {
             type = CameraEffect.CRTScanline,
-            isOn = CameraMaterial.GetFloat(((SystemName)17).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)18).ToString())
+            isOn = CameraMaterial.GetFloat(((SystemName)num++).ToString()) == 1,
+            NowValue = CameraMaterial.GetFloat(((SystemName)num++).ToString())
         });
 
         HelpingInMake HM = findHM();
@@ -697,14 +717,16 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             foreach (ColorSaveData CSD in data.precolor)
             {
-                BM.PreColors.Add(new Color(CSD.r, CSD.g, CSD.b));
+                BM.AddPreColor(new Color(CSD.r, CSD.g, CSD.b));
             }
         }
         if (data.savecolor.Count > 0)
         {
             foreach (ColorSaveData CSD in data.savecolor)
             {
-                BM.SaveColors.Add(new Color(CSD.r, CSD.g, CSD.b));
+                int num = 0;
+                BM.AddSaveColor(new Color(CSD.r, CSD.g, CSD.b), num);
+                num++;
             }
         }
     }
@@ -728,63 +750,59 @@ public class SaveAndLoadManager : MonoBehaviour
         CameraSettingSave data = JsonUtility.FromJson<CameraSettingSave>(json);
         Material CameraMaterial = GameManager.Instance.MainCamera.gameObject.GetComponent<CameraShaderPutter>().CamMaterial;
 
-        CameraSettingSave CSS = new CameraSettingSave()
+        foreach(var SV in data.CameraAdditionalEffect)
         {
-            CameraAdditionalEffect = new List<SettingValue>(),
-            IsSubCameraUse = new List<bool>()
-        };
+            switch (SV.type)
+            {
+                case CameraEffect.Reverse:
+                    CameraMaterial.SetFloat(((SystemName)0).ToString(), SV.isOn ? 1f : 0f);
+                    break;
 
-        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.Reverse, isOn = CameraMaterial.GetFloat(((SystemName)1).ToString()) == 1 });
-        CSS.CameraAdditionalEffect.Add(new SettingValue() { type = CameraEffect.BlackWhite, isOn = CameraMaterial.GetFloat(((SystemName)3).ToString()) == 1 });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.ContrastThreshold,
-            isOn = CameraMaterial.GetFloat(((SystemName)5).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)6).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.Posterize,
-            isOn = CameraMaterial.GetFloat(((SystemName)7).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)8).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.Pixelate,
-            isOn = CameraMaterial.GetFloat(((SystemName)9).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)10).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.Vignette,
-            isOn = CameraMaterial.GetFloat(((SystemName)11).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)12).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.EdgeDetect,
-            isOn = CameraMaterial.GetFloat(((SystemName)13).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)14).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.FilmNoise,
-            isOn = CameraMaterial.GetFloat(((SystemName)15).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)16).ToString())
-        });
-        CSS.CameraAdditionalEffect.Add(new SettingValue()
-        {
-            type = CameraEffect.CRTScanline,
-            isOn = CameraMaterial.GetFloat(((SystemName)17).ToString()) == 1,
-            NowValue = CameraMaterial.GetFloat(((SystemName)18).ToString())
-        });
+                case CameraEffect.BlackWhite:
+                    CameraMaterial.SetFloat(((SystemName)2).ToString(), SV.isOn ? 1f : 0f);
+                    break;
+
+                case CameraEffect.ContrastThreshold:
+                    CameraMaterial.SetFloat(((SystemName)4).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)5).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.Posterize:
+                    CameraMaterial.SetFloat(((SystemName)6).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)7).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.Pixelate:
+                    CameraMaterial.SetFloat(((SystemName)8).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)9).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.Vignette:
+                    CameraMaterial.SetFloat(((SystemName)10).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)11).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.EdgeDetect:
+                    CameraMaterial.SetFloat(((SystemName)12).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)13).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.FilmNoise:
+                    CameraMaterial.SetFloat(((SystemName)14).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)15).ToString(), SV.NowValue);
+                    break;
+
+                case CameraEffect.CRTScanline:
+                    CameraMaterial.SetFloat(((SystemName)16).ToString(), SV.isOn ? 1f : 0f);
+                    CameraMaterial.SetFloat(((SystemName)17).ToString(), SV.NowValue);
+                    break;
+            }
+        }
 
         HelpingInMake HM = findHM();
 
-        CSS.IsSubCameraUse.Add(HM.isLight);
-        CSS.IsSubCameraUse.Add(HM.isFilter);
-
-        File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
+        HM.isLight = data.IsSubCameraUse[0];
+        HM.isFilter = data.IsSubCameraUse[1];
     }
 
 

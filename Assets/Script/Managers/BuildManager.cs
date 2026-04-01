@@ -77,7 +77,7 @@ public class BuildManager : MonoBehaviour
 
     public void AddPreColor(Color _color)
     {
-        if (PreColors.Count == 0) for (int i = 0; i < precolornum; i++) PreColors.Add(new Color(255, 255, 255));
+        if (PreColors.Count == 0)  for (int i = 0; i < precolornum; i++) PreColors.Add(new Color(255, 255, 255));
 
         if (PreColors.Contains(_color)) return;
         PreColors.Add(_color);

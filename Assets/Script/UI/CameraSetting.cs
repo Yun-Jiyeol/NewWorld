@@ -51,8 +51,6 @@ public class CameraSetting : BasicUI
 
     void MakeNewSetting()
     {
-        mainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
-
         CameraNowSetting = new Dictionary<CameraEffect, CameraState>();
         CameraNowSetting.Add(CameraEffect.Reverse, new CameraState() { isOn = false, MakeLine = false });
         CameraNowSetting.Add(CameraEffect.BlackWhite, new CameraState() { isOn = false, MakeLine = false });
@@ -68,6 +66,16 @@ public class CameraSetting : BasicUI
     void SettingCameraNowSetting()
     {
         if (CameraNowSetting == null) MakeNewSetting();
+
+        CameraNowSetting[CameraEffect.Reverse].isOn = CameraMaterial.GetFloat(((SystemName)0).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.BlackWhite].isOn = CameraMaterial.GetFloat(((SystemName)2).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.ContrastThreshold].isOn = CameraMaterial.GetFloat(((SystemName)4).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.Posterize].isOn = CameraMaterial.GetFloat(((SystemName)6).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.Pixelate].isOn = CameraMaterial.GetFloat(((SystemName)8).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.Vignette].isOn = CameraMaterial.GetFloat(((SystemName)10).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.EdgeDetect].isOn = CameraMaterial.GetFloat(((SystemName)12).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.FilmNoise].isOn = CameraMaterial.GetFloat(((SystemName)14).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.CRTScanline].isOn = CameraMaterial.GetFloat(((SystemName)16).ToString()) == 1f;
 
         CameraNowSetting[CameraEffect.ContrastThreshold].NowPower = CameraMaterial.GetFloat(((SystemName)5).ToString());
         CameraNowSetting[CameraEffect.Posterize].NowPower = CameraMaterial.GetFloat(((SystemName)7).ToString());
