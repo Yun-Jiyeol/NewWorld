@@ -45,6 +45,7 @@ public class InputManager : MonoBehaviour
     public float scaleSpeed = 0.05f;
 
     public bool isTouchingUI = false;
+    public CoinType nowMovingThing = CoinType.Player;
 
     private void Awake()
     {
@@ -53,14 +54,17 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-        if(isTouchingUI) return;
+        if (isTouchingUI) return;
 
         switch (GameManager.Instance.flow)
         {
             case GameFlow.WatchAllWorld:
                 if (Cursor.visible)
                 {
-                    if (Input.GetKeyDown(KeyCode.F1))//나중 esc로 변경
+                    nowMovingThing = CoinType.None;
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+
+                    if (Input.GetKeyDown(KeyCode.Tab))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                         Cursor.visible = false;
@@ -74,6 +78,9 @@ public class InputManager : MonoBehaviour
                     CheckRaycast(true);
                     PlayerMove();
 
+                    nowMovingThing = CoinType.Player;
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+
                     if (Input.GetKeyDown(BuildNewWorld))
                     {
                         GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
@@ -81,9 +88,10 @@ public class InputManager : MonoBehaviour
                         TargetGameObject = newworld;
                         TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
                         GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
+                        nowMovingThing = CoinType.World;
                         ChooseWorld();
                     }
-                    if (Input.GetKeyDown(KeyCode.F1)) //나중 esc로 변경
+                    if (Input.GetKeyDown(KeyCode.Tab))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
@@ -107,17 +115,38 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.SelectOneWorld:
+                GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+
                 if (EventSystem.current.IsPointerOverGameObject()) return;
                 break;
 
             case GameFlow.WatchOneWorld:
                 CheckRaycast(false);
                 SaveAndLoadColor();
+                ChangeTypeOfMove();
 
-                if (EventSystem.current.IsPointerOverGameObject()) return;
-                TargetMove(TargetGameObject);
-                TargetScale(TargetGameObject);
-                TargetTurn(TargetGameObject);
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
+                    return;
+                }
+                else
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+                }
+
+                if(nowMovingThing == CoinType.World)
+                {
+                    TargetMove(TargetGameObject);
+                    TargetScale(TargetGameObject);
+                    TargetTurn(TargetGameObject);
+                }
+                else if (nowMovingThing == CoinType.Player)
+                {
+                    PlayerMove();
+                    GameManager.Instance.MainCamera.CameraTurn();
+                }
+
                 if (Input.GetKey(KeyCode.Delete))
                 {
                     TryToDestroy();
@@ -133,11 +162,11 @@ public class InputManager : MonoBehaviour
                 {
                     SeeChooseBlock();
 
-                    if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                     {
                         if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
                         {
-                            if(BeforeDestroyBlockPos == null)
+                            if (BeforeDestroyBlockPos == null)
                             {
                                 SettingDestroyRange();
                             }
@@ -154,37 +183,6 @@ public class InputManager : MonoBehaviour
                             SettingDestroyRange();
                         }
                     }
-
-                    /*
-                    if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
-                    {
-                        if (DestroyCoroutine != null) StopCoroutine(DestroyCoroutine);
-                        DestroyCoroutine = StartCoroutine(DestroyThisBlock());
-                    }
-                    if ((Input.GetMouseButton(0) && isRotated) || Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(1))
-                    {
-                        if (DestroyCoroutine != null)
-                        {
-                            showpreviewblock = true;
-
-                            StopCoroutine(DestroyCoroutine);
-                            DestroyCoroutine = null;
-
-                            if(block != null)
-                            {
-                                GameManager.Instance.BuildManager.RequestBuild
-                                    (new WorldAndBlock
-                                    {
-                                        world = TargetGameObject.GetComponent<ChunkCode>(),
-                                        blockposition = block._position,
-                                        blockcolor = block._color
-                                    });
-
-                                Destroy(block._go);
-                                block = null;
-                            }
-                        }
-                    }*/
 
                     if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0))
                     {
@@ -212,11 +210,29 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
-                if (EventSystem.current.IsPointerOverGameObject()) return;
-                TargetScale(TargetGameObject);
-                TargetTurn(TargetGameObject);
-                TargetMove(TargetGameObject, false);
-                PlayerMove();
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
+                    return;
+                }
+                else
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+                }
+
+                ChangeTypeOfMove();
+                GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+                if (nowMovingThing == CoinType.World)
+                {
+                    TargetMove(TargetGameObject);
+                    TargetScale(TargetGameObject);
+                    TargetTurn(TargetGameObject);
+                }
+                else if (nowMovingThing == CoinType.Player)
+                {
+                    PlayerMove();
+                    GameManager.Instance.MainCamera.CameraTurn();
+                }
 
                 if (Input.GetMouseButtonDown(0)) GameManager.Instance.MainCamera.stopCamera = true;
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
@@ -226,7 +242,7 @@ public class InputManager : MonoBehaviour
 
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
 
-                    TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();  
+                    TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();
 
                     ChangeToWatchAllWorld();
                 }
@@ -234,10 +250,20 @@ public class InputManager : MonoBehaviour
 
             case GameFlow.MakeOneWorld:
                 CheckRaycast(false);
-                if (EventSystem.current.IsPointerOverGameObject()) return;
-                TargetMove(TargetGameObject);
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
+                    return;
+                }
+                else
+                {
+                    GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+                }
                 TargetScale(TargetGameObject);
                 TargetTurn(TargetGameObject);
+
+                GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
+
 
                 if (!isSomethingHit)
                 {
@@ -254,6 +280,27 @@ public class InputManager : MonoBehaviour
                     ReadyToBuildBlock.SetActive(false);
                 }
                 break;
+        }
+    }
+
+    void ChangeTypeOfMove()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (nowMovingThing == CoinType.None) return;
+            else if (nowMovingThing == CoinType.World)
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                GameManager.Instance.MainCamera.TryCheckrot();
+                nowMovingThing = CoinType.Player;
+            }
+            else if (nowMovingThing == CoinType.Player)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Confined;
+                nowMovingThing = CoinType.World;
+            }
         }
     }
 

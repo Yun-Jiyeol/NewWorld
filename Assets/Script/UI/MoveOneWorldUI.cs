@@ -40,6 +40,11 @@ public class MoveOneWorldUI : BasicUI
                 inputManager.TargetMove(target);
                 inputManager.TargetScale(target);
                 inputManager.TargetTurn(target);
+                inputManager.nowMovingThing = CoinType.World;
+            }
+            else
+            {
+                inputManager.nowMovingThing = CoinType.None;
             }
 
             yield return null;

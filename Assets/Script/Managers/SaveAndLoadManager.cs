@@ -156,7 +156,12 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             LoadFile(saveDataFolder);
         }
+        else
+        {
+            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+        }
 
+        EnsureSaveFolder();
         string[] worldFolders = Directory.GetDirectories(SaveFolder);
 
         List<string> validWorlds = new List<string>();
@@ -428,7 +433,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Update() //Test¿ë
     {
         if (Input.GetKeyUp(KeyCode.K))
         {

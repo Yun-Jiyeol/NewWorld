@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour
         switch (flow)
         {
             case GameFlow.WatchAllWorld:
+                InputManager.nowMovingThing = CoinType.Player;
+
                 MainCamera.SubCamera.gameObject.SetActive(false);
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Locked;
@@ -71,6 +73,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
+                InputManager.nowMovingThing = CoinType.Player;
+
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Locked;
@@ -81,6 +85,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.WatchOneWorld:
+                InputManager.nowMovingThing = CoinType.World;
+
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 InputManager.WhenComeintoWatchOneWorld();
                 BuildManager.maxFrameTime = 10f;
@@ -92,6 +98,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.MakeOneWorld:
+                InputManager.nowMovingThing = CoinType.World;
+
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
@@ -102,6 +110,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameFlow.SelectOneWorld:
+                InputManager.nowMovingThing = CoinType.None;
+
                 MainCamera.SubCamera.gameObject.SetActive(false);
                 BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Confined;

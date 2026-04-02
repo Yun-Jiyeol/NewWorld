@@ -10,6 +10,10 @@ public class PreColor : MonoBehaviour, IPointerClickHandler
 
     public void OnSetting(int _num)
     {
+        if(GameManager.Instance.BuildManager.PreColors.Count == 0)
+        {
+            for (int i = 0; i < GameManager.Instance.BuildManager.precolornum; i++) GameManager.Instance.BuildManager.PreColors.Add(new Color(255, 255, 255));
+        }
         savecolor = GameManager.Instance.BuildManager.PreColors[_num];
         gameObject.GetComponent<Image>().color = savecolor;
     }

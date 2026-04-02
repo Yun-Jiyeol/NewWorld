@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     public WorldSeenUI WorldSeenUI;
 
     public SavingEffectUI SavingEffectUI;
+    public WhatMoving WhatMoving;
 
     private void Start()
     {

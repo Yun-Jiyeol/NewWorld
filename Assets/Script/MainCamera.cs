@@ -48,10 +48,15 @@ public class MainCamera : MonoBehaviour
             || GameManager.Instance.flow == GameFlow.None
             || GameManager.Instance.flow == GameFlow.Start
             || GameManager.Instance.flow == GameFlow.MakeOneWorld
-            || GameManager.Instance.flow == GameFlow.SelectOneWorld) return;
+            || GameManager.Instance.flow == GameFlow.SelectOneWorld
+            || GameManager.Instance.flow == GameFlow.PutWorldInSpace) return;
         if (stopCamera) return;
         if (isRotating) return;
+        CameraTurn();
+    }
 
+    public void CameraTurn()
+    {
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * 100f * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity * 100f * Time.deltaTime;
 
