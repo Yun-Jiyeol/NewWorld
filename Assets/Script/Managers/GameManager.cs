@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public GameFlow flow = GameFlow.Start;
+    public GameFlow flow = GameFlow.None;
 
     public InputManager InputManager { get; private set; }
     public BuildManager BuildManager { get; private set; }
@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     public UIManager UIManager;
 
     public MainCamera MainCamera;
+
+    public int NowWorldSaveFolder = 0;
 
     private void Awake()
     {
@@ -50,7 +52,7 @@ public class GameManager : MonoBehaviour
         LightManager = gameObject.GetComponent<LightManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
 
-        ChangeFlow(GameFlow.WatchAllWorld);
+        ChangeFlow(GameFlow.Start);
     }
 
     public void ChangeFlow(GameFlow _flow)
@@ -58,8 +60,24 @@ public class GameManager : MonoBehaviour
         if (_flow == flow) return;
 
         flow = _flow;
+        if (flow == GameFlow.Start)
+        {
+            UIManager.ChangeScene(SceneSelection.StartScene);
+        }
+        else
+        {
+            UIManager.ChangeScene(SceneSelection.InGameUI);
+        }
+
         switch (flow)
         {
+            case GameFlow.Start:
+                BuildManager.maxFrameTime = 5f;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+                NowWorldSaveFolder = 0;
+                break;
+
             case GameFlow.WatchAllWorld:
                 InputManager.nowMovingThing = CoinType.Player;
 

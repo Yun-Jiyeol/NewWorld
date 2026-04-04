@@ -44,7 +44,7 @@ public class SelectionUI : MonoBehaviour
 
     public List<GameObject> AdditionalUI = new List<GameObject>();
 
-    private void Start()
+    public void Onit()
     {
         thistransform = gameObject.GetComponent<RectTransform>();
         SettingAll();

@@ -132,7 +132,9 @@ public class PlayerPositionSave
 public class SaveAndLoadManager : MonoBehaviour
 {
     public static string RootPath => Application.persistentDataPath;
-    public static string SaveFolder => System.IO.Path.Combine(RootPath, "Saves");
+    public static string PlayerSettingFolder => System.IO.Path.Combine(RootPath, $"PlayerSetting");
+    public static string SaveFolder => System.IO.Path.Combine(RootPath, $"Saves_{GameManager.Instance.NowWorldSaveFolder}");
+    public static string WorldPlayerSetting => System.IO.Path.Combine(SaveFolder, $"WorldPlayerSetting");
 
     Queue<ChunkCode> saveQueue = new Queue<ChunkCode>();
     HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
@@ -150,11 +152,17 @@ public class SaveAndLoadManager : MonoBehaviour
 
     private void Start()
     {
-        string saveDataFolder = Path.Combine(Application.persistentDataPath, "SaveData");
-
-        if (Directory.Exists(saveDataFolder))
+        if (Directory.Exists(PlayerSettingFolder))
         {
-            LoadFile(saveDataFolder);
+            LoadStartFile(PlayerSettingFolder);
+        }
+    }
+
+    public void LoadWorldFolder()
+    {
+        if (Directory.Exists(WorldPlayerSetting))
+        {
+            LoadFile(WorldPlayerSetting);
         }
         else
         {
@@ -316,6 +324,7 @@ public class SaveAndLoadManager : MonoBehaviour
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(Path.Combine(folder, "world.json"), json);
     }
+
     IEnumerator SaveChunksCoroutine(ChunkCode world)
     {
         string folder = GetWorldFolder(world.Savedtime);
@@ -639,6 +648,11 @@ public class SaveAndLoadManager : MonoBehaviour
         CSS.IsSubCameraUse.Add(HM.isFilter);
 
         File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
+    }
+
+    void LoadStartFile(string _path)
+    {
+        string[] files = Directory.GetFiles(_path, "*.json");
     }
 
     void LoadFile(string _path)
