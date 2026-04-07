@@ -133,8 +133,9 @@ public class SaveAndLoadManager : MonoBehaviour
 {
     public static string RootPath => Application.persistentDataPath;
     public static string PlayerSettingFolder => System.IO.Path.Combine(RootPath, $"PlayerSetting");
-    public static string SaveFolder => System.IO.Path.Combine(RootPath, $"Saves_{GameManager.Instance.NowWorldSaveFolder}");
-    public static string WorldPlayerSetting => System.IO.Path.Combine(SaveFolder, $"WorldPlayerSetting");
+    public static string SaveFolder => System.IO.Path.Combine(RootPath, $"Saves");
+    public static string WorldSaveFolder => System.IO.Path.Combine(SaveFolder, $"{GameManager.Instance.NowWorldSaveFolder}");
+    public static string WorldPlayerSetting => System.IO.Path.Combine(WorldSaveFolder, $"WorldPlayerSetting");
 
     Queue<ChunkCode> saveQueue = new Queue<ChunkCode>();
     HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
@@ -170,7 +171,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
 
         EnsureSaveFolder();
-        string[] worldFolders = Directory.GetDirectories(SaveFolder);
+        string[] worldFolders = Directory.GetDirectories(WorldSaveFolder);
 
         List<string> validWorlds = new List<string>();
 
@@ -200,7 +201,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
     string GetWorldFolder(string time)
     {
-        return Path.Combine(SaveFolder, "World_" + time);
+        return Path.Combine(WorldSaveFolder, "World_" + time);
     }
 
     public void SaveWorldData(ChunkCode _world) //설치 한 이후 1회, 제작 중 1분 단위로 1회
@@ -862,5 +863,20 @@ public class SaveAndLoadManager : MonoBehaviour
 
         json = JsonUtility.ToJson(worldsave, true);
         File.WriteAllText(path, json);
+    }
+
+    public string GetName(string _path)
+    {
+        EnsureSaveFolder();
+
+        string folder = Path.Combine(SaveFolder, _path);
+        string path = Path.Combine(folder, "world.json");
+
+        if (!File.Exists(path)) return null;
+
+        string json = File.ReadAllText(path);
+        WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
+
+        return worldsave.Name;
     }
 }

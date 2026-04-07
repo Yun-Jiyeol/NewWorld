@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     public MainCamera MainCamera;
 
-    public int NowWorldSaveFolder = 0;
+    public string NowWorldSaveFolder = null;
 
     private void Awake()
     {
@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
                 BuildManager.maxFrameTime = 5f;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
-                NowWorldSaveFolder = 0;
+                NowWorldSaveFolder = null;
                 break;
 
             case GameFlow.WatchAllWorld:
