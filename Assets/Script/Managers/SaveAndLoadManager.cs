@@ -149,6 +149,12 @@ public class SaveAndLoadManager : MonoBehaviour
             Directory.CreateDirectory(SaveFolder);
             Debug.Log($"[Save] 폴더 생성: {SaveFolder}");
         }
+
+        if(GameManager.Instance.NowWorldSaveFolder != null)
+        {
+            Directory.CreateDirectory(WorldSaveFolder);
+            Directory.CreateDirectory(WorldPlayerSetting);
+        }
     }
 
     private void Start()
@@ -161,6 +167,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void LoadWorldFolder()
     {
+        EnsureSaveFolder();
+
         if (Directory.Exists(WorldPlayerSetting))
         {
             LoadFile(WorldPlayerSetting);
@@ -170,7 +178,6 @@ public class SaveAndLoadManager : MonoBehaviour
             GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
         }
 
-        EnsureSaveFolder();
         string[] worldFolders = Directory.GetDirectories(WorldSaveFolder);
 
         List<string> validWorlds = new List<string>();
@@ -371,12 +378,11 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string fileName = $"World_{_world.Savedtime}.json";
+        string folder = Path.Combine(WorldSaveFolder, $"World_{_world.Savedtime}");
 
-        string path = System.IO.Path.Combine(SaveFolder, fileName);
-        if (File.Exists(path))
+        if (Directory.Exists(folder))
         {
-            File.Delete(path);
+            Directory.Delete(folder, true);
         }
     }
 
@@ -462,9 +468,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     string TryMakeDataFolder()
     {
-        string path = Path.Combine(Application.persistentDataPath, "SaveData");
+        string path = WorldPlayerSetting;   
         Directory.CreateDirectory(path);
-
         return path;
     }
 
@@ -742,9 +747,9 @@ public class SaveAndLoadManager : MonoBehaviour
         }
         if (data.savecolor.Count > 0)
         {
+            int num = 0;
             foreach (ColorSaveData CSD in data.savecolor)
             {
-                int num = 0;
                 BM.AddSaveColor(new Color(CSD.r, CSD.g, CSD.b), num);
                 num++;
             }
@@ -851,7 +856,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string folder = Path.Combine(SaveFolder, $"World_{Time}");
+        string folder = Path.Combine(WorldSaveFolder, $"World_{Time}");
         string path = Path.Combine(folder, "world.json");
 
         if (!File.Exists(path)) return;
@@ -869,7 +874,7 @@ public class SaveAndLoadManager : MonoBehaviour
     {
         EnsureSaveFolder();
 
-        string folder = Path.Combine(SaveFolder, _path);
+        string folder = Path.Combine(WorldSaveFolder, _path);
         string path = Path.Combine(folder, "world.json");
 
         if (!File.Exists(path)) return null;

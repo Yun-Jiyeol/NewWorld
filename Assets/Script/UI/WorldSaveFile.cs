@@ -9,12 +9,17 @@ public class WorldSaveFile : MonoBehaviour
     string Name;
 
     public GameObject Check;
-    bool isCheck = false;
+    public bool isCheck = false;
  
     public void Onit(string _name)
     {
         Name = _name;
         WorldName.text = Name;
+
+        if(GameManager.Instance.NowWorldSaveFolder == _name)
+        {
+            OnCheck();
+        } 
     }
 
     public void ClickWorld()
@@ -27,16 +32,19 @@ public class WorldSaveFile : MonoBehaviour
         {
             OnCheck();
         }
+
+        GameManager.Instance.UIManager.StartAdditionalUI.NowUI.GetComponent<LoadWorldUI>().CheckAllWorlds(this);
     }
 
     public void UnCheck()
     {
         isCheck = false;
+        Check.SetActive(false);
     }
 
     public void OnCheck()
     {
         isCheck = true;
-        GameManager.Instance.NowWorldSaveFolder = Name;
+        Check.SetActive(true);
     }
 }
