@@ -35,7 +35,7 @@ public class WhatMoving : MonoBehaviour
 
     CoinType NowShowCoinType = CoinType.None;
 
-    private void Start()
+    private void Awake()
     {
         CoinDict = new Dictionary<CoinType, CoinSave>();
 

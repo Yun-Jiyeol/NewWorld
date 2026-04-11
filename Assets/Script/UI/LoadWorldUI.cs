@@ -31,21 +31,12 @@ public class LoadWorldUI : NeedToDoOnit
         {
             string folderName = Path.GetFileName(folder);
 
-            if (!folderName.StartsWith("World_"))
-                continue;
-
-            // world.json 있는지 체크 (안전장치)
-            string worldInfoPath = Path.Combine(folder, "world.json");
-
-            if (File.Exists(worldInfoPath))
-            {
-                validWorlds.Add(folder);
-            }
+            validWorlds.Add(folderName);
         }
 
         foreach (string folder in validWorlds)
         {
-            MakeWorld(GameManager.Instance.SaveAndLoadManager.GetName(folder));
+            MakeWorld(folder);
         }
     }
 
@@ -79,6 +70,16 @@ public class LoadWorldUI : NeedToDoOnit
     public void ClickExitKey()
     {
         GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
+    }
+
+    public void ClickMakeNewWorld()
+    {
+        GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.MakeNewWorldUI);
+    }
+
+    public void StartLoadWorld()
+    {
+
     }
 
     void CheckLoadBtn()

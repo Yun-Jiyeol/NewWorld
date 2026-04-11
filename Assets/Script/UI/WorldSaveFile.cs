@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.WSA;
 
 public class WorldSaveFile : MonoBehaviour
 {
@@ -14,9 +15,15 @@ public class WorldSaveFile : MonoBehaviour
     public void Onit(string _name)
     {
         Name = _name;
-        WorldName.text = Name;
 
-        if(GameManager.Instance.NowWorldSaveFolder == _name)
+        int index = _name.IndexOf('_');
+        if (index > 0)
+        {
+            _name = _name.Substring(0, index);
+        }
+        WorldName.text = _name;
+
+        if(GameManager.Instance.NowWorldSaveFolder == Name)
         {
             OnCheck();
         } 
@@ -46,5 +53,6 @@ public class WorldSaveFile : MonoBehaviour
     {
         isCheck = true;
         Check.SetActive(true);
+        GameManager.Instance.NowWorldSaveFolder = Name;
     }
 }
