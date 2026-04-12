@@ -53,6 +53,10 @@ public class WorldSaveFile : MonoBehaviour
     {
         isCheck = true;
         Check.SetActive(true);
-        GameManager.Instance.NowWorldSaveFolder = Name;
+    }
+
+    public string GetName()
+    {
+        return Name;
     }
 }

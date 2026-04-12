@@ -39,6 +39,16 @@ public class WorldManager : MonoBehaviour
         Destroy(_world);
     }
 
+    public void DestroyAllWorld()
+    {
+        for(int i = Worlds.Count -1; i >= 0; i--)
+        {
+            Destroy(Worlds[i]);
+        }
+
+        Worlds.Clear();
+    }
+
     public GameObject MakeWorld()
     {
         GameObject newWorld = new GameObject();

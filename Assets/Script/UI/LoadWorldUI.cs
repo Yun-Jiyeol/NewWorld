@@ -58,10 +58,12 @@ public class LoadWorldUI : NeedToDoOnit
             {
                 if(WSF != _wsf) WSF.UnCheck();
             }
+
+            NowChooseWorldName = _wsf.GetName();
         }
         else
         {
-            GameManager.Instance.NowWorldSaveFolder = null;
+            NowChooseWorldName = null;
         }
 
         CheckLoadBtn();
@@ -79,12 +81,16 @@ public class LoadWorldUI : NeedToDoOnit
 
     public void StartLoadWorld()
     {
+        StartLoadBtn.SetActive(false);
+        CancelBefore();
+        LoadNewWorld();
 
+        GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
     }
 
     void CheckLoadBtn()
     {
-        if(GameManager.Instance.NowWorldSaveFolder == null || GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName)
+        if(NowChooseWorldName == null || GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName)
         {
             StartLoadBtn.SetActive(false);
         }
@@ -92,5 +98,17 @@ public class LoadWorldUI : NeedToDoOnit
         {
             StartLoadBtn.SetActive(true);
         }
+    }
+
+    void CancelBefore()
+    {
+        GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
+        GameManager.Instance.WorldManager.DestroyAllWorld();
+    }
+
+    void LoadNewWorld()
+    {
+        GameManager.Instance.NowWorldSaveFolder = NowChooseWorldName;
+        GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
     }
 }

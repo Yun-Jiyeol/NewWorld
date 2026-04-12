@@ -140,7 +140,11 @@ public class SaveAndLoadManager : MonoBehaviour
     Queue<ChunkCode> saveQueue = new Queue<ChunkCode>();
     HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
     HashSet<ChunkCode> dirtyWorlds = new HashSet<ChunkCode>();
+
     bool isSaving = false;
+    bool isLoading = false;
+    bool cancelLoading = false;
+    List<Coroutine> loadingCoroutines = new List<Coroutine>();
 
     public static void EnsureSaveFolder()
     {
@@ -165,18 +169,23 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
+    public void CancelLoadWorldFolder()
+    {
+        CancelLoading();
+
+        cancelLoading = false;
+    }
+
     public void LoadWorldFolder()
     {
+        isLoading = true;
+
         EnsureSaveFolder();
 
         if (Directory.Exists(WorldPlayerSetting))
-        {
             LoadFile(WorldPlayerSetting);
-        }
         else
-        {
             GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
-        }
 
         string[] worldFolders = Directory.GetDirectories(WorldSaveFolder);
 
@@ -189,21 +198,22 @@ public class SaveAndLoadManager : MonoBehaviour
             if (!folderName.StartsWith("World_"))
                 continue;
 
-            // world.json 있는지 체크 (안전장치)
             string worldInfoPath = Path.Combine(folder, "world.json");
 
             if (File.Exists(worldInfoPath))
-            {
                 validWorlds.Add(folder);
-            }
         }
 
         foreach (string folder in validWorlds)
         {
+            if (cancelLoading) break;
+
             LoadWorldData(folder);
         }
 
         GameManager.Instance.WorldManager.LoadAllWorld();
+
+        isLoading = false;
     }
 
     string GetWorldFolder(string time)
@@ -388,6 +398,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     void LoadWorldData(string folder)
     {
+        if (cancelLoading) return;
+
         string json = File.ReadAllText(Path.Combine(folder, "world.json"));
         WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
 
@@ -406,7 +418,8 @@ public class SaveAndLoadManager : MonoBehaviour
         worldCode._name = worldsave.Name;
         worldCode.Savedtime = worldsave.Time;
 
-        StartCoroutine(LoadChunksCoroutine(folder, worldCode));
+        Coroutine co = StartCoroutine(LoadChunksCoroutine(folder, worldCode));
+        loadingCoroutines.Add(co);
     }
 
     IEnumerator LoadChunksCoroutine(string folder, ChunkCode world)
@@ -417,12 +430,16 @@ public class SaveAndLoadManager : MonoBehaviour
 
         foreach (string file in files)
         {
+            if (cancelLoading) yield break; 
+
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 int count = reader.ReadInt32();
 
                 for (int i = 0; i < count; i++)
                 {
+                    if (cancelLoading) yield break;
+
                     int x = reader.ReadInt32();
                     int y = reader.ReadInt32();
                     int z = reader.ReadInt32();
@@ -447,6 +464,24 @@ public class SaveAndLoadManager : MonoBehaviour
                 start = Time.realtimeSinceStartup;
             }
         }
+    }
+    public void CancelLoading()
+    {
+        if (!isLoading) return;
+
+        cancelLoading = true;
+
+        foreach (var co in loadingCoroutines)
+        {
+            if (co != null)
+                StopCoroutine(co);
+        }
+
+        loadingCoroutines.Clear();
+
+        isLoading = false;
+
+        Debug.Log("로드 취소됨");
     }
 
     private void Update() //Test용
