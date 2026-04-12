@@ -12,6 +12,9 @@ public class LoadWorldUI : NeedToDoOnit
     public GameObject StartLoadBtn;
     string NowChooseWorldName = null;
 
+    GameObject BlockImage = null;
+    bool isEndCancel = true;
+
     public override void Onit()
     {
         NowChooseWorldName= GameManager.Instance.NowWorldSaveFolder;
@@ -79,15 +82,6 @@ public class LoadWorldUI : NeedToDoOnit
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.MakeNewWorldUI);
     }
 
-    public void StartLoadWorld()
-    {
-        StartLoadBtn.SetActive(false);
-        CancelBefore();
-        LoadNewWorld();
-
-        GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
-    }
-
     void CheckLoadBtn()
     {
         if(NowChooseWorldName == null || GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName)
@@ -99,11 +93,41 @@ public class LoadWorldUI : NeedToDoOnit
             StartLoadBtn.SetActive(true);
         }
     }
+    public void StartLoadWorld()
+    {
+        StartLoadBtn.SetActive(false);
+        StartCoroutine(CancelCoroutine());
+    }
+
+    IEnumerator CancelCoroutine()
+    {
+        isEndCancel = false;
+        if(BlockImage != null)
+        {
+            BlockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, transform);
+        }
+
+        CancelBefore();
+
+        if (!isEndCancel)
+        {
+            yield return null;
+        }
+
+        if (BlockImage != null)
+        {
+            Destroy(BlockImage);
+            BlockImage = null;
+        }
+        LoadNewWorld();
+    }
 
     void CancelBefore()
     {
         GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
         GameManager.Instance.WorldManager.DestroyAllWorld();
+
+        isEndCancel = true;
     }
 
     void LoadNewWorld()
