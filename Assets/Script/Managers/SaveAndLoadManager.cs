@@ -283,7 +283,7 @@ public class SaveAndLoadManager : MonoBehaviour
         yield return StartCoroutine(SaveChunksCoroutine(_world));
     }
 
-    void SaveWorldInfo(ChunkCode world)
+    public void SaveWorldInfo(ChunkCode world)
     {
         string folder = GetWorldFolder(world.Savedtime);
 

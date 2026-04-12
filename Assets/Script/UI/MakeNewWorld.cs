@@ -1,3 +1,4 @@
+using OpenCover.Framework.Model;
 using System;
 using TMPro;
 
@@ -10,7 +11,6 @@ public class MakeNewWorld : NeedToDoOnit
     public override void Onit()
     {
         NameField.onValueChanged.AddListener(OnValueChanged);
-        NameField.onEndEdit.AddListener(ChangeSettingName);
     }
 
     void OnValueChanged(string value)
@@ -21,17 +21,18 @@ public class MakeNewWorld : NeedToDoOnit
         {
             NameField.text = filtered;
         }
-    }
 
-    public void ChangeSettingName(string _input)
-    {
-        SettingName = _input;
+        SettingName = filtered;
     }
 
     public void MakeWorld()
     {
         string time = DateTime.Now.ToString("yyyyMMddHHmmss");
 
+        if (SettingName == "")
+        {
+            SettingName = "NewWorld";
+        }
         GameManager.Instance.NowWorldSaveFolder = SettingName + "_" + time;
         SaveAndLoadManager.EnsureSaveFolder();
 

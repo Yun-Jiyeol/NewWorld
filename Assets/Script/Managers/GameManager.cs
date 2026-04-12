@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour
     public MaterialManager MaterialManager { get; private set; }
     public SaveAndLoadManager SaveAndLoadManager { get; private set; }
     public LightManager LightManager { get; private set; }
+    public OnStartOrStopManager OnStartOrStopManager { get; private set; }
 
     public UIManager UIManager;
 
@@ -50,6 +52,7 @@ public class GameManager : MonoBehaviour
         MaterialManager = gameObject.GetComponent<MaterialManager>();
         SaveAndLoadManager = gameObject.GetComponent<SaveAndLoadManager>();
         LightManager = gameObject.GetComponent<LightManager>();
+        OnStartOrStopManager = gameObject.GetComponent<OnStartOrStopManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
 
         ChangeFlow(GameFlow.Start);
@@ -62,10 +65,12 @@ public class GameManager : MonoBehaviour
         flow = _flow;
         if (flow == GameFlow.Start)
         {
+            OnStartOrStopManager.DelectActions();
             UIManager.ChangeScene(SceneSelection.StartScene);
         }
         else
         {
+            OnStartOrStopManager.AddActions();
             UIManager.ChangeScene(SceneSelection.InGameUI);
         }
 
@@ -88,6 +93,8 @@ public class GameManager : MonoBehaviour
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight, SelectionUIenum.PlayerPos, SelectionUIenum.CameraSetting });
+
+                RemoveInTimeSave();
                 break;
 
             case GameFlow.PutWorldInSpace:
@@ -100,6 +107,8 @@ public class GameManager : MonoBehaviour
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.CameraSetting });
+
+                AddInTimeSave(SaveNowWorld);
                 break;
 
             case GameFlow.WatchOneWorld:
@@ -113,6 +122,8 @@ public class GameManager : MonoBehaviour
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.Color, SelectionUIenum.PutWorld, SelectionUIenum.HelpingInMake, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
+
+                AddInTimeSave(SaveNowWorld);
                 break;
 
             case GameFlow.MakeOneWorld:
@@ -125,6 +136,8 @@ public class GameManager : MonoBehaviour
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake,SelectionUIenum.HelpingInMake });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.ChooseHowToMake);
+
+                AddInTimeSave(SaveNowWorld);
                 break;
 
             case GameFlow.SelectOneWorld:
@@ -137,7 +150,29 @@ public class GameManager : MonoBehaviour
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld, SelectionUIenum.MoveOneWorld, SelectionUIenum.WorldSetting, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
+
+                AddInTimeSave(SaveSomeNowWorld);
                 break;
         }
+    }
+
+    public void SaveNowWorld()
+    {
+        SaveAndLoadManager.SaveWorldData(InputManager.TargetGameObject.GetComponent<ChunkCode>());
+    }
+
+    public void SaveSomeNowWorld()
+    {
+        SaveAndLoadManager.SaveWorldInfo(InputManager.TargetGameObject.GetComponent<ChunkCode>());
+    }
+
+    void AddInTimeSave(Action _action)
+    {
+        OnStartOrStopManager.AddTimeActions(_action);
+    }
+
+    void RemoveInTimeSave()
+    {
+        OnStartOrStopManager.StopTimeCoroutine();
     }
 }

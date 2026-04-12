@@ -10,6 +10,7 @@ public class LoadWorldUI : NeedToDoOnit
     List<WorldSaveFile> WorldSaveFiles = new List<WorldSaveFile>();
 
     public GameObject StartLoadBtn;
+    public GameObject StartBtn;
     string NowChooseWorldName = null;
 
     GameObject BlockImage = null;
@@ -84,19 +85,31 @@ public class LoadWorldUI : NeedToDoOnit
 
     void CheckLoadBtn()
     {
-        if(NowChooseWorldName == null || GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName)
+        if(GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName && NowChooseWorldName != null)
         {
+            StartBtn.SetActive(true);
             StartLoadBtn.SetActive(false);
+        }
+        else if(NowChooseWorldName != null)
+        {
+            StartBtn.SetActive(false);
+            StartLoadBtn.SetActive(true);
         }
         else
         {
-            StartLoadBtn.SetActive(true);
+            StartBtn.SetActive(false);
+            StartLoadBtn.SetActive(false);
         }
     }
+
     public void StartLoadWorld()
     {
-        StartLoadBtn.SetActive(false);
         StartCoroutine(CancelCoroutine());
+    }
+
+    public void StartWorld()
+    {
+        GameManager.Instance.UIManager.StartAdditionalUI.ClickStartBtn();
     }
 
     IEnumerator CancelCoroutine()
@@ -120,6 +133,8 @@ public class LoadWorldUI : NeedToDoOnit
             BlockImage = null;
         }
         LoadNewWorld();
+
+        CheckLoadBtn();
     }
 
     void CancelBefore()

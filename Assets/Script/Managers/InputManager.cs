@@ -425,7 +425,7 @@ public class InputManager : MonoBehaviour
         Destroy(ReadyToBuildBlock);
         ReadyToBuildBlock = null;
 
-        GameManager.Instance.SaveAndLoadManager.SaveWorldData(TargetGameObject.GetComponent<ChunkCode>());
+        GameManager.Instance.SaveNowWorld();
         TargetGameObject = null;
 
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
