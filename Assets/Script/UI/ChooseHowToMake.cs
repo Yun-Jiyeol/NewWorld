@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChooseHowToMake : BasicUI
 {
@@ -12,6 +13,10 @@ public class ChooseHowToMake : BasicUI
     public TMP_InputField Xtext;
     public TMP_InputField Ytext;
     public TMP_InputField Ztext;
+
+    public ScrollbarHelper XScrollbar;
+    public ScrollbarHelper YScrollbar;
+    public ScrollbarHelper ZScrollbar;
 
     bool canchangevalue = true;
 
@@ -29,6 +34,10 @@ public class ChooseHowToMake : BasicUI
         Xtext.text = x.ToString();
         Ytext.text = y.ToString();
         Ztext.text = z.ToString();
+
+        XScrollbar.Onit(this);
+        YScrollbar.Onit(this);
+        ZScrollbar.Onit(this);
 
         check();
     }
@@ -85,6 +94,7 @@ public class ChooseHowToMake : BasicUI
 
         x = value;
         Xtext.text = x.ToString();
+        XScrollbar.ChangedValue(x);
         MakeNewWorld();
     }
 
@@ -104,6 +114,7 @@ public class ChooseHowToMake : BasicUI
 
         x = value;
         Xtext.text = x.ToString();
+        XScrollbar.ChangedValue(x);
         MakeNewWorld();
     }
 
@@ -127,6 +138,7 @@ public class ChooseHowToMake : BasicUI
 
         y = value;
         Ytext.text = y.ToString();
+        YScrollbar.ChangedValue(y);
         MakeNewWorld();
     }
 
@@ -146,6 +158,7 @@ public class ChooseHowToMake : BasicUI
 
         y = value;
         Ytext.text = y.ToString();
+        YScrollbar.ChangedValue(y);
         MakeNewWorld();
     }
 
@@ -169,6 +182,7 @@ public class ChooseHowToMake : BasicUI
 
         z = value;
         Ztext.text = z.ToString();
+        ZScrollbar.ChangedValue(z);
         MakeNewWorld();
     }
 
@@ -188,6 +202,7 @@ public class ChooseHowToMake : BasicUI
 
         z = value;
         Ztext.text = z.ToString();
+        ZScrollbar.ChangedValue(z);
         MakeNewWorld();
     }
 
