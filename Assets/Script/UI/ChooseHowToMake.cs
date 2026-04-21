@@ -36,8 +36,13 @@ public class ChooseHowToMake : BasicUI
         Ztext.text = z.ToString();
 
         XScrollbar.Onit(this);
+        XScrollbar.ChangedValue(x);
+
         YScrollbar.Onit(this);
+        YScrollbar.ChangedValue(y);
+
         ZScrollbar.Onit(this);
+        ZScrollbar.ChangedValue(z);
 
         check();
     }
