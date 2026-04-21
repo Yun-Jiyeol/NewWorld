@@ -484,14 +484,6 @@ public class SaveAndLoadManager : MonoBehaviour
         Debug.Log("로드 취소됨");
     }
 
-    private void Update() //Test용
-    {
-        if (Input.GetKeyUp(KeyCode.K))
-        {
-            SaveAll();
-        }
-    }
-
     public void SaveAll()
     {
         PlayerPosSave();

@@ -16,7 +16,9 @@ public class OnStartOrStopManager : MonoBehaviour
     {
         if(OnStopGame == null && OnPauseGame == null) return;
 
+        OnStopGame -= GameManager.Instance.SaveAndLoadManager.SaveAll;
         OnStopGame += GameManager.Instance.SaveAndLoadManager.SaveAll;
+        OnPauseGame -= GameManager.Instance.SaveAndLoadManager.SaveAll;
         OnPauseGame += GameManager.Instance.SaveAndLoadManager.SaveAll;
     }
 

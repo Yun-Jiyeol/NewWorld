@@ -81,6 +81,8 @@ public class GameManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
                 NowWorldSaveFolder = null;
+
+                RemoveInTimeSave();
                 break;
 
             case GameFlow.WatchAllWorld:
@@ -94,7 +96,7 @@ public class GameManager : MonoBehaviour
                 UIManager.Compass.SetActive(true);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight, SelectionUIenum.PlayerPos, SelectionUIenum.CameraSetting });
 
-                RemoveInTimeSave();
+                AddInTimeSave(SavePlayer);
                 break;
 
             case GameFlow.PutWorldInSpace:
@@ -158,12 +160,19 @@ public class GameManager : MonoBehaviour
 
     public void SaveNowWorld()
     {
+        if(InputManager.TargetGameObject == null) return;
         SaveAndLoadManager.SaveWorldData(InputManager.TargetGameObject.GetComponent<ChunkCode>());
     }
 
     public void SaveSomeNowWorld()
     {
+        if (InputManager.TargetGameObject == null) return;
         SaveAndLoadManager.SaveWorldInfo(InputManager.TargetGameObject.GetComponent<ChunkCode>());
+    }
+
+    public void SavePlayer()
+    {
+        SaveAndLoadManager.SaveAll();
     }
 
     void AddInTimeSave(Action _action)

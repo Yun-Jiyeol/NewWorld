@@ -5,7 +5,8 @@ using UnityEngine;
 public enum StartUIs 
 {
     MakeNewWorldUI,
-    LoadUI
+    LoadUI,
+    SettingUI
 }
 
 
@@ -13,6 +14,7 @@ public class StartAdditionalUI : MonoBehaviour
 {
     public GameObject LoadUI;
     public GameObject MakeNewWorldUI;
+    public GameObject SettingUI;
 
     public GameObject NowUI = null;
 
@@ -28,6 +30,9 @@ public class StartAdditionalUI : MonoBehaviour
                 break;
             case StartUIs.LoadUI:
                 _go = LoadUI;
+                break;
+            case StartUIs.SettingUI:
+                _go = SettingUI;
                 break;
         }
 
@@ -47,6 +52,11 @@ public class StartAdditionalUI : MonoBehaviour
         SpawnUI(StartUIs.LoadUI);
     }
 
+    public void ClickSettingBtn()
+    {
+        SpawnUI(StartUIs.SettingUI);
+    }
+
     public void ClickStartBtn()
     {
         if(GameManager.Instance.NowWorldSaveFolder == null)
@@ -55,6 +65,7 @@ public class StartAdditionalUI : MonoBehaviour
         }
         else
         {
+            OffThisUI();
             GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         }
     }
