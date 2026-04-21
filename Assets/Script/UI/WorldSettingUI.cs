@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class WorldSettingUI : BasicUI
 {
@@ -42,5 +43,11 @@ public class WorldSettingUI : BasicUI
         if (TextBox.text == "") return;
 
         TextBox.text = "";
+    }
+
+    public void OnClickEnd()
+    {
+        GameManager.Instance.SaveSomeNowWorld();
+        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
 }
