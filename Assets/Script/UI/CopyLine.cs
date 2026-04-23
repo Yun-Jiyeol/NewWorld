@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -16,8 +17,8 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     bool isPressed = false;
 
-    float Max = 150f;
-    float Min = -150f;
+    float Max = 145f;
+    float Min = -145f;
 
     LightUI lightUI = null;
     MainLightUI MainLightUI = null;
@@ -32,10 +33,10 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         DrawPaletteLine();
 
         Color.RGBToHSV(_lightui._color, out float h, out float s, out float v);
-        float value = Mathf.Lerp(-150f, 150f, h);
+        float value = Mathf.Lerp(-145f, 145f, h);
 
-        childToMove.anchoredPosition = new Vector2(value, 35f);
-        _lightui.inLineChoose = GetColorFromPalette(new Vector2(value, 0));
+        childToMove.anchoredPosition = new Vector2(value, -25f);
+        _lightui.ChangeLineChoose(GetColorFromPalette(new Vector2(value, 0)));
         childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
         lightUI = _lightui;
     }
@@ -45,10 +46,10 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         DrawPaletteLine();
 
         Color.RGBToHSV(_mainLightUI._color, out float h, out float s, out float v);
-        float value = Mathf.Lerp(-150f, 150f, h);
+        float value = Mathf.Lerp(-145f, 145f, h);
 
-        childToMove.anchoredPosition = new Vector2(value, 35f);
-        _mainLightUI.inLineChoose = GetColorFromPalette(new Vector2(value, 0));
+        childToMove.anchoredPosition = new Vector2(value, -25f);
+        _mainLightUI.ChangeInlineColor(GetColorFromPalette(new Vector2(value, 0)));
         childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
         MainLightUI = _mainLightUI;
     }
@@ -153,16 +154,16 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 localPoint.x = Min;
             }
 
-            childToMove.anchoredPosition = new Vector2(localPoint.x, 35f);
+            childToMove.anchoredPosition = new Vector2(localPoint.x, -25f);
 
             if(lightUI != null)
             {
-                lightUI.inLineChoose = GetColorFromPalette(new Vector2(localPoint.x, 0));
+                lightUI.ChangeLineChoose(GetColorFromPalette(new Vector2(localPoint.x, 0)));
                 childToMove.gameObject.GetComponent<Image>().color = lightUI.inLineChoose;
                 lightUI.CopyChoose.DrawPaletteLine();
             }else if(MainLightUI != null)
             {
-                MainLightUI.inLineChoose = GetColorFromPalette(new Vector2(localPoint.x, 0));
+                MainLightUI.ChangeInlineColor(GetColorFromPalette(new Vector2(localPoint.x, 0)));
                 childToMove.gameObject.GetComponent<Image>().color = MainLightUI.inLineChoose;
                 MainLightUI.CopyChoose.DrawPaletteLine();
             }

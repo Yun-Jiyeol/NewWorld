@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 public class MainLightUI : BasicUI
@@ -15,6 +16,8 @@ public class MainLightUI : BasicUI
     GameObject ML = null;
 
     GameObject blockImage= null;
+
+    public Image background; 
 
     public override void OnSetting()
     {
@@ -64,6 +67,12 @@ public class MainLightUI : BasicUI
     public void ResetMainLight()
     {
         StartCoroutine(ResetRotOfMainLight());
+    }
+
+    public void ChangeInlineColor(Color color)
+    {
+        inLineChoose = color;
+        background.color = color;
     }
 
     IEnumerator ResetRotOfMainLight()

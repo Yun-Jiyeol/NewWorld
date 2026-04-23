@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -139,13 +140,13 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (lightui != null)
         {
             lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-            childToMove.gameObject.GetComponent<Image>().color = lightui._color;
+            childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = lightui._color;
             lightui.ChangeColor();
         }
         else if (MainLightUI != null)
         {
             MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
-            childToMove.gameObject.GetComponent<Image>().color = MainLightUI._color;
+            childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = MainLightUI._color;
             MainLightUI.ChangeColor();
         }
     }
@@ -188,13 +189,13 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if (lightui != null)
             {
                 lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-                childToMove.gameObject.GetComponent<Image>().color = lightui._color;
+                childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = lightui._color;
                 lightui.ChangeColor();
             }
             else if (MainLightUI != null)
             {
                 MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
-                childToMove.gameObject.GetComponent<Image>().color = MainLightUI._color;
+                childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = MainLightUI._color;
                 MainLightUI.ChangeColor();
             }
         }

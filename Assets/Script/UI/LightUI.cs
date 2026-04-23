@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -36,7 +37,7 @@ public class LightUI : BasicUI
     float SettingLight;
     float SettingRange;
     float SettingAngle;
-    int MaxLight = 999;
+    int MaxLight = 9999;
     int MinLight = 0;
 
     public Light target;
@@ -44,6 +45,8 @@ public class LightUI : BasicUI
 
     public Color _color;
     public Color inLineChoose;
+
+    public Image BGColor;
 
     GameObject ShowLight;
 
@@ -103,6 +106,12 @@ public class LightUI : BasicUI
 
         ShowLight.transform.localScale = Vector3.one  * (maxSZ / 10f);
         SettingColor();
+    }
+
+    public void ChangeLineChoose(Color color)
+    {
+        inLineChoose = color;
+        BGColor.color = color;
     }
 
     public void ChangeSettingLight(float i)
@@ -298,16 +307,16 @@ public class LightUI : BasicUI
         switch (targettype)
         {
             case (LightType.Spot):
-                Spot.gameObject.GetComponent<Image>().color = new Color(1, 0.5f, 0.5f);
-                Point.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
+                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(230f, 45f), 0.3f);
+                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(45f, 45f), 0.3f);
                 SettingAngleGo.SetActive(true);
                 MakeSpere();
                 SettingColor();
                 break;
 
             case (LightType.Point):
-                Spot.gameObject.GetComponent<Image>().color = new Color(1, 1, 1);
-                Point.gameObject.GetComponent<Image>().color = new Color(0.5f, 1, 0.5f);
+                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(45f, 45f), 0.3f);
+                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(230f, 45f), 0.3f);
                 SettingAngleGo.SetActive(false);
                 MakeSpere();
                 SettingColor();
@@ -323,5 +332,15 @@ public class LightUI : BasicUI
     public void ResetPosition()
     {
         GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().SetLightPosition();
+    }
+
+    public void OnSelection(GameObject _go)
+    {
+        _go.SetActive(true);
+    }
+
+    public void DisSelection(GameObject _go)
+    {
+        _go.SetActive(false);
     }
 }

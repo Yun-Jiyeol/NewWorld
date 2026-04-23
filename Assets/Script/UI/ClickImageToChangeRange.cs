@@ -23,7 +23,7 @@ public class ClickImageToChangeRange : MonoBehaviour, IPointerDownHandler
         {
             if (!Input.GetMouseButton(0)) break;
 
-            gameObject.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f);
+            gameObject.GetComponent<Image>().color = new Color(0.8f, 0.8f, 1f);
             ui.ChangeSettingLightRange(ChagedValue * Time.deltaTime);
             yield return null;
         }

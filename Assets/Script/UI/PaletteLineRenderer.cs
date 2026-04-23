@@ -17,8 +17,8 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
 
     bool isPressed = false;
 
-    float Max = 150f;
-    float Min = -150f;
+    float Max = 145f;
+    float Min = -145f;
 
     ParetteUI paretteui;
 
@@ -32,9 +32,9 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
         DrawPaletteLine();
 
         Color.RGBToHSV(GameManager.Instance.BuildManager.MainColor.color, out float h, out float s, out float v);
-        float value = Mathf.Lerp(-150f, 150f, h);
+        float value = Mathf.Lerp(-145f, 145f, h);
 
-        childToMove.anchoredPosition = new Vector2(value, 35f);
+        childToMove.anchoredPosition = new Vector2(value, -25f);
         targetMaterial.color = GetColorFromPalette(new Vector2(value, 0));
         paretteui = _paretteui;
     }
@@ -139,7 +139,7 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
                 localPoint.x = Min;
             }
 
-            childToMove.anchoredPosition = new Vector2(localPoint.x, 35f);
+            childToMove.anchoredPosition = new Vector2(localPoint.x, -25f);
 
             targetMaterial.color = GetColorFromPalette(new Vector2(localPoint.x, 0));
             paretteui._finalChooseColor.DrawPaletteLine();
