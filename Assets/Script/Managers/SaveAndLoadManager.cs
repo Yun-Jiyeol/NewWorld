@@ -223,6 +223,8 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void SaveWorldData(ChunkCode _world) //설치 한 이후 1회, 제작 중 1분 단위로 1회
     {
+        _world.isSavedBefore = false;
+
         // 이미 저장 중이면 dirty 처리
         if (isSaving && currentSavingWorld == _world)
         {
@@ -417,6 +419,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
         worldCode._name = worldsave.Name;
         worldCode.Savedtime = worldsave.Time;
+        worldCode.isSavedBefore = true;
 
         Coroutine co = StartCoroutine(LoadChunksCoroutine(folder, worldCode));
         loadingCoroutines.Add(co);

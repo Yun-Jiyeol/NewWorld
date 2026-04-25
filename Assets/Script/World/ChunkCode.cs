@@ -18,6 +18,7 @@ public class ChunkCode : MonoBehaviour
     public string Savedtime;
 
     public GameObject LightBlock;
+    public bool isSavedBefore = false;
 
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들

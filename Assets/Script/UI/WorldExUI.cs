@@ -9,32 +9,37 @@ public class WorldExUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 {
     ChunkCode ChunkCode;
     public TextMeshProUGUI Name;
-    public TextMeshProUGUI pos;
+    public TextMeshProUGUI xpos;
+    public TextMeshProUGUI ypos;
+    public TextMeshProUGUI zpos;
 
-    Image thisImage;
+    public GameObject OnSelect;
+    public GameObject OnMouse;
+    public GameObject OnError;
+
     PlayerPosUI PPUI;
-
-    private void Start()
-    {
-        thisImage = gameObject.GetComponent<Image>();
-    }
 
     public void Setting(GameObject _world, PlayerPosUI _ppui)
     {
         PPUI = _ppui;
         ChunkCode = _world.GetComponent<ChunkCode>();
+        if(!ChunkCode.isSavedBefore) OnError.SetActive(true);
+
         Name.text = ChunkCode._name;
-        pos.text = "x = " + _world.transform.position.x.ToString("F1") + "y = " + _world.transform.position.y.ToString("F1") + "z = " + _world.transform.position.z.ToString("F1");
+
+        xpos.text = "XÁÂÇ¥ = " + _world.transform.position.x.ToString("F1");
+        ypos.text = "YÁÂÇ¥ = " + _world.transform.position.y.ToString("F1");
+        zpos.text = "ZÁÂÇ¥ = " + _world.transform.position.z.ToString("F1");
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        thisImage.color = new Color(0, 0, 0, 1f);
+        OnMouse.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        thisImage.color = new Color(0, 0, 0, 0);
+        OnMouse.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -44,6 +49,7 @@ public class WorldExUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void LooAtThis()
     {
+        OnSelect.SetActive(true);
         GameManager.Instance.MainCamera.LookAt(ChunkCode.gameObject.transform);
     }
 

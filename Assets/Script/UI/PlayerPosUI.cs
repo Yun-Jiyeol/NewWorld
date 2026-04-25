@@ -23,7 +23,7 @@ public class PlayerPosUI : BasicUI
         {
             GameObject ui = Instantiate(WorldExUI, WorldsCheckUI.transform);
             ui.GetComponent<WorldExUI>().Setting(GameManager.Instance.WorldManager.Worlds[i], this);
-            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 250f);
+            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 175f);
 
             worldexuis.Add(ui);
         }
@@ -38,7 +38,7 @@ public class PlayerPosUI : BasicUI
         if(worldexuis.Count == 0) return;
         foreach(GameObject go in worldexuis)
         {
-            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta -= new Vector2(0, 250f);
+            WorldsCheckUI.GetComponent<RectTransform>().sizeDelta -= new Vector2(0, 175f);
             Destroy(go);
         }
 
@@ -90,6 +90,11 @@ public class PlayerPosUI : BasicUI
         if(LastLook != _give)
         {
             LastLook = _give;
+
+            foreach(GameObject weu in worldexuis)
+            {
+                weu.GetComponent<WorldExUI>().OnSelect.SetActive(false);
+            }
 
             _give.LooAtThis();
             SelectBtn.SetActive(true);
