@@ -136,7 +136,6 @@ public class ChunkCode : MonoBehaviour
             }
         }
 
-
         FinishSettingBlock();
     }
 

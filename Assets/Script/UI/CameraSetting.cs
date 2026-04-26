@@ -32,6 +32,7 @@ public class CameraSetting : BasicUI
     MainCamera mainCamera;
     Material CameraMaterial;
     public Dictionary<CameraEffect, CameraState> CameraNowSetting;
+    Dictionary<CameraEffect, GameObject> SlidersSave = new Dictionary<CameraEffect, GameObject>();
 
     public List<Image> CameraNowShow;
     public Sprite OnSprite;
@@ -65,17 +66,20 @@ public class CameraSetting : BasicUI
 
     void SettingCameraNowSetting()
     {
-        if (CameraNowSetting == null) MakeNewSetting();
+        if (CameraNowSetting == null)
+        {
+            MakeNewSetting();
+        }
 
-        CameraNowSetting[CameraEffect.Reverse].isOn = CameraMaterial.GetFloat(((SystemName)0).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.BlackWhite].isOn = CameraMaterial.GetFloat(((SystemName)2).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.ContrastThreshold].isOn = CameraMaterial.GetFloat(((SystemName)4).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.Posterize].isOn = CameraMaterial.GetFloat(((SystemName)6).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.Pixelate].isOn = CameraMaterial.GetFloat(((SystemName)8).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.Vignette].isOn = CameraMaterial.GetFloat(((SystemName)10).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.EdgeDetect].isOn = CameraMaterial.GetFloat(((SystemName)12).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.FilmNoise].isOn = CameraMaterial.GetFloat(((SystemName)14).ToString()) == 1f;
-        CameraNowSetting[CameraEffect.CRTScanline].isOn = CameraMaterial.GetFloat(((SystemName)16).ToString()) == 1f;
+        CameraNowSetting[CameraEffect.Reverse].isOn = CameraMaterial.GetFloat(((SystemName)0).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.BlackWhite].isOn = CameraMaterial.GetFloat(((SystemName)2).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.ContrastThreshold].isOn = CameraMaterial.GetFloat(((SystemName)4).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.Posterize].isOn = CameraMaterial.GetFloat(((SystemName)6).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.Pixelate].isOn = CameraMaterial.GetFloat(((SystemName)8).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.Vignette].isOn = CameraMaterial.GetFloat(((SystemName)10).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.EdgeDetect].isOn = CameraMaterial.GetFloat(((SystemName)12).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.FilmNoise].isOn = CameraMaterial.GetFloat(((SystemName)14).ToString()) >= 0.5f;
+        CameraNowSetting[CameraEffect.CRTScanline].isOn = CameraMaterial.GetFloat(((SystemName)16).ToString()) >= 0.5f;
 
         CameraNowSetting[CameraEffect.ContrastThreshold].NowPower = CameraMaterial.GetFloat(((SystemName)5).ToString());
         CameraNowSetting[CameraEffect.Posterize].NowPower = CameraMaterial.GetFloat(((SystemName)7).ToString());
@@ -84,12 +88,26 @@ public class CameraSetting : BasicUI
         CameraNowSetting[CameraEffect.EdgeDetect].NowPower = CameraMaterial.GetFloat(((SystemName)13).ToString());
         CameraNowSetting[CameraEffect.FilmNoise].NowPower = CameraMaterial.GetFloat(((SystemName)15).ToString());
         CameraNowSetting[CameraEffect.CRTScanline].NowPower = CameraMaterial.GetFloat(((SystemName)17).ToString());
+
+        CheckAllSlider();
+
+        for (int i = 0; i < CameraNowSetting.Count; i++)
+        {
+            CheckSetting(i);
+        }
     }
 
     public void ClickThisBtn(int type)
     {
         CameraEffect clickedtype = (CameraEffect)type;
         CameraNowSetting[clickedtype].isOn = !CameraNowSetting[clickedtype].isOn;
+
+        CheckSetting(type);
+    }
+
+    private void CheckSetting(int type)
+    {
+        CameraEffect clickedtype = (CameraEffect)type;
 
         string Name = ((SystemName)(type * 2)).ToString();
         string Value = ((SystemName)(type * 2 + 1)).ToString();
@@ -108,6 +126,7 @@ public class CameraSetting : BasicUI
                 slider.transform.SetSiblingIndex(index + 1);
                 SpawnPos.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 300f);
                 slider.GetComponent<CameraSettingSlider>().Init(clickedtype, this);
+                SlidersSave[clickedtype] = slider;
             }
         }
         else //끌때
@@ -118,18 +137,35 @@ public class CameraSetting : BasicUI
 
             if (CameraNowSetting[clickedtype].MakeLine) //조절기 삭제
             {
-                Transform parent = CameraNowShow[type].transform.parent.parent;
-
-                int index = parent.transform.GetSiblingIndex();
-
-                GameObject nextObj = null;
-                if (index + 1 < parent.parent.childCount)
-                {
-                    nextObj = parent.parent.GetChild(index + 1).gameObject;
-                }
-
-                Destroy(nextObj);
+                Destroy(SlidersSave[clickedtype]);
+                SlidersSave[clickedtype] = null;    
             }
+        }
+    }
+
+    void CheckAllSlider()
+    {
+        foreach(var CS in CameraNowSetting)
+        {
+            if (CS.Value.MakeLine)
+            {
+                CheckSliderbar(CS.Key);
+            }
+        }
+    } 
+
+    void CheckSliderbar(CameraEffect clickedtype)
+    {
+        if (!SlidersSave.ContainsKey(clickedtype))
+        {
+            SlidersSave.Add(clickedtype, null);
+            return;
+        }
+
+        if (SlidersSave[clickedtype] != null)
+        {
+            Destroy(SlidersSave[clickedtype]);
+            SlidersSave[clickedtype] = null;
         }
     }
 }

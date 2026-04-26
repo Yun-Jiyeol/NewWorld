@@ -64,15 +64,11 @@ public class MoveOneWorldUI : BasicUI
     {
         target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, SaveScale,true, SaveVector3,true, SaveRotation);
         GameManager.Instance.SaveSomeNowWorld();
-        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
-        target = null;
     }
 
     public void SetPosition()
     {
         GameManager.Instance.SaveSomeNowWorld();
-        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
-        target = null;
     }
 
     public void DestroyWorld()

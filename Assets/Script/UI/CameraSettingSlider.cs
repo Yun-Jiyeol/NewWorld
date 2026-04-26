@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,9 @@ public class CameraSettingSlider : MonoBehaviour
     public TMP_InputField inputfield;
     public Slider slider;
 
+    public TextMeshProUGUI MaxText;
+    public TextMeshProUGUI MInText;
+
     CameraSetting parent;
     CameraEffect thistype;
     Material CameraMaterial;
@@ -18,6 +22,8 @@ public class CameraSettingSlider : MonoBehaviour
     float Max = 0;
     float Min = 0;
     float NowValue = 0;
+
+    bool isinit = false;
 
     public void Init(CameraEffect type, CameraSetting cam)
     {
@@ -28,17 +34,26 @@ public class CameraSettingSlider : MonoBehaviour
         Max = parent.CameraNowSetting[thistype].MaxPower;
         Min = parent.CameraNowSetting[thistype].MinPower;
         NowValue = parent.CameraNowSetting[thistype].NowPower;
+        
+        slider.value = NowValue;
 
         slider.minValue = Min;
+        MInText.text = Min.ToString("F1");
+
         slider.maxValue = Max;
+        MaxText.text = Max.ToString("F1");
 
         SettingSlider();
         SettingInputField();
         SettingCameraEffect();
+
+        isinit = true;
     }
 
     public void OnSliderChange()
     {
+        if (!isinit) return;
+
         float value = slider.value;
         NowValue = value;
 
@@ -91,5 +106,19 @@ public class CameraSettingSlider : MonoBehaviour
 
         string Value = ((SystemName)(num * 2 + 1)).ToString();
         CameraMaterial.SetFloat(Value, NowValue);
+    }
+
+    public void ClickSidePoint(int i)
+    {
+        float input = (Max - Min) / 50f;
+
+        NowValue += input * i;
+
+        NowValue = Mathf.Min(Max, NowValue);
+        NowValue = Mathf.Max(Min, NowValue);
+
+        SettingSlider();
+        SettingInputField();
+        SettingCameraEffect();
     }
 }

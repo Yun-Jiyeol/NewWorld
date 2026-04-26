@@ -7,6 +7,11 @@ public class CameraShaderPutter : MonoBehaviour
     public Material CamMaterial;
     public bool isUsingEffect = true;
 
+    private void Start()
+    {
+        ResetMaterial();
+    }
+
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (isUsingEffect)

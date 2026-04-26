@@ -29,17 +29,17 @@ Material:
     - _BlackWhite: 0
     - _CRT: 0
     - _CRTStrength: 0.2
-    - _Contrast: 0
-    - _ContrastThreshold: 0.5
-    - _Edge: 0
-    - _EdgeStrength: 1
+    - _Contrast: 1
+    - _ContrastThreshold: 0.65698296
+    - _Edge: 1
+    - _EdgeStrength: 3.1428251
     - _Noise: 0
     - _NoiseStrength: 0.1
     - _OnContrast: 0
-    - _PixelSize: 254
-    - _Pixelate: 0
-    - _Posterize: 0
-    - _PosterizeSteps: 4
+    - _PixelSize: 881.06256
+    - _Pixelate: 1
+    - _Posterize: 1
+    - _PosterizeSteps: 23.414583
     - _Reverse: 0
     - _Vignette: 0
     - _VignetteStrength: 1

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -158,6 +159,7 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             Directory.CreateDirectory(WorldSaveFolder);
             Directory.CreateDirectory(WorldPlayerSetting);
+            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
         }
     }
 
@@ -182,7 +184,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
         EnsureSaveFolder();
 
-        if (Directory.Exists(WorldPlayerSetting))
+        if (Directory.Exists(WorldPlayerSetting) && Directory.EnumerateFiles(WorldPlayerSetting).Any())
             LoadFile(WorldPlayerSetting);
         else
             GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
