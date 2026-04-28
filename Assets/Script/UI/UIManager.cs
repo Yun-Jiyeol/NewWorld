@@ -29,6 +29,13 @@ public class UIManager : MonoBehaviour
 
     public StartAdditionalUI StartAdditionalUI;
 
+    public WorldUIIcons WorldUIIcons;
+
+    private void Awake()
+    {
+        WorldUIIcons = gameObject.GetComponent<WorldUIIcons>();
+    }
+
     private void Start()
     {
         GameManager.Instance.UIManager = this;

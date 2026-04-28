@@ -1,16 +1,31 @@
-using OpenCover.Framework.Model;
+using DG.Tweening;
 using System;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class MakeNewWorld : NeedToDoOnit
 {
     public TMP_InputField NameField;
+
+    public RectTransform ArrowImage;
+    public Image IconSprite;
+    int spritenum = 0;
+
+    public GameObject AdditionalUIIcon;
+    GameObject _AdditionalUIIcon = null;
 
     string SettingName = "NewWorld";
 
     public override void Onit()
     {
         NameField.onValueChanged.AddListener(OnValueChanged);
+    }
+
+    public override void Onit(int _num)
+    {
+        spritenum = _num;
+        IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
     }
 
     void OnValueChanged(string value)
@@ -33,7 +48,7 @@ public class MakeNewWorld : NeedToDoOnit
         {
             SettingName = "NewWorld";
         }
-        GameManager.Instance.NowWorldSaveFolder = SettingName + "_" + time;
+        GameManager.Instance.NowWorldSaveFolder = SettingName + "_" + time + "_" + spritenum;
         SaveAndLoadManager.EnsureSaveFolder();
 
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
@@ -42,5 +57,17 @@ public class MakeNewWorld : NeedToDoOnit
     public void DeclineMakeWorld()
     {
         GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
+    }
+
+    public void SpawnAdditionalUIIcons()
+    {
+        if (_AdditionalUIIcon == null)
+        {
+            _AdditionalUIIcon = Instantiate(AdditionalUIIcon, gameObject.transform);
+            _AdditionalUIIcon.GetComponent<NeedToDoOnit>().GetParent(gameObject);
+        }
+
+        ArrowImage.DOScaleX(ArrowImage.localScale.x * -1f , 0f);
+        _AdditionalUIIcon.GetComponent<NeedToDoOnit>().Onit();
     }
 }

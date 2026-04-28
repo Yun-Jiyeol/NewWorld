@@ -59,7 +59,7 @@ public class InputManager : MonoBehaviour
         switch (GameManager.Instance.flow)
         {
             case GameFlow.WatchAllWorld:
-                if (Cursor.visible)
+                if (Cursor.lockState == CursorLockMode.Confined)
                 {
                     nowMovingThing = CoinType.None;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
@@ -67,7 +67,7 @@ public class InputManager : MonoBehaviour
                     if (Input.GetKeyDown(KeyCode.Tab))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
-                        Cursor.visible = false;
+                        GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
                         Cursor.lockState = CursorLockMode.Locked;
                         GameManager.Instance.MainCamera.stopCamera = false;
                         GameManager.Instance.MainCamera.SavePos();
@@ -95,7 +95,7 @@ public class InputManager : MonoBehaviour
                     {
                         GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
-                        Cursor.visible = true;
+                        GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
                         Cursor.lockState = CursorLockMode.Confined;
                         GameManager.Instance.MainCamera.stopCamera = true;
                         GameManager.Instance.MainCamera.SavePos();
@@ -290,14 +290,14 @@ public class InputManager : MonoBehaviour
             if (nowMovingThing == CoinType.None) return;
             else if (nowMovingThing == CoinType.World)
             {
-                Cursor.visible = false;
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
                 Cursor.lockState = CursorLockMode.Locked;
                 GameManager.Instance.MainCamera.TryCheckrot();
                 nowMovingThing = CoinType.Player;
             }
             else if (nowMovingThing == CoinType.Player)
             {
-                Cursor.visible = true;
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
                 Cursor.lockState = CursorLockMode.Confined;
                 nowMovingThing = CoinType.World;
             }

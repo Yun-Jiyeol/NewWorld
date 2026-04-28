@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
 
     public MainCamera MainCamera;
 
+    public CursorMover CursorMover;
+
     public string NowWorldSaveFolder = null;
 
     private void Awake()
@@ -54,7 +56,11 @@ public class GameManager : MonoBehaviour
         LightManager = gameObject.GetComponent<LightManager>();
         OnStartOrStopManager = gameObject.GetComponent<OnStartOrStopManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
+    }
 
+    private void Start()
+    {
+        Cursor.visible = false;
         ChangeFlow(GameFlow.Start);
     }
 
@@ -79,7 +85,7 @@ public class GameManager : MonoBehaviour
             case GameFlow.Start:
                 BuildManager.maxFrameTime = 5f;
                 Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = true;
+                CursorMover?.ChangeCursorState(cursorstate.Follow);
                 NowWorldSaveFolder = null;
 
                 RemoveInTimeSave();
@@ -91,7 +97,7 @@ public class GameManager : MonoBehaviour
                 MainCamera.SubCamera.gameObject.SetActive(false);
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                CursorMover?.ChangeCursorState(cursorstate.Off);
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting , SelectionUIenum.MainLight, SelectionUIenum.PlayerPos, SelectionUIenum.CameraSetting });
@@ -105,7 +111,7 @@ public class GameManager : MonoBehaviour
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                CursorMover?.ChangeCursorState(cursorstate.Off);
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.CameraSetting });
@@ -120,7 +126,7 @@ public class GameManager : MonoBehaviour
                 InputManager.WhenComeintoWatchOneWorld();
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = true;
+                CursorMover?.ChangeCursorState(cursorstate.Follow);
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.Color, SelectionUIenum.PutWorld, SelectionUIenum.HelpingInMake, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
@@ -134,7 +140,7 @@ public class GameManager : MonoBehaviour
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = true;
+                CursorMover?.ChangeCursorState(cursorstate.Follow);
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.ChooseHowToMake,SelectionUIenum.HelpingInMake });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.ChooseHowToMake);
@@ -148,7 +154,7 @@ public class GameManager : MonoBehaviour
                 MainCamera.SubCamera.gameObject.SetActive(false);
                 BuildManager.maxFrameTime = 1f;
                 Cursor.lockState = CursorLockMode.Confined;
-                Cursor.visible = true;
+                CursorMover?.ChangeCursorState(cursorstate.Follow);
                 UIManager.Compass.SetActive(false);
                 UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.LightOneWorld, SelectionUIenum.MoveOneWorld, SelectionUIenum.WorldSetting, SelectionUIenum.CameraSetting });
                 UIManager.SelectionUI.ChangeNowUIEnum(SelectionUIenum.None);
