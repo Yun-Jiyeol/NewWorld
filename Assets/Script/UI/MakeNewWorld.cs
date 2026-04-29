@@ -1,4 +1,5 @@
 using DG.Tweening;
+using OpenCover.Framework.Model;
 using System;
 using TMPro;
 using UnityEngine;
@@ -38,6 +39,15 @@ public class MakeNewWorld : NeedToDoOnit
         }
 
         SettingName = filtered;
+    }
+
+    public void ResetWorldSetting()
+    {
+        spritenum = 0;
+        IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+
+        SettingName = "NewWorld";
+        NameField.text = SettingName;
     }
 
     public void MakeWorld()
