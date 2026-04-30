@@ -11,6 +11,8 @@ public class SoundControl : NeedToDoOnit
     public TextMeshProUGUI VolumeValue;
     public List<Image> ShowValues;
 
+    public Gradient gradient;
+
     public Sprite OnSprite;
     public Sprite OffSprite;
 
@@ -41,7 +43,16 @@ public class SoundControl : NeedToDoOnit
 
         for (int i = 0; i < ShowValues.Count; i++)
         {
-            ShowValues[i].sprite = (i < count) ? OnSprite : OffSprite;
+            if (i < count)
+            {
+                ShowValues[i].sprite = OnSprite;
+                ShowValues[i].color = gradient.Evaluate(i / 10f);
+            }
+            else
+            {
+                ShowValues[i].sprite = OffSprite;
+                ShowValues[i].color = Color.white;
+            }
         }
     }
 

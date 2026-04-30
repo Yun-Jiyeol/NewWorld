@@ -74,6 +74,10 @@ public class SelectionUI : MonoBehaviour
                 PopInSettingPanel();
                 break;
 
+            case SelectionUIenum.Setting:
+                GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.SettingUI);
+                break;
+
             default:
                 PopUpSettingPanel();
                 break;

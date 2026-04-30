@@ -7,6 +7,11 @@ public class SettingUI : NeedToDoOnit
     public Transform SpawnTransform;
 
     public GameObject SoundSettingPage;
+    public GameObject KeySettingPage;
+    public GameObject LanguageSettingPage;
+    public GameObject WorldSettingPage;
+
+    public GameObject WorldSettingBtn;
 
     int nowpage = -1;
     GameObject NowPage = null;
@@ -14,6 +19,11 @@ public class SettingUI : NeedToDoOnit
     public override void Onit()
     {
         ClickSettingPageBtn(0);
+
+        if(GameManager.Instance.flow == GameFlow.Start)
+        {
+            WorldSettingBtn.SetActive(false);
+        }
     }
 
     public void ClickOffBtn()
@@ -24,6 +34,8 @@ public class SettingUI : NeedToDoOnit
     /*
      * 0. sound세팅
      * 1. 키 세팅
+     * 2. 언어 세팅
+     * 3. 월드 세팅
      */
     public void ClickSettingPageBtn(int num) 
     {
@@ -40,8 +52,18 @@ public class SettingUI : NeedToDoOnit
             case 0:
                 NowPage = Instantiate(SoundSettingPage, SpawnTransform);
                 break;
+            case 1:
+                NowPage = Instantiate(KeySettingPage, SpawnTransform);
+                break;
+            case 2:
+                NowPage = Instantiate(LanguageSettingPage, SpawnTransform);
+                break;
+            case 3:
+                NowPage = Instantiate(WorldSettingPage, SpawnTransform);
+                break;
         }
 
         NowPage.GetComponent<NeedToDoOnit>().Onit();
+        NowPage.GetComponent<NeedToDoOnit>().GetParent(gameObject.transform);
     }
 }

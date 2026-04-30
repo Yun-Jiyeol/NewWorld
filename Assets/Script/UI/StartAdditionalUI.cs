@@ -69,4 +69,9 @@ public class StartAdditionalUI : MonoBehaviour
             GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         }
     }
+
+    public void ClickExitGameBtn()
+    {
+        GameManager.Instance.Exit();
+    }
 }

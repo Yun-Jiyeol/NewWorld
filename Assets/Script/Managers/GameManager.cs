@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Cursor.visible = false;
+        NowWorldSaveFolder = null;
+
         ChangeFlow(GameFlow.Start);
     }
 
@@ -88,7 +90,6 @@ public class GameManager : MonoBehaviour
                 BuildManager.maxFrameTime = 5f;
                 Cursor.lockState = CursorLockMode.Confined;
                 CursorMover?.ChangeCursorState(cursorstate.Follow);
-                NowWorldSaveFolder = null;
 
                 RemoveInTimeSave();
                 break;
@@ -191,5 +192,26 @@ public class GameManager : MonoBehaviour
     void RemoveInTimeSave()
     {
         OnStartOrStopManager.StopTimeCoroutine();
+    }
+
+    public void ExitGame()
+    {
+        SaveAndLoadManager.SaveAll();
+        Exit();
+    }
+
+    public void Exit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    public void GoToStartPage()
+    {
+        SaveAndLoadManager.SaveAll();
+        ChangeFlow(GameFlow.Start);
     }
 }
