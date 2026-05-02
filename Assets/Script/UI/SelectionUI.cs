@@ -66,6 +66,13 @@ public class SelectionUI : MonoBehaviour
 
     public void ChangeNowUIEnum(SelectionUIenum _changeenum)
     {
+        if(nowUIenum == _changeenum)
+        {
+            PopInSettingPanel();
+
+            return;
+        }
+
         nowUIenum = _changeenum;
 
         switch (nowUIenum)
@@ -106,6 +113,8 @@ public class SelectionUI : MonoBehaviour
 
     public void PopInSettingPanel()
     {
+        nowUIenum = SelectionUIenum.None;
+
         thistransform.DOKill();
         thistransform.DOAnchorPosX(0f, 0.25f);
         DestroyAllAdditionalUi();

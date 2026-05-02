@@ -77,11 +77,16 @@ public class GameManager : MonoBehaviour
         {
             OnStartOrStopManager.DelectActions();
             UIManager.ChangeScene(SceneSelection.StartScene);
+
+            MainCamera.SubCamera.gameObject.SetActive(true);
+            MainCamera.SubCamera.GetComponent<Camera>().cullingMask = ~0;
         }
         else
         {
             OnStartOrStopManager.AddActions();
             UIManager.ChangeScene(SceneSelection.InGameUI);
+
+            MainCamera.SubCamera.GetComponent<Camera>().cullingMask = 1 << 7;
         }
 
         switch (flow)
@@ -89,6 +94,8 @@ public class GameManager : MonoBehaviour
             case GameFlow.Start:
                 BuildManager.maxFrameTime = 5f;
                 Cursor.lockState = CursorLockMode.Confined;
+
+                MainCamera.SubCamera.gameObject.SetActive(true);
                 CursorMover?.ChangeCursorState(cursorstate.Follow);
 
                 RemoveInTimeSave();
