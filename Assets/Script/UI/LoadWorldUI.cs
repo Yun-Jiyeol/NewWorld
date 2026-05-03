@@ -1,10 +1,14 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class LoadWorldUI : NeedToDoOnit
+public class LoadWorldUI : NeedToDoOnit, OnEndAction
 {
+    StartAdditionalUI startAdditionalUI;
+
     public Transform SpawnPos;
     public GameObject SaveFilePrefab;
     List<WorldSaveFile> WorldSaveFiles = new List<WorldSaveFile>();
@@ -16,12 +20,29 @@ public class LoadWorldUI : NeedToDoOnit
     GameObject BlockImage = null;
     bool isEndCancel = true;
 
+    [Header("Move")]
+    public Image BG;
+    public RectTransform Desk;
+    public RectTransform Btns;
+
+    private void Awake()
+    {
+        SaveMove();
+    }
+
     public override void Onit()
     {
         NowChooseWorldName= GameManager.Instance.NowWorldSaveFolder;
 
         SettingSaveWorlds();
         CheckLoadBtn();
+
+        StartMove();
+    }
+
+    public override void GetParent(GameObject _parent)
+    {
+        startAdditionalUI = _parent.GetComponent<StartAdditionalUI>();
     }
 
     void SettingSaveWorlds()
@@ -149,5 +170,51 @@ public class LoadWorldUI : NeedToDoOnit
     {
         GameManager.Instance.NowWorldSaveFolder = NowChooseWorldName;
         GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
+    }
+
+    Color OriginalColor;
+    Vector2 OriginalDeskPos;
+    Vector2 OriginalBtnsPos;
+
+    Color AfterColor;
+    Vector2 AfterDeskPos;
+    Vector2 AftersBtnsPos;
+
+    void SaveMove()
+    {
+        OriginalColor = BG.color;
+        OriginalDeskPos = Desk.anchoredPosition;
+        OriginalBtnsPos = Btns.anchoredPosition;
+
+        Color AfterColor = OriginalColor;
+        AfterColor.a = 0;
+        BG.color = AfterColor;
+
+        AfterDeskPos = Desk.anchoredPosition + new Vector2(0, 1300f);
+        Desk.anchoredPosition = AfterDeskPos;
+
+        AftersBtnsPos = Btns.anchoredPosition + new Vector2(-600f, 0);
+        Btns.anchoredPosition = AftersBtnsPos;
+    }
+
+    void StartMove()
+    {
+        startAdditionalUI.SpawnLoadUI();
+
+        BG.DOColor(OriginalColor, 0.2f);
+        Desk.DOAnchorPos(OriginalDeskPos, 0.7f);
+        Btns.DOAnchorPos(OriginalBtnsPos, 0.5f);
+    }
+
+    public void OnEnd()
+    {
+        startAdditionalUI.DestroyLoadUI();
+
+        BG.DOColor(AfterColor, 0.1f);
+        Btns.DOAnchorPos(AftersBtnsPos, 0.3f);
+        Desk.DOAnchorPos(AfterDeskPos, 0.5f).OnComplete(() =>
+        {
+            Destroy(gameObject);
+        });
     }
 }

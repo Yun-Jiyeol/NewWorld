@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour
     public GameObject InGameUI;
     SceneSelection nowScene = SceneSelection.None;
 
+    public StartSceneUI StartSceneUI;
     public StartAdditionalUI StartAdditionalUI;
 
     public WorldUIIcons WorldUIIcons;
