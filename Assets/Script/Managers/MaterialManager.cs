@@ -8,4 +8,6 @@ public class MaterialManager : MonoBehaviour
     public Material MainVisibleMaterial;
     public Material PreviewMaterial;
     public Material LightMaterial;
+
+    public List<Sprite> Tapes;
 }

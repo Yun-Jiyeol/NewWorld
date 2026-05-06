@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum StartUIs 
 {
@@ -23,6 +24,16 @@ public class StartAdditionalUI : MonoBehaviour
     public RectTransform Desk;
     Vector2 DeskOriginalPos;
     Vector2 DeskAfterPos = new Vector2(0, - 150f);
+
+    [Header("TapeInMotion")]
+    public GameObject tape;
+    GameObject _NowSpawnedtape = null;
+    public RectTransform UpdownCover;
+    public Transform Spawnpos;
+    public Transform ChangeParent;
+    public MoveName MoveName;
+    public Image OverShow;
+    string NowInTape = null;
 
     private void Awake()
     {
@@ -100,6 +111,49 @@ public class StartAdditionalUI : MonoBehaviour
     {
         GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 닫는다.");
         Desk.DOAnchorPos(DeskOriginalPos, 0.5f);
+
+        TapeInMotion();
+    }
+
+    void TapeInMotion()
+    {
+        if (NowInTape == GameManager.Instance.NowWorldSaveFolder) return;
+        NowInTape = GameManager.Instance.NowWorldSaveFolder;
+
+        UpdownCover.DOSizeDelta(new Vector2(945, 100), 0.3f);
+
+        if (NowInTape == null)
+        {
+            MoveName.Onit();
+            return;
+        }
+
+        if(_NowSpawnedtape != null)
+        {
+            Destroy(_NowSpawnedtape);
+        }
+        _NowSpawnedtape = Instantiate(tape,Spawnpos);
+        RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
+        WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
+
+        _wsf.Onit(NowInTape);
+        _tapeRec.anchorMin = Vector3.one * 0.5f;
+        _tapeRec.anchorMax = Vector3.one * 0.5f;
+        _tapeRec.anchoredPosition = new Vector2(0, -80);
+        _tapeRec.sizeDelta = new Vector2(1100, 200);
+        _tapeRec.localScale = new Vector2(0.9f, 0.9f);
+        _wsf.Shadow.gameObject.SetActive(true);
+
+        _tapeRec.DOScale(new Vector2(0.85f, 0.6f), 0.8f).SetDelay(0.25f);
+        _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition + new Vector2(0, 10f), 0.5f).SetDelay(0.35f);
+        _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.2f).OnComplete(() =>
+        {
+            _NowSpawnedtape.transform.SetParent(ChangeParent);
+            _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0,40f) , 0.5f);
+            MoveName.Onit();
+        });
+
+        UpdownCover.DOSizeDelta(new Vector2(945, 230), 0.5f).SetDelay(1.2f);
     }
 
     public void ClickExitGameBtn()

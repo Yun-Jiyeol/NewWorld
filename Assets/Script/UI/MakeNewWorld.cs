@@ -12,11 +12,17 @@ public class MakeNewWorld : NeedToDoOnit
     public RectTransform ArrowImage;
     public Image IconSprite;
     int spritenum = 0;
+    int OutPutNum = 0;
 
     public GameObject AdditionalUIIcon;
     GameObject _AdditionalUIIcon = null;
 
     string SettingName = "NewWorld";
+
+    private void Start()
+    {
+        OutPutNum = UnityEngine.Random.Range(0, 10);
+    }
 
     public override void Onit()
     {
@@ -58,7 +64,7 @@ public class MakeNewWorld : NeedToDoOnit
         {
             SettingName = "NewWorld";
         }
-        GameManager.Instance.NowWorldSaveFolder = SettingName + "_" + time + "_" + spritenum;
+        GameManager.Instance.NowWorldSaveFolder = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
         SaveAndLoadManager.EnsureSaveFolder();
 
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
