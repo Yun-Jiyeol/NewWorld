@@ -52,54 +52,70 @@ public class StartSceneUI : MonoBehaviour
         RedLight.DOColor(Color.white, 1f).OnComplete(() =>
         {
             Zoom.DOAnchorPos(new Vector2(0, 0), 1.5f);
-            Zoom.GetComponent<Image>().DOColor(new Color(1,1,1,0), 2f);
+            Zoom.GetComponent<Image>().DOColor(new Color(0,0,0,0),1f).SetDelay(1f);
+
             Zoom.DOSizeDelta(new Vector2(3200, 2600), 2f).OnComplete(() =>
             {
+                GameManager.Instance.UIManager.StartSceneUI.isStart = true;
                 Destroy(StartAction);
             });
         });
     }
 
+    Queue<string> textQueue = new Queue<string>();
+    bool isTyping = false;
     public void AddText(string _text)
     {
-        // 현재 타이핑 중이면 중지
-        if (typingCoroutine != null)
+        textQueue.Enqueue(_text);
+
+        if (!isTyping)
         {
-            StopCoroutine(typingCoroutine);
+            StartCoroutine(ProcessQueue());
         }
-
-        // 새 줄을 맨 위에 추가
-        texts.Insert(0, "");
-
-        // 최대 줄 수 제한
-        if (texts.Count > maxLineCount)
-        {
-            texts.RemoveAt(texts.Count - 1);
-        }
-
-        typingCoroutine = StartCoroutine(TypeText(_text));
     }
 
-    IEnumerator TypeText(string targetText)
+    IEnumerator ProcessQueue()
+    {
+        isTyping = true;
+
+        while (textQueue.Count > 0)
+        {
+            string nextText = textQueue.Dequeue();
+
+            // 새 줄 추가
+            texts.Insert(0, "");
+
+            if (texts.Count > maxLineCount)
+            {
+                texts.RemoveAt(texts.Count - 1);
+            }
+
+            // ⭐ 한 줄 끝날 때까지 기다림
+            yield return StartCoroutine(TypeText(nextText, 0));
+        }
+
+        isTyping = false;
+    }
+
+    IEnumerator TypeText(string targetText, int lineIndex)
     {
         string current = "";
-        float typingSpeed = 0;
 
         for (int i = 0; i < targetText.Length; i++)
         {
-            typingSpeed = Random.Range(MintypingSpeed, MaxtypingSpeed);
+            float typingSpeed = Random.Range(MintypingSpeed, MaxtypingSpeed);
 
             current += targetText[i];
 
-            // 첫 줄 갱신
-            texts[0] = current;
+            if (lineIndex < texts.Count)
+            {
+                texts[lineIndex] = current;
+            }
 
             RefreshBoard();
 
             yield return new WaitForSeconds(typingSpeed);
         }
-
-        typingCoroutine = null;
     }
 
     void RefreshBoard()

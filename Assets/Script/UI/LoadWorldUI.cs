@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,8 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     private void Awake()
     {
+        StartBtn.SetActive(false);
+        StartLoadBtn.SetActive(false);
         SaveMove();
     }
 
@@ -106,20 +109,13 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     void CheckLoadBtn()
     {
-        if(GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName && NowChooseWorldName != null)
+        if(GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName || NowChooseWorldName == null)
         {
-            StartBtn.SetActive(true);
             StartLoadBtn.SetActive(false);
-        }
-        else if(NowChooseWorldName != null)
-        {
-            StartBtn.SetActive(false);
-            StartLoadBtn.SetActive(true);
         }
         else
         {
-            StartBtn.SetActive(false);
-            StartLoadBtn.SetActive(false);
+            StartLoadBtn.SetActive(true);
         }
     }
 
@@ -153,9 +149,14 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
             Destroy(BlockImage);
             BlockImage = null;
         }
-        LoadNewWorld();
 
-        CheckLoadBtn();
+        GameManager.Instance.NowWorldSaveFolder = NowChooseWorldName;
+
+        GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
+        string[] parts = NowChooseWorldName.Split('_');
+        GameManager.Instance.UIManager.StartSceneUI.AddText('[' + parts[0] + "]테이프를 실행한다.");
+
+        GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
     }
 
     void CancelBefore()
@@ -164,12 +165,6 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         GameManager.Instance.WorldManager.DestroyAllWorld();
 
         isEndCancel = true;
-    }
-
-    void LoadNewWorld()
-    {
-        GameManager.Instance.NowWorldSaveFolder = NowChooseWorldName;
-        GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
     }
 
     Color OriginalColor;

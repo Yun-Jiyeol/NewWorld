@@ -65,6 +65,7 @@ public class WorldManager : MonoBehaviour
     {
         GameObject maincam = Camera.main.gameObject;
         SortWorldsByDistance(maincam);
+        GameManager.Instance.UIManager.StartSceneUI.AddText("생성 중");
 
         StartCoroutine(LoadAllworld());
     }
@@ -85,7 +86,10 @@ public class WorldManager : MonoBehaviour
         for(int i = 0;i<Worlds.Count; i++)
         {
             loadButton = false;
+
+            GameManager.Instance.UIManager.StartSceneUI.AddText(Worlds[i].GetComponent<ChunkCode>()._name + "생성 중");
             Worlds[i].GetComponent<ChunkCode>().StartBuildRoutine();
+
             while (!loadButton)
             {
                 yield return null;

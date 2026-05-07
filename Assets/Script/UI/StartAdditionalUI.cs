@@ -1,6 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,6 +33,12 @@ public class StartAdditionalUI : MonoBehaviour
     public Image OverShow;
     string NowInTape = null;
 
+    [Header("StartMotion")]
+    public RectTransform MainPos;
+    public RectTransform UpSide;
+    public Image NoiseImage;
+    public Image OutSideImage;
+
     private void Awake()
     {
         DeskOriginalPos = Desk.anchoredPosition;
@@ -66,6 +70,8 @@ public class StartAdditionalUI : MonoBehaviour
 
     public void OffThisUI()
     {
+        if (NowUI == null) return;
+
         if(NowUI.TryGetComponent<OnEndAction>(out OnEndAction _code))
         {
             _code.OnEnd();
@@ -97,13 +103,35 @@ public class StartAdditionalUI : MonoBehaviour
         else
         {
             OffThisUI();
-            GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
+            StartMove();
         }
+    }
+
+    void StartMove()
+    {
+        UpSide.DOScale(new Vector2(2f, 2f), 2f);
+        MainPos.DOAnchorPos(new Vector2(0, -1080), 0.5f).OnComplete(() =>
+        {
+            OutSideImage.DOColor(new Color(1, 1, 1, 0), 1.5f);
+            NoiseImage.DOColor(new Color(0, 0, 0, 0), 2f).OnComplete(() =>
+            {
+                OnStartGame();
+            });
+        });
+    }
+
+    void OnStartGame()
+    {
+        GameManager.Instance.StartGame();
+
+        UpSide.DOScale(new Vector2(1f, 1f), 0f);
+        MainPos.DOAnchorPos(new Vector2(0, 0), 0f);
+        NoiseImage.DOColor(new Color(1, 1, 1,1), 0f);
     }
 
     public void SpawnLoadUI()
     {
-        GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 뒤적인다.");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 열어본다.");
         Desk.DOAnchorPos(DeskOriginalPos + DeskAfterPos, 0.7f);
     }
 
@@ -120,6 +148,12 @@ public class StartAdditionalUI : MonoBehaviour
         if (NowInTape == GameManager.Instance.NowWorldSaveFolder) return;
         NowInTape = GameManager.Instance.NowWorldSaveFolder;
 
+        OverShow.gameObject.SetActive(true);
+
+        OverShow.DOKill();
+        UpdownCover.DOKill();
+
+        OverShow.DOColor(new Color(1, 1, 1, 1f), 0.5f);
         UpdownCover.DOSizeDelta(new Vector2(945, 100), 0.3f);
 
         if (NowInTape == null)
@@ -144,6 +178,15 @@ public class StartAdditionalUI : MonoBehaviour
         _tapeRec.localScale = new Vector2(0.9f, 0.9f);
         _wsf.Shadow.gameObject.SetActive(true);
 
+        _tapeRec.DOKill();
+        _wsf.DOKill();
+
+        UpdownCover.DOSizeDelta(new Vector2(945, 230), 0.5f).SetDelay(1.2f);
+        OverShow.DOColor(new Color(1, 1, 1, 0), 4f).SetDelay(1.2f).OnComplete(() =>
+        {
+            OverShow.color = Color.black;
+            OverShow.gameObject.SetActive(false);
+        });
         _tapeRec.DOScale(new Vector2(0.85f, 0.6f), 0.8f).SetDelay(0.25f);
         _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition + new Vector2(0, 10f), 0.5f).SetDelay(0.35f);
         _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.2f).OnComplete(() =>
@@ -152,8 +195,6 @@ public class StartAdditionalUI : MonoBehaviour
             _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0,40f) , 0.5f);
             MoveName.Onit();
         });
-
-        UpdownCover.DOSizeDelta(new Vector2(945, 230), 0.5f).SetDelay(1.2f);
     }
 
     public void ClickExitGameBtn()

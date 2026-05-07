@@ -174,6 +174,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void StartGame()
+    {
+        MainCamera.TryCheckrot();
+        UIManager.Onit();
+
+        ChangeFlow(GameFlow.WatchAllWorld);
+    }
+
     public void SaveNowWorld()
     {
         if(InputManager.TargetGameObject == null) return;
