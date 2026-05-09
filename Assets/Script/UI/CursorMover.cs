@@ -74,9 +74,11 @@ public class CursorMover : MonoBehaviour
         switch (nowstate)
         {
             case cursorstate.Off:
+                Cursor.lockState = CursorLockMode.Locked;
                 SetOff();
                 break;
             case cursorstate.Follow:
+                Cursor.lockState = CursorLockMode.Confined;
                 SetFollow();
                 break;
         }

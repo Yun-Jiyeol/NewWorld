@@ -423,6 +423,7 @@ public class ChunkCode : MonoBehaviour
     {
         switch (GameManager.Instance.flow)
         {
+            case GameFlow.Start:
             case GameFlow.WatchAllWorld:
                 PutThisWorld();
                 GameManager.Instance.WorldManager.ClickLoadBtn();

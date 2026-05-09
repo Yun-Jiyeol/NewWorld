@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
     public StartAdditionalUI StartAdditionalUI;
 
     public WorldUIIcons WorldUIIcons;
+    public RectTransform _Wha;
 
     private void Awake()
     {
@@ -42,7 +43,6 @@ public class UIManager : MonoBehaviour
     {
         RectTransform _Com = Compass.GetComponent<RectTransform>();
         RectTransform _Sel = SelectionUI.gameObject.GetComponent<RectTransform>();
-        RectTransform _Wha = WhatMoving.gameObject.GetComponent<RectTransform>();
 
         _Com.localScale = Vector2.one * 1.2f;
         _Sel.anchoredPosition = new Vector2(100, 0);

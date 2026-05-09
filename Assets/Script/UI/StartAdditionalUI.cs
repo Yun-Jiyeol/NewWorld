@@ -127,6 +127,7 @@ public class StartAdditionalUI : MonoBehaviour
         UpSide.DOScale(new Vector2(1f, 1f), 0f);
         MainPos.DOAnchorPos(new Vector2(0, 0), 0f);
         NoiseImage.DOColor(new Color(1, 1, 1,1), 0f);
+        OutSideImage.DOColor(new Color(1, 1, 1, 1), 0f);
     }
 
     public void SpawnLoadUI()

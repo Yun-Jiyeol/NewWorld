@@ -8,7 +8,8 @@ public enum CoinType
 {
     None,
     World,
-    Player
+    Player,
+    Light
 }
 
 [System.Serializable]
@@ -35,6 +36,9 @@ public class WhatMoving : MonoBehaviour
 
     CoinType NowShowCoinType = CoinType.None;
 
+    bool isLock = false;
+    public LockUI lockUI;
+
     private void Awake()
     {
         CoinDict = new Dictionary<CoinType, CoinSave>();
@@ -42,6 +46,21 @@ public class WhatMoving : MonoBehaviour
         foreach (CoinSave coinSave in CoinSaves)
         {
             CoinDict.Add(coinSave.coinType, coinSave);
+        }
+    }
+
+    public void LockMotion(bool _isLock)
+    {
+        if (isLock == _isLock) return;
+        isLock = _isLock;
+
+        if (isLock)
+        {
+            lockUI.OnLock();
+        }
+        else
+        {
+            lockUI.OffLock();
         }
     }
 
@@ -54,36 +73,60 @@ public class WhatMoving : MonoBehaviour
         {
             case CoinType.None:
                 MiddleCross.SetActive(false);
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
 
                 StopColorTween();
                 colorTween.Add(CoinDict[CoinType.World].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f));
                 colorTween.Add(CoinDict[CoinType.Player].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f));
+                colorTween.Add(CoinDict[CoinType.Light].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f));
                 break;
 
             case CoinType.Player:
                 MiddleCross.SetActive(true);
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
                 StopAllTween();
                 CoinDict[CoinType.Player].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f);
 
                 Color worldcolor = CoinDict[_nowcoin].CoinColor;
                 worldcolor.a = 0f;
                 CoinDict[CoinType.World].CoinSprite.DOColor(worldcolor, 0.5f);
+                CoinDict[CoinType.Light].CoinSprite.DOColor(worldcolor, 0.5f);
 
                 CoinDict[CoinType.World].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(PlayerVec, 0.5f);
                 CoinDict[CoinType.Player].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(PlayerVec, 0.5f);
+                CoinDict[CoinType.Light].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(PlayerVec, 0.5f);
                 break;
 
             case CoinType.World:
                 MiddleCross.SetActive(false);
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
                 StopAllTween();
                 CoinDict[CoinType.World].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f);
 
                 Color playercolor = CoinDict[_nowcoin].CoinColor;
                 playercolor.a = 0f;
                 CoinDict[CoinType.Player].CoinSprite.DOColor(playercolor, 0.5f);
+                CoinDict[CoinType.Light].CoinSprite.DOColor(playercolor, 0.5f);
 
                 CoinDict[CoinType.World].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
                 CoinDict[CoinType.Player].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
+                CoinDict[CoinType.Light].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
+                break;
+
+            case CoinType.Light:
+                MiddleCross.SetActive(false);
+                GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
+                StopAllTween();
+                CoinDict[CoinType.Light].CoinSprite.DOColor(CoinDict[_nowcoin].CoinColor, 0.5f);
+
+                Color lightcolor = CoinDict[_nowcoin].CoinColor;
+                lightcolor.a = 0f;
+                CoinDict[CoinType.Player].CoinSprite.DOColor(lightcolor, 0.5f);
+                CoinDict[CoinType.World].CoinSprite.DOColor(lightcolor, 0.5f);
+
+                CoinDict[CoinType.World].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
+                CoinDict[CoinType.Player].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
+                CoinDict[CoinType.Light].CoinSprite.gameObject.GetComponent<RectTransform>().DOAnchorPos(WorldVec, 0.5f);
                 break;
         }
     }

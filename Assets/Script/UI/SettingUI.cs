@@ -66,4 +66,19 @@ public class SettingUI : NeedToDoOnit
         NowPage.GetComponent<NeedToDoOnit>().Onit();
         NowPage.GetComponent<NeedToDoOnit>().GetParent(gameObject.transform);
     }
+
+    private void OnEnable()
+    {
+        GameManager.Instance.InputManager.isSettingUI = true;
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.InputManager.isSettingUI = false;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.Instance.InputManager.isSettingUI = false;
+    }
 }

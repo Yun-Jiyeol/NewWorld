@@ -423,6 +423,20 @@ public class SaveAndLoadManager : MonoBehaviour
         worldCode.Savedtime = worldsave.Time;
         worldCode.isSavedBefore = true;
 
+        if (worldsave.isLightBlock)
+        {
+            Light _light = worldCode.ChangeLightPower();
+            _light.gameObject.transform.position = new Vector3(worldsave.lightblock.x, worldsave.lightblock.y, worldsave.lightblock.z);
+            _light.gameObject.transform.rotation = new Quaternion(worldsave.lightblock.xrot, worldsave.lightblock.yrot,
+                worldsave.lightblock.zrot, worldsave.lightblock.wrot);
+            _light.color = new Color(worldsave.lightblock.r, worldsave.lightblock.g, worldsave.lightblock.b);
+
+            _light.type = worldsave.lightblock.type == 1 ? LightType.Spot : LightType.Point;
+            _light.spotAngle = worldsave.lightblock.SpotAngle;
+            _light.range = worldsave.lightblock.Range;
+            _light.intensity = worldsave.lightblock.Intensive;
+        }
+
         Coroutine co = StartCoroutine(LoadChunksCoroutine(folder, worldCode));
         loadingCoroutines.Add(co);
     }

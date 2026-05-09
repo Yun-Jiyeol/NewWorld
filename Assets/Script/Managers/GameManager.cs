@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     public LightManager LightManager { get; private set; }
     public OnStartOrStopManager OnStartOrStopManager { get; private set; }
     public SoundManager SoundManager { get; private set; }
+    public TimerManager TimerManager { get; private set; }
 
     public UIManager UIManager;
 
@@ -57,6 +58,7 @@ public class GameManager : MonoBehaviour
         LightManager = gameObject.GetComponent<LightManager>();
         OnStartOrStopManager = gameObject.GetComponent<OnStartOrStopManager>();
         SoundManager = gameObject.GetComponent<SoundManager>();
+        TimerManager = gameObject.GetComponent<TimerManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
     }
 

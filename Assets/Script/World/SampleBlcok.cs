@@ -52,7 +52,7 @@ public class SampleBlcok : MonoBehaviour
         Color startColor = mpb.GetColor("_Color");
 
         float startAlpha = StartColor.a;
-        float minAlpha = 0.2f;
+        float minAlpha = 0.5f;
         float speed = 1.5f;
 
         while (true)

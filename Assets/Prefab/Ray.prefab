@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4198595980701086185}
   - component: {fileID: 5991295391025750917}
   - component: {fileID: 3394992365347315426}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 7550057465354619018}
   - component: {fileID: 7550057465354619023}
   - component: {fileID: 7550057465354619016}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7550057465421984626}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 7550057465936908918}
   - component: {fileID: 7550057465936908916}
   - component: {fileID: 7550057465936908917}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

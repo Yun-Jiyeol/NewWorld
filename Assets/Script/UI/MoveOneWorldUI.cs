@@ -10,6 +10,8 @@ public class MoveOneWorldUI : BasicUI
     Quaternion SaveRotation;
     float SaveScale;
 
+    bool isWorldMove = true;
+
     private void Awake()
     {
         inputManager = GameManager.Instance.InputManager;
@@ -31,16 +33,26 @@ public class MoveOneWorldUI : BasicUI
 
     IEnumerator updateCoroutine()
     {
+        isWorldMove = true;
         yield return new WaitForSeconds(0.2f);
 
         while (gameObject.activeSelf)
         {
             if (target != null && !EventSystem.current.IsPointerOverGameObject())
             {
-                inputManager.TargetMove(target);
-                inputManager.TargetScale(target);
-                inputManager.TargetTurn(target);
-                inputManager.nowMovingThing = CoinType.World;
+                if (isWorldMove)
+                {
+                    inputManager.TargetMove(target);
+                    inputManager.TargetScale(target);
+                    inputManager.TargetTurn(target);
+                    inputManager.nowMovingThing = CoinType.World;
+                }
+                else
+                {
+                    inputManager.PlayerMove();
+                    GameManager.Instance.MainCamera.CameraTurn();
+                    inputManager.nowMovingThing = CoinType.Player;
+                }
             }
             else
             {

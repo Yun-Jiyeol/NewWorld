@@ -49,6 +49,7 @@ public class LightUI : BasicUI
     public Image BGColor;
 
     GameObject ShowLight;
+    bool isLightMove = true;
 
     public override void OnSetting() 
     {
@@ -59,6 +60,8 @@ public class LightUI : BasicUI
         targettype = target.type;
         SettingRange = target.range;
         SettingAngle = target.spotAngle;
+
+        isLightMove = true;
 
         CopyLine.Setting(this);
         CopyChoose.Setting(this);
@@ -80,10 +83,29 @@ public class LightUI : BasicUI
     private void Update()
     {
         if(target == null) return;
-        if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
+            return;
+        }
 
-        GameManager.Instance.InputManager.TargetMove(target.gameObject);
-        GameManager.Instance.InputManager.TargetTurn(target.gameObject);
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            isLightMove = !isLightMove;
+        }
+
+        if (isLightMove)
+        {
+            GameManager.Instance.InputManager.nowMovingThing = CoinType.Light;
+            GameManager.Instance.InputManager.TargetMove(target.gameObject);
+            GameManager.Instance.InputManager.TargetTurn(target.gameObject);
+        }
+        else
+        {
+            GameManager.Instance.InputManager.nowMovingThing = CoinType.Player;
+            GameManager.Instance.InputManager.PlayerMove();
+            GameManager.Instance.MainCamera.CameraTurn();
+        }
     }
 
     void MakeSpere()
@@ -326,6 +348,7 @@ public class LightUI : BasicUI
 
     private void OnDisable()
     {
+        GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
         if (ShowLight != null) Destroy(ShowLight);
     }
 

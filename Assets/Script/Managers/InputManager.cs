@@ -45,6 +45,8 @@ public class InputManager : MonoBehaviour
     public float scaleSpeed = 0.05f;
 
     public bool isTouchingUI = false;
+    public bool isSettingUI = false;
+    public bool isLock = false;
     public CoinType nowMovingThing = CoinType.Player;
 
     private void Awake()
@@ -55,6 +57,7 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         if (isTouchingUI) return;
+        if (isSettingUI) return;
 
         switch (GameManager.Instance.flow)
         {
@@ -71,6 +74,30 @@ public class InputManager : MonoBehaviour
                         Cursor.lockState = CursorLockMode.Locked;
                         GameManager.Instance.MainCamera.stopCamera = false;
                         GameManager.Instance.MainCamera.SavePos();
+                    }
+
+                    if (EventSystem.current.IsPointerOverGameObject()) return;
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                        RaycastHit hit;
+
+                        if (Physics.Raycast(ray, out hit))
+                        {
+                            // 맞은 물체
+                            GameObject hitObject = hit.transform.gameObject;
+
+                            // 태그 확인
+                            if (hitObject.CompareTag("World"))
+                            {
+                                TargetGameObject = hitObject.GetComponentInParent<ChunkCode>().gameObject;
+
+                                _cam.GetComponent<MainCamera>().LookAt(TargetGameObject.transform);
+
+                                GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+                            }
+                        }
                     }
                 }
                 else
@@ -102,12 +129,13 @@ public class InputManager : MonoBehaviour
                     }
 
                     if (!isSomethingHit) return;
+                    if (EventSystem.current.IsPointerOverGameObject()) return;
                     if (Input.GetMouseButtonDown(0))
                     {
                         if (OnRaycast.transform.CompareTag("World"))
                         {
                             TargetGameObject = OnRaycast.transform.GetComponentInParent<ChunkCode>().gameObject;
-                            _cam.LookAt(TargetGameObject.transform.position);
+                            _cam.GetComponent<MainCamera>().LookAt(TargetGameObject.transform);
                             GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
                         }
                     }
@@ -146,6 +174,22 @@ public class InputManager : MonoBehaviour
                     PlayerMove();
                     GameManager.Instance.MainCamera.CameraTurn();
                 }
+
+                if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+                {
+                    if (isLock)
+                    {
+                        GameManager.Instance.UIManager.WhatMoving.LockMotion(false);
+                        isLock = false;
+                    }
+                    else
+                    {
+                        GameManager.Instance.UIManager.WhatMoving.LockMotion(true);
+                        isLock = true;
+                        return;
+                    }
+                }
+                if (isLock) return;
 
                 if (Input.GetKey(KeyCode.Delete))
                 {
