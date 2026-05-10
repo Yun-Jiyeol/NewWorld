@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -9,12 +10,14 @@ public class WorldSeenUI : MonoBehaviour
     public GameObject BG;
     Image BGImage;
     public GameObject SelectWorld;
+    RawImage SelectWorldImage;
 
     Coroutine NowCorountine;
 
     private void Awake()
     {
         BGImage = BG.GetComponent<Image>();
+        SelectWorldImage = SelectWorld.GetComponent<RawImage>();
     }
 
     public void OnScreen()
@@ -24,14 +27,17 @@ public class WorldSeenUI : MonoBehaviour
         SelectWorld.SetActive(true);
 
         BGImage.color = new Color(0, 0, 0, 0);
+        SelectWorldImage.DOColor(Color.white, 0f);
 
-        if(NowCorountine != null) StopCoroutine(NowCorountine);
+        if (NowCorountine != null) StopCoroutine(NowCorountine);
         NowCorountine = StartCoroutine(ChangeScreenCoroutine(9/10f));
     }
 
     public void OffScreen()
     {
         if (NowCorountine != null) StopCoroutine(NowCorountine);
+
+        SelectWorldImage.DOColor(new Color(1,1,1,0), 0.5f);
         NowCorountine = StartCoroutine(ChangeScreenCoroutine(0f, true));
     }
 
@@ -58,7 +64,7 @@ public class WorldSeenUI : MonoBehaviour
 
         BGImage.color = new Color(0, 0, 0, targetalfar);
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(0.1f);
 
         if (isoff)
         {

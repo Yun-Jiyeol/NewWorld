@@ -280,6 +280,63 @@ public class InputManager : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0)) GameManager.Instance.MainCamera.stopCamera = true;
                 if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
+                if (Input.GetMouseButtonDown(2))
+                {
+                    Ray ray = _cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, 1000f, 1 << 6))
+                    {
+                        ChunkCode _chunk = TargetGameObject.GetComponent<ChunkCode>();
+
+                        GameObject farthestChunk = null;
+
+                        float farthestValue = float.MinValue;
+
+                        // 카메라 방향
+                        Vector3 camDir = _cam.transform.forward.normalized;
+
+                        foreach (var chunk in _chunk.Chunks)
+                        {
+                            Vector3 worldPos = chunk.Value.transform.position;
+
+                            // 방향 기준 거리 계산
+                            float dot = Vector3.Dot(worldPos, camDir);
+
+                            if (dot > farthestValue)
+                            {
+                                farthestValue = dot;
+                                farthestChunk = chunk.Value;
+                            }
+                        }
+
+                        MeshFilter mf = farthestChunk.GetComponent<MeshFilter>();
+
+                        Mesh mesh = mf.sharedMesh;
+
+                        Vector3 farthestPoint = Vector3.zero;
+
+                        farthestValue = float.MinValue;
+
+                        foreach (Vector3 v in mesh.vertices)
+                        {
+                            Vector3 worldPos = farthestChunk.transform.TransformPoint(v);
+
+                            float dot = Vector3.Dot(worldPos, camDir);
+
+                            if (dot > farthestValue)
+                            {
+                                farthestValue = dot;
+                                farthestPoint = worldPos;
+                            }
+                        }
+
+                        Vector3 offset = hit.point - farthestPoint;
+
+                        TargetGameObject.transform.position += offset;
+                    }
+
+                    return;
+                }
                 if (Input.GetMouseButtonUp(1))
                 {
                     GameManager.Instance.ChangeFlow(GameFlow.None);
@@ -287,6 +344,8 @@ public class InputManager : MonoBehaviour
                     TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
 
                     TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();
+
+                    UnChooseWorld();
 
                     ChangeToWatchAllWorld();
                 }
@@ -460,12 +519,13 @@ public class InputManager : MonoBehaviour
 
     void ChangeToPutWorldInSpace()
     {
-        UnChooseWorld();
         GameManager.Instance.ChangeFlow(GameFlow.PutWorldInSpace);
     }
 
     void ChangeToWatchAllWorld()
     {
+        GameManager.Instance.MainCamera.GetComponent<Camera>().cullingMask &= ~(1 << 7);
+
         Destroy(ReadyToBuildBlock);
         ReadyToBuildBlock = null;
 
@@ -781,7 +841,8 @@ public class InputManager : MonoBehaviour
         GameObject cam = GameManager.Instance.MainCamera.gameObject;
 
         TargetGameObject.transform.SetParent(cam.transform);
+        GameManager.Instance.MainCamera.GetComponent<Camera>().cullingMask |= (1 << 7);
         GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
-        Invoke("ChangeToPutWorldInSpace", 0.7f);
+        Invoke("ChangeToPutWorldInSpace", 0.7f); 
     }
 }
