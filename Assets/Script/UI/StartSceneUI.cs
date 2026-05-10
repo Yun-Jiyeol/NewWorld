@@ -132,4 +132,18 @@ public class StartSceneUI : MonoBehaviour
             }
         }
     }
+
+    private void OnDisable()
+    {
+        textQueue.Clear();
+        texts.Clear();
+        WritingBoard.text = "";
+        isTyping = false;
+
+        StopAllCoroutines();
+        typingCoroutine = null;
+
+        Zoom.DOKill();
+        RedLight.DOKill();
+    }
 }

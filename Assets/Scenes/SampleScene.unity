@@ -25297,6 +25297,7 @@ GameObject:
   - component: {fileID: 1173635533}
   - component: {fileID: 1173635534}
   - component: {fileID: 1173635535}
+  - component: {fileID: 1173635536}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -25369,13 +25370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31bf5bf32fa806e459f4bdbdde066f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveUp: 119
-  MoveDown: 115
-  MoveLeft: 97
-  MoveRight: 100
-  MoveFar: 101
-  MoveClose: 113
-  BuildNewWorld: 112
   TargetGameObject: {fileID: 0}
   ReadyToBuildBlock: {fileID: 0}
   SelectWorldPosition: {fileID: 1428416028}
@@ -25492,6 +25486,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b4cb66c74f4d2c468f895a423e2104a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1173635536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173635524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7bb2d7659edda44b268083ca60ae50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1183565373

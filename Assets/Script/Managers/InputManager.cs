@@ -10,15 +10,7 @@ using static UnityEngine.GraphicsBuffer;
 public class InputManager : MonoBehaviour
 {
     Transform _cam;
-
-    public KeyCode MoveUp = KeyCode.W;
-    public KeyCode MoveDown = KeyCode.S;
-    public KeyCode MoveLeft = KeyCode.A;
-    public KeyCode MoveRight = KeyCode.D;
-    public KeyCode MoveFar = KeyCode.F;
-    public KeyCode MoveClose = KeyCode.Z;
-
-    public KeyCode BuildNewWorld = KeyCode.P;
+    KeyManager _keyManager;
 
     RaycastHit OnRaycast = new RaycastHit();
     bool isSomethingHit = false;
@@ -54,6 +46,11 @@ public class InputManager : MonoBehaviour
         _cam = Camera.main.transform;
     }
 
+    private void Start()
+    {
+        _keyManager = GameManager.Instance.KeyManager;
+    }
+
     private void Update()
     {
         if (isTouchingUI) return;
@@ -67,7 +64,7 @@ public class InputManager : MonoBehaviour
                     nowMovingThing = CoinType.None;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (Input.GetKeyDown(KeyCode.Tab))//나중 esc로 변경
+                    if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                         GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
@@ -77,13 +74,13 @@ public class InputManager : MonoBehaviour
                     }
 
                     if (EventSystem.current.IsPointerOverGameObject()) return;
-                    if (Input.GetMouseButtonDown(0))
+                    if (_keyManager.isGetKeyDown(_keyManager.SelectBtn))
                     {
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                         RaycastHit hit;
 
-                        if (Physics.Raycast(ray, out hit))
+                        if (Physics.Raycast(ray, out hit, 1000f, 1<<6))
                         {
                             // 맞은 물체
                             GameObject hitObject = hit.transform.gameObject;
@@ -102,13 +99,13 @@ public class InputManager : MonoBehaviour
                 }
                 else
                 {
-                    CheckRaycast(true);
+                    CheckRaycast(true, 1<<6);
                     PlayerMove();
 
                     nowMovingThing = CoinType.Player;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (Input.GetKeyDown(BuildNewWorld))
+                    if (_keyManager.isGetKeyDown(_keyManager.SpawnWorld))
                     {
                         GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
 
@@ -118,7 +115,7 @@ public class InputManager : MonoBehaviour
                         nowMovingThing = CoinType.World;
                         ChooseWorld();
                     }
-                    if (Input.GetKeyDown(KeyCode.Tab))//나중 esc로 변경
+                    if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
@@ -130,7 +127,7 @@ public class InputManager : MonoBehaviour
 
                     if (!isSomethingHit) return;
                     if (EventSystem.current.IsPointerOverGameObject()) return;
-                    if (Input.GetMouseButtonDown(0))
+                    if (_keyManager.isGetKeyDown(_keyManager.SelectBtn))
                     {
                         if (OnRaycast.transform.CompareTag("World"))
                         {
@@ -149,7 +146,7 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.WatchOneWorld:
-                CheckRaycast(false);
+                CheckRaycast(false, 1<<7);
                 SaveAndLoadColor();
                 ChangeTypeOfMove();
 
@@ -175,7 +172,7 @@ public class InputManager : MonoBehaviour
                     GameManager.Instance.MainCamera.CameraTurn();
                 }
 
-                if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+                if (_keyManager.isGetKeyDown(_keyManager.LockSelectionKey))
                 {
                     if (isLock)
                     {
@@ -191,7 +188,7 @@ public class InputManager : MonoBehaviour
                 }
                 if (isLock) return;
 
-                if (Input.GetKey(KeyCode.Delete))
+                if (_keyManager.isGetKeyDown(_keyManager.DestroyBlockKey))
                 {
                     TryToDestroy();
                     ResetDestroyRange();
@@ -206,29 +203,23 @@ public class InputManager : MonoBehaviour
                 {
                     SeeChooseBlock();
 
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    if (_keyManager.isGetKeyDown(_keyManager.AdditionalSelectBtn) && !_keyManager.isGetKey(_keyManager.BuildCube))
                     {
-                        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
-                        {
-                            if (BeforeDestroyBlockPos == null)
-                            {
-                                SettingDestroyRange();
-                            }
-                            else
-                            {
-                                SettingDestroyRangeAfter();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
+                        if (BeforeDestroyBlockPos == null)
                         {
                             SettingDestroyRange();
                         }
+                        else
+                        {
+                            SettingDestroyRangeAfter();
+                        }
+                    }
+                    else if(_keyManager.isGetKeyDown(_keyManager.SelectBtn) && !_keyManager.isGetKey(_keyManager.BuildCube))
+                    {
+                        SettingDestroyRange();
                     }
 
-                    if (Input.GetMouseButtonDown(1) && !Input.GetMouseButton(0))
+                    if (_keyManager.isGetKeyDown(_keyManager.BuildCube) && !_keyManager.isGetKey(_keyManager.SelectBtn))
                     {
                         ResetDestroyRange();
                         SpawnNewBlock();
@@ -239,7 +230,7 @@ public class InputManager : MonoBehaviour
                         GameManager.Instance.BuildManager.AddPreColor(addcolor);
                     }
 
-                    if (Input.GetMouseButtonDown(2))
+                    if (_keyManager.isGetKeyDown(_keyManager.ChooseBtn))
                     {
                         ResetDestroyRange();
 
@@ -278,9 +269,9 @@ public class InputManager : MonoBehaviour
                     GameManager.Instance.MainCamera.CameraTurn();
                 }
 
-                if (Input.GetMouseButtonDown(0)) GameManager.Instance.MainCamera.stopCamera = true;
-                if (Input.GetMouseButtonUp(0)) GameManager.Instance.MainCamera.stopCamera = false;
-                if (Input.GetMouseButtonDown(2))
+                if (_keyManager.isGetKeyDown(_keyManager.SelectBtn)) GameManager.Instance.MainCamera.stopCamera = true;
+                if (_keyManager.isGetKeyUp(_keyManager.SelectBtn)) GameManager.Instance.MainCamera.stopCamera = false;
+                if (_keyManager.isGetKeyDown(_keyManager.ChooseBtn))
                 {
                     Ray ray = _cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit;
@@ -337,7 +328,7 @@ public class InputManager : MonoBehaviour
 
                     return;
                 }
-                if (Input.GetMouseButtonUp(1))
+                if (_keyManager.isGetKeyDown(_keyManager.BuildCube))
                 {
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
@@ -352,7 +343,7 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.MakeOneWorld:
-                CheckRaycast(false);
+                CheckRaycast(false, 1<<7);
                 if (EventSystem.current.IsPointerOverGameObject())
                 {
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
@@ -388,7 +379,7 @@ public class InputManager : MonoBehaviour
 
     void ChangeTypeOfMove()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))
         {
             if (nowMovingThing == CoinType.None) return;
             else if (nowMovingThing == CoinType.World)
@@ -565,34 +556,28 @@ public class InputManager : MonoBehaviour
 
     void SaveAndLoadColor()
     {
-        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-        {
-            SaveColors();
-        }
-        else
-        {
-            LoadColor();
-        }
+        LoadColor();
+        SaveColors();
     }
 
     void SaveColors()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) GameManager.Instance.BuildManager.AddSaveColor(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) GameManager.Instance.BuildManager.AddSaveColor(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) GameManager.Instance.BuildManager.AddSaveColor(2);
-        if (Input.GetKeyDown(KeyCode.Alpha4)) GameManager.Instance.BuildManager.AddSaveColor(3);
-        if (Input.GetKeyDown(KeyCode.Alpha5)) GameManager.Instance.BuildManager.AddSaveColor(4);
-        if (Input.GetKeyDown(KeyCode.Alpha6)) GameManager.Instance.BuildManager.AddSaveColor(5);
+        if (_keyManager.isGetKeyDown(_keyManager.firstsave)) GameManager.Instance.BuildManager.AddSaveColor(0);
+        if (_keyManager.isGetKeyDown(_keyManager.secondsave)) GameManager.Instance.BuildManager.AddSaveColor(1);
+        if (_keyManager.isGetKeyDown(_keyManager.thirdsave)) GameManager.Instance.BuildManager.AddSaveColor(2);
+        if (_keyManager.isGetKeyDown(_keyManager.forthsave)) GameManager.Instance.BuildManager.AddSaveColor(3);
+        if (_keyManager.isGetKeyDown(_keyManager.fifthsave)) GameManager.Instance.BuildManager.AddSaveColor(4);
+        if (_keyManager.isGetKeyDown(_keyManager.sixthsave)) GameManager.Instance.BuildManager.AddSaveColor(5);
     }
 
     void LoadColor()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
-        if (Input.GetKeyDown(KeyCode.Alpha4)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
-        if (Input.GetKeyDown(KeyCode.Alpha5)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
-        if (Input.GetKeyDown(KeyCode.Alpha6)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
+        if (_keyManager.isGetKeyDown(_keyManager.firstload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
+        if (_keyManager.isGetKeyDown(_keyManager.secondload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
+        if (_keyManager.isGetKeyDown(_keyManager.thirdload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
+        if (_keyManager.isGetKeyDown(_keyManager.forthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
+        if (_keyManager.isGetKeyDown(_keyManager.fifthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
+        if (_keyManager.isGetKeyDown(_keyManager.sixthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
     }
 
     public void TargetMove(GameObject _target, bool isMoveSide = true)
@@ -600,13 +585,13 @@ public class InputManager : MonoBehaviour
         Vector3 move = Vector3.zero;
         if (isMoveSide)
         {
-            if (Input.GetKey(MoveUp)) move += _cam.up;
-            if (Input.GetKey(MoveDown)) move -= _cam.up;
-            if (Input.GetKey(MoveRight)) move += _cam.right;
-            if (Input.GetKey(MoveLeft)) move -= _cam.right;
+            if (_keyManager.isGetKey(_keyManager.WUpMove)) move += _cam.up;
+            if (_keyManager.isGetKey(_keyManager.WDownMove)) move -= _cam.up;
+            if (_keyManager.isGetKey(_keyManager.WRightMove)) move += _cam.right;
+            if (_keyManager.isGetKey(_keyManager.WLeftMove)) move -= _cam.right;
         }
-        if (Input.GetKey(MoveFar)) move += _cam.forward;
-        if (Input.GetKey(MoveClose)) move -= _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.WFrontMove)) move += _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.WBackMove)) move -= _cam.forward;
 
         if (move != Vector3.zero)
         {
@@ -624,10 +609,10 @@ public class InputManager : MonoBehaviour
     public void PlayerMove()
     {
         Vector3 move = Vector3.zero;
-        if (Input.GetKey(MoveUp)) move += _cam.forward;
-        if (Input.GetKey(MoveDown)) move -= _cam.forward;
-        if (Input.GetKey(MoveRight)) move += _cam.right;
-        if (Input.GetKey(MoveLeft)) move -= _cam.right;
+        if (_keyManager.isGetKey(_keyManager.PFrontMove)) move += _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.PBackMove)) move -= _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.PRightMove)) move += _cam.right;
+        if (_keyManager.isGetKey(_keyManager.PLeftMove)) move -= _cam.right;
 
         if (move != Vector3.zero)
         {
@@ -689,7 +674,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void CheckRaycast(bool isCamera)
+    void CheckRaycast(bool isCamera, int _layer)
     {
         Ray ray = new Ray();
         if (isCamera) ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
@@ -697,7 +682,7 @@ public class InputManager : MonoBehaviour
 
         RaycastHit hit; 
         
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, 1000f, _layer))
         {
             OnRaycast = hit;
             isSomethingHit= true;
