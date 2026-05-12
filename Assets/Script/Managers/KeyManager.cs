@@ -9,49 +9,97 @@ public class Keyboards
     public bool shiftClick = false;
 }
 
+public enum KeyNameSaves
+{
+    // OnPlayerMove
+    PFrontMove,
+    PLeftMove,
+    PBackMove,
+    PRightMove,
+
+    // OnWorldMove
+    WUpMove,
+    WLeftMove,
+    WDownMove,
+    WRightMove,
+    WFrontMove,
+    WBackMove,
+
+    // OnSelect
+    SelectBtn,
+    AdditionalSelectBtn,
+    BuildCube,
+    ChooseBtn,
+    DestroyBlockKey,
+    LockSelectionKey,
+
+    // OnUISelect
+    SpawnWorld,
+    PopUpUI,
+
+    // OnSaveColor
+    firstsave,
+    secondsave,
+    thirdsave,
+    forthsave,
+    fifthsave,
+    sixthsave,
+
+    // OnLoadColor
+    firstload,
+    secondload,
+    thirdload,
+    forthload,
+    fifthload,
+    sixthload
+}
+
 public class KeyManager : MonoBehaviour
 {
-    [Header("OnPlayerMove")]
-    public Keyboards PFrontMove = new Keyboards() { key = KeyCode.W };
-    public Keyboards PLeftMove = new Keyboards() { key = KeyCode.A };
-    public Keyboards PBackMove = new Keyboards() { key = KeyCode.S };
-    public Keyboards PRightMove = new Keyboards() { key = KeyCode.D };
+    public Dictionary<KeyNameSaves, Keyboards> KeyboardDictionary = new Dictionary<KeyNameSaves, Keyboards>()
+    { 
+        // OnPlayerMove
+        { KeyNameSaves.PFrontMove, new Keyboards() { key = KeyCode.W } },
+        { KeyNameSaves.PLeftMove, new Keyboards() { key = KeyCode.A } },
+        { KeyNameSaves.PBackMove, new Keyboards() { key = KeyCode.S } },
+        { KeyNameSaves.PRightMove, new Keyboards() { key = KeyCode.D } },
 
-    [Header("OnWorldMove")]
-    public Keyboards WUpMove = new Keyboards() { key = KeyCode.W };
-    public Keyboards WLeftMove = new Keyboards() { key = KeyCode.A };
-    public Keyboards WDownMove = new Keyboards() { key = KeyCode.S };
-    public Keyboards WRightMove = new Keyboards() { key = KeyCode.D };
-    public Keyboards WFrontMove = new Keyboards() { key = KeyCode.E };
-    public Keyboards WBackMove = new Keyboards() { key = KeyCode.Q };
+        // OnWorldMove
+        { KeyNameSaves.WUpMove, new Keyboards() { key = KeyCode.W } },
+        { KeyNameSaves.WLeftMove, new Keyboards() { key = KeyCode.A } },
+        { KeyNameSaves.WDownMove, new Keyboards() { key = KeyCode.S } },
+        { KeyNameSaves.WRightMove, new Keyboards() { key = KeyCode.D } },
+        { KeyNameSaves.WFrontMove, new Keyboards() { key = KeyCode.E } },
+        { KeyNameSaves.WBackMove, new Keyboards() { key = KeyCode.Q } },
 
-    [Header("OnSelect")]
-    public Keyboards SelectBtn = new Keyboards() { key = KeyCode.Mouse0 };
-    public Keyboards AdditionalSelectBtn = new Keyboards() { key = KeyCode.Mouse0 , shiftClick = true};
-    public Keyboards BuildCube = new Keyboards() { key = KeyCode.Mouse1 };
-    public Keyboards ChooseBtn = new Keyboards() { key = KeyCode.Mouse2 };
-    public Keyboards DestroyBlockKey = new Keyboards() { key = KeyCode.Delete };
-    public Keyboards LockSelectionKey = new Keyboards() { key = KeyCode.LeftControl };
+        // OnSelect
+        { KeyNameSaves.SelectBtn, new Keyboards() { key = KeyCode.Mouse0 } },
+        { KeyNameSaves.AdditionalSelectBtn, new Keyboards() { key = KeyCode.Mouse0, shiftClick = true } },
+        { KeyNameSaves.BuildCube, new Keyboards() { key = KeyCode.Mouse1 } },
+        { KeyNameSaves.ChooseBtn, new Keyboards() { key = KeyCode.Mouse2 } },
+        { KeyNameSaves.DestroyBlockKey, new Keyboards() { key = KeyCode.Delete } },
+        { KeyNameSaves.LockSelectionKey, new Keyboards() { key = KeyCode.LeftControl } },
 
-    [Header("OnUISelect")]
-    public Keyboards SpawnWorld = new Keyboards() { key = KeyCode.P };
-    public Keyboards PopUpUI = new Keyboards() { key = KeyCode.Tab };
+        // OnUISelect
+        { KeyNameSaves.SpawnWorld, new Keyboards() { key = KeyCode.P } },
+        { KeyNameSaves.PopUpUI, new Keyboards() { key = KeyCode.Tab } },
 
-    [Header("OnSaveColor")]
-    public Keyboards firstsave = new Keyboards() { key = KeyCode.Alpha1 , shiftClick = true };
-    public Keyboards secondsave = new Keyboards() { key = KeyCode.Alpha2, shiftClick = true };
-    public Keyboards thirdsave = new Keyboards() { key = KeyCode.Alpha3, shiftClick = true };
-    public Keyboards forthsave = new Keyboards() { key = KeyCode.Alpha4, shiftClick = true };
-    public Keyboards fifthsave = new Keyboards() { key = KeyCode.Alpha5, shiftClick = true };
-    public Keyboards sixthsave = new Keyboards() { key = KeyCode.Alpha6, shiftClick = true };
+        // OnSaveColor
+        { KeyNameSaves.firstsave, new Keyboards() { key = KeyCode.Alpha1, shiftClick = true } },
+        { KeyNameSaves.secondsave, new Keyboards() { key = KeyCode.Alpha2, shiftClick = true } },
+        { KeyNameSaves.thirdsave, new Keyboards() { key = KeyCode.Alpha3, shiftClick = true } },
+        { KeyNameSaves.forthsave, new Keyboards() { key = KeyCode.Alpha4, shiftClick = true } },
+        { KeyNameSaves.fifthsave, new Keyboards() { key = KeyCode.Alpha5, shiftClick = true } },
+        { KeyNameSaves.sixthsave, new Keyboards() { key = KeyCode.Alpha6, shiftClick = true } },
 
-    [Header("OnLoadColor")]
-    public Keyboards firstload = new Keyboards() { key = KeyCode.Alpha1};
-    public Keyboards secondload = new Keyboards() { key = KeyCode.Alpha2};
-    public Keyboards thirdload = new Keyboards() { key = KeyCode.Alpha3 };
-    public Keyboards forthload = new Keyboards() { key = KeyCode.Alpha4};
-    public Keyboards fifthload = new Keyboards() { key = KeyCode.Alpha5 };
-    public Keyboards sixthload = new Keyboards() { key = KeyCode.Alpha6};
+        // OnLoadColor
+        { KeyNameSaves.firstload, new Keyboards() { key = KeyCode.Alpha1 } },
+        { KeyNameSaves.secondload, new Keyboards() { key = KeyCode.Alpha2 } },
+        { KeyNameSaves.thirdload, new Keyboards() { key = KeyCode.Alpha3 } },
+        { KeyNameSaves.forthload, new Keyboards() { key = KeyCode.Alpha4 } },
+        { KeyNameSaves.fifthload, new Keyboards() { key = KeyCode.Alpha5 } },
+        { KeyNameSaves.sixthload, new Keyboards() { key = KeyCode.Alpha6 } },
+    };
 
     public bool isGetKeyDown(Keyboards _chooseKey)
     {
@@ -125,5 +173,144 @@ public class KeyManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public string GetKeyFromKeyCode(Keyboards keyboard)
+    {  // A ~ Z
+        string output = "";
+        if (keyboard.shiftClick)
+        {
+            output = "Shift + ";
+        }
+
+        KeyCode key = keyboard.key;
+
+        if (key >= KeyCode.A && key <= KeyCode.Z)
+        {
+            return output + key.ToString();
+        }
+
+        // 0 ~ 9
+        if (key >= KeyCode.Alpha0 && key <= KeyCode.Alpha9)
+        {
+            return output + key.ToString().Replace("Alpha", "");
+        }
+
+        // F1 ~ F12
+        if (key >= KeyCode.F1 && key <= KeyCode.F12)
+        {
+            return output + key.ToString();
+        }
+
+        switch (key)
+        {
+            // 마우스
+            case KeyCode.Mouse0:
+                return output + "왼쪽 클릭";
+
+            case KeyCode.Mouse1:
+                return output + "오른쪽 클릭";
+
+            case KeyCode.Mouse2:
+                return output + "휠 클릭";
+
+            // 특수키
+            case KeyCode.Tab:
+                return output + "Tab";
+
+            case KeyCode.LeftShift:
+                return output + "LeftShift";
+            case KeyCode.RightShift:
+                return output + "RightShift";
+
+            case KeyCode.LeftControl:
+                return output + "LeftControl";
+            case KeyCode.RightControl:
+                return output + "RightControl";
+
+            case KeyCode.LeftAlt:
+                return output + "LeftAlt";
+            case KeyCode.RightAlt:
+                return output + "RightAlt";
+
+            case KeyCode.Space:
+                return output + "Space";
+
+            // 방향키
+            case KeyCode.UpArrow:
+                return output + "위 화살표";
+
+            case KeyCode.DownArrow:
+                return output + "아래 화살표";
+
+            case KeyCode.LeftArrow:
+                return output + "왼쪽 화살표";
+
+            case KeyCode.RightArrow:
+                return output + "오른쪽 화살표";
+        }
+
+        // 기본값
+        return output + key.ToString();
+    }
+
+    public KeyCode? CheckKeyCode(KeyCode key)
+    {
+        // A ~ Z
+        if (key >= KeyCode.A &&
+            key <= KeyCode.Z)
+        {
+            return key;
+        }
+
+        // 0 ~ 9
+        if (key >= KeyCode.Alpha0 &&
+            key <= KeyCode.Alpha9)
+        {
+            return key;
+        }
+
+        // F1 ~ F12
+        if (key >= KeyCode.F1 &&
+            key <= KeyCode.F12)
+        {
+            return key;
+        }
+
+        switch (key)
+        {
+            // 방향키
+            case KeyCode.UpArrow:
+            case KeyCode.DownArrow:
+            case KeyCode.LeftArrow:
+            case KeyCode.RightArrow:
+
+            // 특수키
+            case KeyCode.Tab:
+            case KeyCode.Space:
+            case KeyCode.LeftControl:
+            case KeyCode.RightControl:
+            case KeyCode.LeftAlt:
+            case KeyCode.RightAlt:
+
+            // 기호
+            case KeyCode.Comma:
+            case KeyCode.Period:
+            case KeyCode.Slash:
+            case KeyCode.Semicolon:
+            case KeyCode.Quote:
+            case KeyCode.LeftBracket:
+            case KeyCode.RightBracket:
+
+            // 마우스
+            case KeyCode.Mouse0:
+            case KeyCode.Mouse1:
+            case KeyCode.Mouse2:
+
+                return key;
+        }
+
+        // 허용되지 않은 키 눌림
+        return null;
     }
 }

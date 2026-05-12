@@ -64,7 +64,7 @@ public class InputManager : MonoBehaviour
                     nowMovingThing = CoinType.None;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))//나중 esc로 변경
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                         GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
@@ -74,7 +74,7 @@ public class InputManager : MonoBehaviour
                     }
 
                     if (EventSystem.current.IsPointerOverGameObject()) return;
-                    if (_keyManager.isGetKeyDown(_keyManager.SelectBtn))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn]))
                     {
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -105,7 +105,7 @@ public class InputManager : MonoBehaviour
                     nowMovingThing = CoinType.Player;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (_keyManager.isGetKeyDown(_keyManager.SpawnWorld))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SpawnWorld]))
                     {
                         GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
 
@@ -115,7 +115,7 @@ public class InputManager : MonoBehaviour
                         nowMovingThing = CoinType.World;
                         ChooseWorld();
                     }
-                    if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))//나중 esc로 변경
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
                     {
                         GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                         GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
@@ -127,7 +127,7 @@ public class InputManager : MonoBehaviour
 
                     if (!isSomethingHit) return;
                     if (EventSystem.current.IsPointerOverGameObject()) return;
-                    if (_keyManager.isGetKeyDown(_keyManager.SelectBtn))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn]))
                     {
                         if (OnRaycast.transform.CompareTag("World"))
                         {
@@ -172,7 +172,7 @@ public class InputManager : MonoBehaviour
                     GameManager.Instance.MainCamera.CameraTurn();
                 }
 
-                if (_keyManager.isGetKeyDown(_keyManager.LockSelectionKey))
+                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.LockSelectionKey]))
                 {
                     if (isLock)
                     {
@@ -188,7 +188,7 @@ public class InputManager : MonoBehaviour
                 }
                 if (isLock) return;
 
-                if (_keyManager.isGetKeyDown(_keyManager.DestroyBlockKey))
+                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.DestroyBlockKey]))
                 {
                     TryToDestroy();
                     ResetDestroyRange();
@@ -203,7 +203,8 @@ public class InputManager : MonoBehaviour
                 {
                     SeeChooseBlock();
 
-                    if (_keyManager.isGetKeyDown(_keyManager.AdditionalSelectBtn) && !_keyManager.isGetKey(_keyManager.BuildCube))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.AdditionalSelectBtn])
+                        && !_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.BuildCube]))
                     {
                         if (BeforeDestroyBlockPos == null)
                         {
@@ -214,12 +215,14 @@ public class InputManager : MonoBehaviour
                             SettingDestroyRangeAfter();
                         }
                     }
-                    else if(_keyManager.isGetKeyDown(_keyManager.SelectBtn) && !_keyManager.isGetKey(_keyManager.BuildCube))
+                    else if(_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn])
+                        && !_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.BuildCube]))
                     {
                         SettingDestroyRange();
                     }
 
-                    if (_keyManager.isGetKeyDown(_keyManager.BuildCube) && !_keyManager.isGetKey(_keyManager.SelectBtn))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.BuildCube])
+                        && !_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn]))
                     {
                         ResetDestroyRange();
                         SpawnNewBlock();
@@ -230,7 +233,7 @@ public class InputManager : MonoBehaviour
                         GameManager.Instance.BuildManager.AddPreColor(addcolor);
                     }
 
-                    if (_keyManager.isGetKeyDown(_keyManager.ChooseBtn))
+                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.ChooseBtn]))
                     {
                         ResetDestroyRange();
 
@@ -269,10 +272,10 @@ public class InputManager : MonoBehaviour
                     GameManager.Instance.MainCamera.CameraTurn();
                 }
 
-                if (_keyManager.isGetKeyDown(_keyManager.SelectBtn)) GameManager.Instance.MainCamera.stopCamera = true;
-                if (_keyManager.isGetKeyUp(_keyManager.SelectBtn)) GameManager.Instance.MainCamera.stopCamera = false;
-                if (_keyManager.isGetKeyDown(_keyManager.ChooseBtn))
-                {
+                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn])) GameManager.Instance.MainCamera.stopCamera = true;
+                if (_keyManager.isGetKeyUp(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn])) GameManager.Instance.MainCamera.stopCamera = false;
+                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.ChooseBtn]))
+                {   
                     Ray ray = _cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit;
                     if (Physics.Raycast(ray, out hit, 1000f, 1 << 6))
@@ -328,7 +331,7 @@ public class InputManager : MonoBehaviour
 
                     return;
                 }
-                if (_keyManager.isGetKeyDown(_keyManager.BuildCube))
+                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.BuildCube]))
                 {
                     GameManager.Instance.ChangeFlow(GameFlow.None);
 
@@ -379,7 +382,7 @@ public class InputManager : MonoBehaviour
 
     void ChangeTypeOfMove()
     {
-        if (_keyManager.isGetKeyDown(_keyManager.PopUpUI))
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))
         {
             if (nowMovingThing == CoinType.None) return;
             else if (nowMovingThing == CoinType.World)
@@ -562,22 +565,22 @@ public class InputManager : MonoBehaviour
 
     void SaveColors()
     {
-        if (_keyManager.isGetKeyDown(_keyManager.firstsave)) GameManager.Instance.BuildManager.AddSaveColor(0);
-        if (_keyManager.isGetKeyDown(_keyManager.secondsave)) GameManager.Instance.BuildManager.AddSaveColor(1);
-        if (_keyManager.isGetKeyDown(_keyManager.thirdsave)) GameManager.Instance.BuildManager.AddSaveColor(2);
-        if (_keyManager.isGetKeyDown(_keyManager.forthsave)) GameManager.Instance.BuildManager.AddSaveColor(3);
-        if (_keyManager.isGetKeyDown(_keyManager.fifthsave)) GameManager.Instance.BuildManager.AddSaveColor(4);
-        if (_keyManager.isGetKeyDown(_keyManager.sixthsave)) GameManager.Instance.BuildManager.AddSaveColor(5);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.firstsave])) GameManager.Instance.BuildManager.AddSaveColor(0);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.secondsave])) GameManager.Instance.BuildManager.AddSaveColor(1);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.thirdsave])) GameManager.Instance.BuildManager.AddSaveColor(2);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.forthsave])) GameManager.Instance.BuildManager.AddSaveColor(3);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.fifthsave])) GameManager.Instance.BuildManager.AddSaveColor(4);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.sixthsave])) GameManager.Instance.BuildManager.AddSaveColor(5);
     }
 
     void LoadColor()
     {
-        if (_keyManager.isGetKeyDown(_keyManager.firstload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
-        if (_keyManager.isGetKeyDown(_keyManager.secondload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
-        if (_keyManager.isGetKeyDown(_keyManager.thirdload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
-        if (_keyManager.isGetKeyDown(_keyManager.forthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
-        if (_keyManager.isGetKeyDown(_keyManager.fifthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
-        if (_keyManager.isGetKeyDown(_keyManager.sixthload)) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.firstload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.secondload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.thirdload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.forthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.fifthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.sixthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
     }
 
     public void TargetMove(GameObject _target, bool isMoveSide = true)
@@ -585,13 +588,13 @@ public class InputManager : MonoBehaviour
         Vector3 move = Vector3.zero;
         if (isMoveSide)
         {
-            if (_keyManager.isGetKey(_keyManager.WUpMove)) move += _cam.up;
-            if (_keyManager.isGetKey(_keyManager.WDownMove)) move -= _cam.up;
-            if (_keyManager.isGetKey(_keyManager.WRightMove)) move += _cam.right;
-            if (_keyManager.isGetKey(_keyManager.WLeftMove)) move -= _cam.right;
+            if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WUpMove])) move += _cam.up;
+            if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WDownMove])) move -= _cam.up;
+            if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WRightMove])) move += _cam.right;
+            if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WLeftMove])) move -= _cam.right;
         }
-        if (_keyManager.isGetKey(_keyManager.WFrontMove)) move += _cam.forward;
-        if (_keyManager.isGetKey(_keyManager.WBackMove)) move -= _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WFrontMove])) move += _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WBackMove])) move -= _cam.forward;
 
         if (move != Vector3.zero)
         {
@@ -609,10 +612,10 @@ public class InputManager : MonoBehaviour
     public void PlayerMove()
     {
         Vector3 move = Vector3.zero;
-        if (_keyManager.isGetKey(_keyManager.PFrontMove)) move += _cam.forward;
-        if (_keyManager.isGetKey(_keyManager.PBackMove)) move -= _cam.forward;
-        if (_keyManager.isGetKey(_keyManager.PRightMove)) move += _cam.right;
-        if (_keyManager.isGetKey(_keyManager.PLeftMove)) move -= _cam.right;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PFrontMove])) move += _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PBackMove])) move -= _cam.forward;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PRightMove])) move += _cam.right;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PLeftMove])) move -= _cam.right;
 
         if (move != Vector3.zero)
         {

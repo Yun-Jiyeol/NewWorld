@@ -66,11 +66,16 @@ public class StartSceneUI : MonoBehaviour
     bool isTyping = false;
     public void AddText(string _text)
     {
+        // 꺼져있으면 무시
+        if (!gameObject.activeInHierarchy)
+            return;
+
         textQueue.Enqueue(_text);
 
         if (!isTyping)
         {
-            StartCoroutine(ProcessQueue());
+            typingCoroutine =
+                StartCoroutine(ProcessQueue());
         }
     }
 
@@ -80,9 +85,14 @@ public class StartSceneUI : MonoBehaviour
 
         while (textQueue.Count > 0)
         {
+            // 비활성화되면 종료
+            if (!gameObject.activeInHierarchy)
+            {
+                break;
+            }
+
             string nextText = textQueue.Dequeue();
 
-            // 새 줄 추가
             texts.Insert(0, "");
 
             if (texts.Count > maxLineCount)
@@ -90,11 +100,11 @@ public class StartSceneUI : MonoBehaviour
                 texts.RemoveAt(texts.Count - 1);
             }
 
-            // ⭐ 한 줄 끝날 때까지 기다림
             yield return StartCoroutine(TypeText(nextText, 0));
         }
 
         isTyping = false;
+        typingCoroutine = null;
     }
 
     IEnumerator TypeText(string targetText, int lineIndex)
@@ -103,7 +113,14 @@ public class StartSceneUI : MonoBehaviour
 
         for (int i = 0; i < targetText.Length; i++)
         {
-            float typingSpeed = Random.Range(MintypingSpeed, MaxtypingSpeed);
+            // 꺼지면 종료
+            if (!gameObject.activeInHierarchy)
+            {
+                yield break;
+            }
+
+            float typingSpeed =
+                Random.Range(MintypingSpeed, MaxtypingSpeed);
 
             current += targetText[i];
 
@@ -135,13 +152,17 @@ public class StartSceneUI : MonoBehaviour
 
     private void OnDisable()
     {
-        textQueue.Clear();
-        texts.Clear();
-        WritingBoard.text = "";
-        isTyping = false;
-
         StopAllCoroutines();
+
         typingCoroutine = null;
+
+        textQueue.Clear();
+
+        texts.Clear();
+
+        WritingBoard.text = "";
+
+        isTyping = false;
 
         Zoom.DOKill();
         RedLight.DOKill();

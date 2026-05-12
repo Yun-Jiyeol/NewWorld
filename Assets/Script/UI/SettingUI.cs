@@ -63,8 +63,8 @@ public class SettingUI : NeedToDoOnit
                 break;
         }
 
-        NowPage.GetComponent<NeedToDoOnit>().Onit();
-        NowPage.GetComponent<NeedToDoOnit>().GetParent(gameObject.transform);
+        NowPage.GetComponent<NeedToDoOnit>()?.Onit();
+        NowPage.GetComponent<NeedToDoOnit>()?.GetParent(gameObject.transform);
     }
 
     private void OnEnable()
