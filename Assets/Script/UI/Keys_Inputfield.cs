@@ -1,12 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.EventSystems;
 
-public class Keys_Inputfield : NeedToDoOnit
+public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
 {
     public KeyNameSaves KeyNum;
     TMP_InputField thisInput;
@@ -18,6 +15,9 @@ public class Keys_Inputfield : NeedToDoOnit
     {
         thisInput = gameObject.GetComponent<TMP_InputField>();
         keyManager = GameManager.Instance.KeyManager;
+
+        thisInput.readOnly = true;
+        thisInput.caretWidth = 0;
     }
 
     private void Start()
@@ -38,19 +38,30 @@ public class Keys_Inputfield : NeedToDoOnit
 
     void OnSelect(string value)
     {
-        if (parent.isChange) 
+        TrySelect();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        TrySelect();
+    }
+
+    void TrySelect()
+    {
+        if (parent.isChange)
         {
             Onit();
             thisInput.DeactivateInputField();
             return;
         }
 
-        if(InputCoroutine != null)
+        if (InputCoroutine != null)
         {
             StopCoroutine(InputCoroutine);
         }
 
         parent.isChange = true;
+
         InputCoroutine = StartCoroutine(_InputCoroutine());
     }
 
@@ -102,6 +113,7 @@ public class Keys_Inputfield : NeedToDoOnit
         thisInput.DeactivateInputField();
         keyManager.KeyboardDictionary[KeyNum] = newKey;
         parent.isChange = false;
+        GameManager.Instance.SaveAndLoadManager.PlayerSetting_SaveKey();
         Onit();
     }
 

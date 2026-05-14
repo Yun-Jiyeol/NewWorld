@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -129,6 +130,20 @@ public class PlayerPositionSave
     public float zrot;
     public float wrot;
 }
+
+[System.Serializable]
+public class KeySaves
+{
+    public List<KeySave> keys = new List<KeySave>();
+}
+
+[System.Serializable]
+public class KeySave 
+{
+    public KeyNameSaves keyname;
+    public Keyboards keyboard;
+}
+
 
 public class SaveAndLoadManager : MonoBehaviour
 {
@@ -702,11 +717,6 @@ public class SaveAndLoadManager : MonoBehaviour
         File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
     }
 
-    void LoadStartFile(string _path)
-    {
-        string[] files = Directory.GetFiles(_path, "*.json");
-    }
-
     void LoadFile(string _path)
     {
         string[] files = Directory.GetFiles(_path, "*.json");
@@ -929,5 +939,63 @@ public class SaveAndLoadManager : MonoBehaviour
         WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
 
         return worldsave.Name;
+    }
+
+    string TryMakePlayerSettingFolder()
+    {
+        string path = PlayerSettingFolder;
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
+    public void PlayerSetting_SaveKey()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "KeySetting.json");
+        KeyManager _key = GameManager.Instance.KeyManager;
+        KeySaves keysaves = new KeySaves();
+
+        for (int i = 0; i < _key.KeyboardDictionary.Count; i++)
+        {
+            keysaves.keys.Add(new KeySave { keyname = (KeyNameSaves)i, keyboard = _key.KeyboardDictionary[(KeyNameSaves)i] });
+        }
+
+        File.WriteAllText(path, JsonUtility.ToJson(keysaves, true));
+    }
+
+    void LoadStartFile(string _path)
+    {
+        if (!Directory.Exists(_path))
+        {
+            Directory.CreateDirectory(_path);
+        }
+
+        string[] files = Directory.GetFiles(_path, "*.json"); 
+        
+        foreach (string file in files)
+        {
+            string fileName = Path.GetFileName(file);
+
+            switch (fileName)
+            {
+                case "KeySetting.json":
+                    PlayerSetting_LoadKey(file);
+                    break;
+            }
+        }
+    }
+
+    void PlayerSetting_LoadKey(string _path)
+    {
+        if (!File.Exists(_path)) return;
+
+        string json = File.ReadAllText(_path);
+        KeyManager _key = GameManager.Instance.KeyManager;
+        KeySaves keysaves = JsonUtility.FromJson<KeySaves>(json);
+
+        foreach (KeySave save in keysaves.keys)
+        {
+            _key.KeyboardDictionary[save.keyname] = save.keyboard;
+        }
     }
 }

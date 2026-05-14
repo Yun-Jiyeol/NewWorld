@@ -5789,7 +5789,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 20
   m_Viewport: {fileID: 2340082928393335459}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1911199094589651121}
@@ -9086,6 +9086,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keytypes:
   - {fileID: 1253368537191250743}
+  - {fileID: 6832631136528738683}
+  - {fileID: 6745085757824870296}
+  - {fileID: 1743553979400733050}
+  - {fileID: 3234043201665752230}
   isChange: 0
 --- !u!1 &3274095505714627999
 GameObject:
@@ -21272,7 +21276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000023045508}
+  m_AnchoredPosition: {x: 0, y: 0.000064300504}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7925215726710215486
