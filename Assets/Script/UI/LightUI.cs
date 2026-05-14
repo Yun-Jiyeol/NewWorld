@@ -51,10 +51,13 @@ public class LightUI : BasicUI
     GameObject ShowLight;
     bool isLightMove = true;
 
+    KeyManager _keyManager;
+
     public override void OnSetting() 
     {
         if (GameManager.Instance.InputManager.TargetGameObject == null) return;
         target = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().ChangeLightPower();
+        _keyManager = GameManager.Instance.KeyManager;
         SettingLight = (int)target.intensity;
         _color = target.color;
         targettype = target.type;
@@ -89,7 +92,7 @@ public class LightUI : BasicUI
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))
         {
             isLightMove = !isLightMove;
         }

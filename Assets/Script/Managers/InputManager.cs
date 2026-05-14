@@ -646,7 +646,7 @@ public class InputManager : MonoBehaviour
     {
         isRotating = false;
 
-        if (Input.GetMouseButton(0))
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PWBaseMoveKey]))
         {
             isRotating = true;
             isRotated = false;

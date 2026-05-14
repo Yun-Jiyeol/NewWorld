@@ -18,12 +18,13 @@ public enum KeyNameSaves
     PRightMove,
 
     // OnWorldMove
+    PWBaseMoveKey,
     WUpMove,
     WLeftMove,
     WDownMove,
     WRightMove,
     WFrontMove,
-    WBackMove,
+    WBackMove, //9
 
     // OnSelect
     SelectBtn,
@@ -65,12 +66,13 @@ public class KeyManager : MonoBehaviour
         { KeyNameSaves.PRightMove, new Keyboards() { key = KeyCode.D } },
 
         // OnWorldMove
-        { KeyNameSaves.WUpMove, new Keyboards() { key = KeyCode.W } },
+        { KeyNameSaves.PWBaseMoveKey, new Keyboards() { key = KeyCode.Mouse0 } },
+        { KeyNameSaves.WUpMove, new Keyboards() { key = KeyCode.E } },
         { KeyNameSaves.WLeftMove, new Keyboards() { key = KeyCode.A } },
-        { KeyNameSaves.WDownMove, new Keyboards() { key = KeyCode.S } },
+        { KeyNameSaves.WDownMove, new Keyboards() { key = KeyCode.Q } },
         { KeyNameSaves.WRightMove, new Keyboards() { key = KeyCode.D } },
-        { KeyNameSaves.WFrontMove, new Keyboards() { key = KeyCode.E } },
-        { KeyNameSaves.WBackMove, new Keyboards() { key = KeyCode.Q } },
+        { KeyNameSaves.WFrontMove, new Keyboards() { key = KeyCode.W } },
+        { KeyNameSaves.WBackMove, new Keyboards() { key = KeyCode.S } },
 
         // OnSelect
         { KeyNameSaves.SelectBtn, new Keyboards() { key = KeyCode.Mouse0 } },

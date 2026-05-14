@@ -8,7 +8,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class Keys_Inputfield : NeedToDoOnit
 {
-    public int KeyNum;
+    public KeyNameSaves KeyNum;
     TMP_InputField thisInput;
     KeyManager keyManager;
     Coroutine InputCoroutine;
@@ -33,7 +33,7 @@ public class Keys_Inputfield : NeedToDoOnit
 
     public override void Onit()
     {
-        thisInput.text = keyManager.GetKeyFromKeyCode(keyManager.KeyboardDictionary[(KeyNameSaves)KeyNum]);
+        thisInput.text = keyManager.GetKeyFromKeyCode(keyManager.KeyboardDictionary[KeyNum]);
     }
 
     void OnSelect(string value)
@@ -100,7 +100,7 @@ public class Keys_Inputfield : NeedToDoOnit
     void Save(Keyboards newKey)
     {
         thisInput.DeactivateInputField();
-        keyManager.KeyboardDictionary[(KeyNameSaves)KeyNum] = newKey;
+        keyManager.KeyboardDictionary[KeyNum] = newKey;
         parent.isChange = false;
         Onit();
     }
