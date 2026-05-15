@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -41,13 +42,58 @@ public class CameraSetting : BasicUI
     public Transform SpawnPos;
     public GameObject Slider;
 
+    public TMP_InputField FieldOfVeiw_Input;
+    public ScrollbarHelper FieldOfVeiw_Scroll;
+    float FieldOfView_Value;
+
     public override void OnSetting()
     {
         if(GameManager.Instance == null) return;
 
         mainCamera = GameManager.Instance.MainCamera;
         CameraMaterial = mainCamera.GetComponent<CameraShaderPutter>().CamMaterial;
+
+        FieldOfView_Value = mainCamera.GetComponent<Camera>().fieldOfView;
+        FieldOfVeiw_Input.text = FieldOfView_Value.ToString();
+        FieldOfVeiw_Scroll.Onit(this);
+        FieldOfVeiw_Scroll.ChangedValue(FieldOfView_Value);
+
         SettingCameraNowSetting();
+    }
+
+    public void AddSubBtn(float num)
+    {
+        ChangeFieldOfView(FieldOfView_Value + num);
+    }
+
+    public void InputField(string value)
+    {
+        if (float.TryParse(value, out float number))
+        {
+            // 숫자면 FOV 변경
+            ChangeFieldOfView(number);
+        }
+        else
+        {
+            ChangeFieldOfView(FieldOfView_Value);
+        }
+    }
+
+    public void ChangeFieldOfView(float _FOVV)
+    {
+        if(_FOVV < 1)
+        {
+            _FOVV = 1;
+        }else if(_FOVV > 180)
+        {
+            _FOVV = 180;
+        }
+
+        mainCamera.GetComponent<Camera>().fieldOfView = _FOVV;
+        FieldOfView_Value = mainCamera.GetComponent<Camera>().fieldOfView;  
+
+        FieldOfVeiw_Input.text = FieldOfView_Value.ToString("F0");
+        FieldOfVeiw_Scroll.ChangedValue(FieldOfView_Value);
     }
 
     void MakeNewSetting()

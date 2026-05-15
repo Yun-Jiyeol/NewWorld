@@ -5,21 +5,28 @@ using UnityEngine.UI;
 
 public enum vector
 {
-    X, Y, Z
+    X, Y, Z, None
 }
 
 public class ScrollbarHelper : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
-    ChooseHowToMake Parent;
+    ChooseHowToMake ChoParent;
+    CameraSetting CamParent;
     Scrollbar thisscroll;
 
     public Image FullImage;
     public Color color;
     public vector vector;
 
+    public void Onit(CameraSetting parent)
+    {
+        CamParent = parent;
+        thisscroll = GetComponent<Scrollbar>();
+    }
+
     public void Onit(ChooseHowToMake parent)
     {
-        Parent = parent;
+        ChoParent = parent;
         thisscroll = gameObject.GetComponent<Scrollbar>();
     }
 
@@ -32,15 +39,19 @@ public class ScrollbarHelper : MonoBehaviour, IPointerUpHandler, IPointerDownHan
         switch (vector)
         {
             case vector.X:
-                Parent.Xtext.text = ((int)(value * 128)).ToString();
+                ChoParent.Xtext.text = ((int)(value * 128)).ToString();
                 break;
 
             case vector.Y:
-                Parent.Ytext.text = ((int)(value * 128)).ToString();
+                ChoParent.Ytext.text = ((int)(value * 128)).ToString();
                 break;
 
             case vector.Z:
-                Parent.Ztext.text = ((int)(value * 128)).ToString();
+                ChoParent.Ztext.text = ((int)(value * 128)).ToString();
+                break;
+
+            case vector.None:
+                CamParent.ChangeFieldOfView(value * 180);
                 break;
         }
     }
@@ -57,15 +68,18 @@ public class ScrollbarHelper : MonoBehaviour, IPointerUpHandler, IPointerDownHan
         switch (vector)
         {
             case vector.X:
-                Parent.ChageXValue();
+                ChoParent.ChageXValue();
                 break;
 
             case vector.Y:
-                Parent.ChageYValue();
+                ChoParent.ChageYValue();
                 break;
 
             case vector.Z:
-                Parent.ChageZValue();
+                ChoParent.ChageZValue();
+                break;
+
+            case vector.None:
                 break;
         }
     }
@@ -76,5 +90,13 @@ public class ScrollbarHelper : MonoBehaviour, IPointerUpHandler, IPointerDownHan
 
         thisscroll.value = percentage;
         FullImage.fillAmount= percentage;
+    }
+
+    public void ChangedValue(float num)
+    {
+        float percentage = num / 180f;
+
+        thisscroll.value = percentage;
+        FullImage.fillAmount = percentage;
     }
 }
