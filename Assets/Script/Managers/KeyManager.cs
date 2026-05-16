@@ -53,7 +53,19 @@ public enum KeyNameSaves
     thirdload,
     forthload,
     fifthload,
-    sixthload
+    sixthload,
+
+    // 월드 세부 조정 키
+    WorldTurnTrigger,
+    TurnXPlus,
+    TurnXMinus,
+    TurnYPlus,
+    TurnYMinus,
+    TurnZPlus,
+    TurnZMinus,
+
+    // 카메라 회전
+    CameraTurn
 }
 
 public class KeyManager : MonoBehaviour
@@ -61,6 +73,7 @@ public class KeyManager : MonoBehaviour
     public Dictionary<KeyNameSaves, Keyboards> KeyboardDictionary = new Dictionary<KeyNameSaves, Keyboards>()
     { 
         // OnPlayerMove
+        { KeyNameSaves.CameraTurn, new Keyboards() { key = KeyCode.F12 } },
         { KeyNameSaves.PFrontMove, new Keyboards() { key = KeyCode.W } },
         { KeyNameSaves.PLeftMove, new Keyboards() { key = KeyCode.A } },
         { KeyNameSaves.PBackMove, new Keyboards() { key = KeyCode.S } },
@@ -74,6 +87,15 @@ public class KeyManager : MonoBehaviour
         { KeyNameSaves.WRightMove, new Keyboards() { key = KeyCode.D } },
         { KeyNameSaves.WFrontMove, new Keyboards() { key = KeyCode.W } },
         { KeyNameSaves.WBackMove, new Keyboards() { key = KeyCode.S } },
+        
+        // OnWorldTurn
+        { KeyNameSaves.WorldTurnTrigger, new Keyboards() { key = KeyCode.Comma } },
+        { KeyNameSaves.TurnXPlus, new Keyboards() { key = KeyCode.LeftBracket } },
+        { KeyNameSaves.TurnXMinus, new Keyboards() { key = KeyCode.RightBracket } },
+        { KeyNameSaves.TurnYPlus, new Keyboards() { key = KeyCode.Semicolon } },
+        { KeyNameSaves.TurnYMinus, new Keyboards() { key = KeyCode.Quote } },
+        { KeyNameSaves.TurnZPlus, new Keyboards() { key = KeyCode.Period } },
+        { KeyNameSaves.TurnZMinus, new Keyboards() { key = KeyCode.Slash } },
 
         // OnSelect
         { KeyNameSaves.SelectBtn, new Keyboards() { key = KeyCode.Mouse0 } },
@@ -251,6 +273,27 @@ public class KeyManager : MonoBehaviour
 
             case KeyCode.RightArrow:
                 return output + "오른쪽 화살표";
+
+            case KeyCode.LeftBracket:
+                return output + "[";
+
+            case KeyCode.RightBracket:
+                return output + "]";
+
+            case KeyCode.Semicolon:
+                return output + ";";
+
+            case KeyCode.Quote:
+                return output + "'";
+
+            case KeyCode.Period:
+                return output + ".";
+
+            case KeyCode.Slash:
+                return output + "/";
+
+            case KeyCode.Comma:
+                return output + ",";
         }
 
         // 기본값

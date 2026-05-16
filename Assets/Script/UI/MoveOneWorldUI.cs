@@ -9,11 +9,13 @@ public class MoveOneWorldUI : BasicUI
     Vector3 SaveVector3;
     Quaternion SaveRotation;
     float SaveScale;
+    KeyManager keyManager;
 
     bool isWorldMove = true;
 
     private void Awake()
     {
+        keyManager = GameManager.Instance.KeyManager;
         inputManager = GameManager.Instance.InputManager;
     }
 
@@ -40,6 +42,11 @@ public class MoveOneWorldUI : BasicUI
         {
             if (target != null && !EventSystem.current.IsPointerOverGameObject())
             {
+                if (keyManager.isGetKeyDown(keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))
+                {
+                    isWorldMove = !isWorldMove;
+                }
+
                 if (isWorldMove)
                 {
                     inputManager.TargetMove(target);

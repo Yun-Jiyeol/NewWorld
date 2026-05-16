@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -36,11 +37,19 @@ public class MainCamera : MonoBehaviour
 
     float yaw;   // 좌우
     float pitch; // 상하
+    float roll; // 회전
 
     public bool stopCamera = true;
 
     public Vector3 PlayerBeforePos;
     public Quaternion PlayerBeforeRot;
+
+    KeyManager _keyManager;
+
+    private void Start()
+    {
+        _keyManager = GameManager.Instance.KeyManager;
+    }
 
     void Update()
     {
@@ -57,15 +66,67 @@ public class MainCamera : MonoBehaviour
 
     public void CameraTurn()
     {
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity * 100f * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * 100f * Time.deltaTime;
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.CameraTurn]))
+        {
+            CameraTurn180();
+            return;
+        }
+        CameraMouseTurn();
+    }
+
+    void CameraTurn180()
+    {
+        stopCamera = true;
+
+        Vector3 rot = transform.eulerAngles;
+
+        rot.z += 180f;
+
+        transform.DORotate(
+            rot,
+            0.5f,
+            RotateMode.FastBeyond360
+        )
+        .OnComplete(() =>
+        {
+            TryCheckrot();
+            stopCamera = false;
+        });
+    }
+
+    void CameraMouseTurn()
+    {
+        float mouseX =
+            Input.GetAxis("Mouse X")
+            * sensitivity
+            * 100f
+            * Time.deltaTime;
+
+        float mouseY =
+            Input.GetAxis("Mouse Y")
+            * sensitivity
+            * 100f
+            * Time.deltaTime;
+
+        // 카메라 뒤집힘 체크
+        float upDot =
+            Vector3.Dot(transform.up, Vector3.up);
+
+        // 뒤집혔으면 yaw 반전
+        if (upDot < 0f)
+        {
+            mouseX = -mouseX;
+        }
+
+        if(roll > 90f || roll < -90f)
+        {
+            mouseY = -mouseY;
+        }
 
         yaw += mouseX;
         pitch -= mouseY;
 
-        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
-
-        transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+        transform.rotation = Quaternion.Euler(pitch, yaw, roll);
     }
 
     public void LookAt(Quaternion quaternion)
@@ -75,6 +136,8 @@ public class MainCamera : MonoBehaviour
         yaw = angles.y;
 
         pitch = angles.x > 180f ? angles.x - 360f : angles.x;
+
+        roll = angles.z > 180f ? angles.z - 360f : angles.z;
     }
 
     public void TryCheckrot()
@@ -84,6 +147,8 @@ public class MainCamera : MonoBehaviour
         yaw = angles.y;
 
         pitch = angles.x > 180f ? angles.x - 360f : angles.x;
+        
+        roll = angles.z > 180f? angles.z - 360f : angles.z;
     }
 
     public void SavePos()

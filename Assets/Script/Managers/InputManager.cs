@@ -646,6 +646,12 @@ public class InputManager : MonoBehaviour
     {
         isRotating = false;
 
+        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WorldTurnTrigger]))
+        {
+            TurnObjectDirect(_target);
+            return;
+        }
+
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PWBaseMoveKey]))
         {
             isRotating = true;
@@ -656,23 +662,109 @@ public class InputManager : MonoBehaviour
         {
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
+
             Transform cam = Camera.main.transform;
 
-            if(mouseX >= 0.2f || mouseX <= -0.2f || mouseY >= 0.2f || mouseY <= -0.2f)
+            if (Mathf.Abs(mouseX) >= 0.2f ||
+                Mathf.Abs(mouseY) >= 0.2f)
             {
                 isRotated = true;
             }
 
+            // 마우스 방향 기반 회전축
+            Vector3 rotationAxis =
+                (cam.up * -mouseX) +
+                (cam.right * mouseY);
+
+            // 회전량
+            float rotationAmount =
+                new Vector2(mouseX, mouseY).magnitude
+                * rotateSpeed;
+
+            // 하나의 축으로 회전
             _target.transform.Rotate(
-                cam.up,
-                -mouseX * rotateSpeed,
+                rotationAxis,
+                rotationAmount,
                 Space.World
             );
+        }
+    }
 
+    private float rotateTimer = 0f;
+    private float rotateDelay = 0.02f;
+
+    void TurnObjectDirect(GameObject _target)
+    {
+        rotateTimer += Time.deltaTime;
+
+        if (rotateTimer < rotateDelay)
+            return;
+
+        rotateTimer = 0f;
+
+        // X
+        if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnXPlus]))
+        {
             _target.transform.Rotate(
-                cam.right,
-                mouseY * rotateSpeed,
-                Space.World
+                1f,
+                0f,
+                0f,
+                Space.Self
+            );
+        }
+        else if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnXMinus]))
+        {
+            _target.transform.Rotate(
+                -1f,
+                0f,
+                0f,
+                Space.Self
+            );
+        }
+
+        // Y
+        if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnYPlus]))
+        {
+            _target.transform.Rotate(
+                0f,
+                1f,
+                0f,
+                Space.Self
+            );
+        }
+        else if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnYMinus]))
+        {
+            _target.transform.Rotate(
+                0f,
+                -1f,
+                0f,
+                Space.Self
+            );
+        }
+
+        // Z
+        if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnZPlus]))
+        {
+            _target.transform.Rotate(
+                0f,
+                0f,
+                1f,
+                Space.Self
+            );
+        }
+        else if (_keyManager.isGetKey(
+            _keyManager.KeyboardDictionary[KeyNameSaves.TurnZMinus]))
+        {
+            _target.transform.Rotate(
+                0f,
+                0f,
+                -1f,
+                Space.Self
             );
         }
     }
