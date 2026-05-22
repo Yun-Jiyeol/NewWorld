@@ -80,25 +80,27 @@ public class WorldManager : MonoBehaviour
         });
     }
 
-    bool loadButton = false;
     IEnumerator LoadAllworld()
     {
-        for(int i = 0;i<Worlds.Count; i++)
+        GameManager.Instance.StartAdditionalUI.ReconstructionValue(0);
+
+        for (int i = 0;i<Worlds.Count; i++)
         {
-            loadButton = false;
+            ChunkCode chunk = Worlds[i].GetComponent<ChunkCode>();
 
-            GameManager.Instance.UIManager.StartSceneUI.AddText(Worlds[i].GetComponent<ChunkCode>()._name + "생성 중");
-            Worlds[i].GetComponent<ChunkCode>().StartBuildRoutine();
+            GameManager.Instance.UIManager.StartSceneUI
+                .AddText(chunk._name + " 생성 중");
 
-            while (!loadButton)
-            {
-                yield return null;
-            }
+            // 코루틴 끝날 때까지 기다림
+            yield return StartCoroutine(chunk.BuildRoutine());
+
+            chunk.PutThisWorld();
+
+            GameManager.Instance.StartAdditionalUI
+                .ReconstructionValue((float)(i + 1) / Worlds.Count);
+
+            // 한 프레임 쉬기 (선택)
+            yield return null;
         }
-    }
-
-    public void ClickLoadBtn()
-    {
-        loadButton = true;
     }
 }   

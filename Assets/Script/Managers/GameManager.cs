@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
 
     public CursorMover CursorMover;
 
+    public StartAdditionalUI StartAdditionalUI;
+
     public string NowWorldSaveFolder = null;
 
     private void Awake()

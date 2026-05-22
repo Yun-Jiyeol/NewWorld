@@ -1,4 +1,6 @@
 using DG.Tweening;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +23,7 @@ public class StartAdditionalUI : MonoBehaviour
     [Header("Move")]
     public RectTransform Desk;
     Vector2 DeskOriginalPos;
-    Vector2 DeskAfterPos = new Vector2(0, - 150f);
+    Vector2 DeskAfterPos = new Vector2(0, 145f);
 
     [Header("TapeInMotion")]
     public GameObject tape;
@@ -29,8 +31,11 @@ public class StartAdditionalUI : MonoBehaviour
     public RectTransform UpdownCover;
     public Transform Spawnpos;
     public Transform ChangeParent;
-    public MoveName MoveName;
+    public StartPage_NamePage NamePage;
     public Image OverShow;
+    public Image AdditionalShow;
+    public Image NoSignalText;
+    public Image NoSignalSide;
     string NowInTape = null;
 
     [Header("StartMotion")]
@@ -39,9 +44,65 @@ public class StartAdditionalUI : MonoBehaviour
     public Image NoiseImage;
     public Image OutSideImage;
 
+    [Header("WorldStatus")]
+    public TextMeshProUGUI CreationStatus;
+    public List<Image> Reconstruction;
+    float lastvalue = 0;
+
+    public List<Image> SignalQuality;
+    float timer;
+    int frameCount;
+    float fps;
+    int fpscount = 0;
+
+    public TextMeshProUGUI CurrentBGM;
+    public TextMeshProUGUI SystemError;
+    public Sprite OnSprite;
+    public Sprite OffSprite;
+
     private void Awake()
     {
-        DeskOriginalPos = Desk.anchoredPosition;
+        DeskOriginalPos = Desk.sizeDelta;
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.StartAdditionalUI = this;
+    }
+
+    private void Update()
+    {
+        SignalQualityValue();
+    }
+
+    void SignalQualityValue()
+    {
+        timer += Time.unscaledDeltaTime;
+        frameCount++;
+
+        if (timer >= 1f)
+        {
+            fps = frameCount / timer;
+            frameCount = 0;
+            timer = 0f;
+
+            int nowcount;
+            if (fps >= 144) nowcount = 5;
+            else if (fps >= 120) nowcount = 4;
+            else if (fps >= 90) nowcount = 3;
+            else if (fps >= 60) nowcount = 2;
+            else if (fps >= 30) nowcount = 1;
+            else nowcount = 0;
+
+            if (fpscount == nowcount) return;
+
+            fpscount = nowcount;
+
+            for (int i = 0; i < 5; i++)
+            {
+                SignalQuality[i].sprite = i < fpscount ? OnSprite : OffSprite;
+            }
+        }
     }
 
     public void SpawnUI(StartUIs selectUI)
@@ -107,6 +168,32 @@ public class StartAdditionalUI : MonoBehaviour
         }
     }
 
+    public void ClickEjectBtn()
+    {
+        if (NowInTape == null) return;
+        if (GameManager.Instance.NowWorldSaveFolder == null) return;
+
+        NowInTape = null;
+        GameManager.Instance.NowWorldSaveFolder = null;
+
+        AdditionalShow.DOKill();
+        NoSignalText.DOKill();
+        UpdownCover.DOKill();
+        OverShow.DOKill();
+
+        AdditionalShow.gameObject.SetActive(true);
+        AdditionalShow.DOColor(new Color(1, 1, 1, 1), 0f).OnComplete(() =>
+        {
+            NoSignalText.DOColor(new Color(1, 1, 1, 1), 0f);
+        });
+        AdditionalShow.DOColor(new Color(1, 1, 1, 0), 0f).SetDelay(0.2f).OnComplete(() =>
+        {
+            AdditionalShow.gameObject.SetActive(false);
+        });
+
+        ResetTape();
+    }
+
     void StartMove()
     {
         UpSide.DOScale(new Vector2(2f, 2f), 2f);
@@ -133,13 +220,13 @@ public class StartAdditionalUI : MonoBehaviour
     public void SpawnLoadUI()
     {
         GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 열어본다.");
-        Desk.DOAnchorPos(DeskOriginalPos + DeskAfterPos, 0.7f);
+        Desk.DOSizeDelta(DeskOriginalPos + DeskAfterPos, 0.7f);
     }
 
     public void DestroyLoadUI()
     {
         GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 닫는다.");
-        Desk.DOAnchorPos(DeskOriginalPos, 0.5f);
+        Desk.DOSizeDelta(DeskOriginalPos, 0.5f);
 
         TapeInMotion();
     }
@@ -149,17 +236,11 @@ public class StartAdditionalUI : MonoBehaviour
         if (NowInTape == GameManager.Instance.NowWorldSaveFolder) return;
         NowInTape = GameManager.Instance.NowWorldSaveFolder;
 
-        OverShow.gameObject.SetActive(true);
-
-        OverShow.DOKill();
-        UpdownCover.DOKill();
-
-        OverShow.DOColor(new Color(1, 1, 1, 1f), 0.5f);
-        UpdownCover.DOSizeDelta(new Vector2(945, 100), 0.3f);
+        ResetTape();
 
         if (NowInTape == null)
         {
-            MoveName.Onit();
+            NamePage.Onit();
             return;
         }
 
@@ -167,35 +248,77 @@ public class StartAdditionalUI : MonoBehaviour
         {
             Destroy(_NowSpawnedtape);
         }
-        _NowSpawnedtape = Instantiate(tape,Spawnpos);
+        _NowSpawnedtape = Instantiate(tape,gameObject.transform);
         RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
         _wsf.Onit(NowInTape);
         _tapeRec.anchorMin = Vector3.one * 0.5f;
         _tapeRec.anchorMax = Vector3.one * 0.5f;
-        _tapeRec.anchoredPosition = new Vector2(0, -80);
+        _tapeRec.anchoredPosition = new Vector2(295, -295);
         _tapeRec.sizeDelta = new Vector2(1100, 200);
-        _tapeRec.localScale = new Vector2(0.9f, 0.9f);
+        _tapeRec.localScale = new Vector2(0.85f, 0.6f);
         _wsf.Shadow.gameObject.SetActive(true);
 
         _tapeRec.DOKill();
         _wsf.DOKill();
+        AdditionalShow.DOKill();
+        NoSignalText.DOKill();
 
-        UpdownCover.DOSizeDelta(new Vector2(945, 230), 0.5f).SetDelay(1.2f);
+        AdditionalShow.gameObject.SetActive(true);
+        AdditionalShow.DOColor(new Color(1, 1, 1, 1), 0f).SetDelay(0.1f).OnComplete(() =>
+        {
+            NoSignalText.DOColor(new Color(1, 1, 1, 0), 0f);
+        });
+        AdditionalShow.DOColor(new Color(1, 1, 1, 0), 0f).SetDelay(0.4f).OnComplete(() =>
+        {
+            AdditionalShow.gameObject.SetActive(false);
+        });
+
+        UpdownCover.DOAnchorPosY(-47.5f, 0.3f).SetDelay(1.2f);
         OverShow.DOColor(new Color(1, 1, 1, 0), 4f).SetDelay(1.2f).OnComplete(() =>
         {
             OverShow.color = Color.black;
             OverShow.gameObject.SetActive(false);
         });
-        _tapeRec.DOScale(new Vector2(0.85f, 0.6f), 0.8f).SetDelay(0.25f);
-        _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition + new Vector2(0, 10f), 0.5f).SetDelay(0.35f);
+        _tapeRec.DOScale(new Vector2(0.75f, 0.3f), 0.8f).SetDelay(0.25f);
+        _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0, 10f), 0.5f).SetDelay(0.35f);
         _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.2f).OnComplete(() =>
         {
             _NowSpawnedtape.transform.SetParent(ChangeParent);
-            _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0,40f) , 0.5f);
-            MoveName.Onit();
+            _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0,60f) , 0.5f);
+            NamePage.Onit();
         });
+    }
+
+    void ResetTape()
+    {
+        OverShow.gameObject.SetActive(true);
+
+        OverShow.DOKill();
+        UpdownCover.DOKill();
+
+        OverShow.DOColor(new Color(1, 1, 1, 1f), 0.5f);
+        UpdownCover.DOAnchorPosY(-115f, 0.3f);
+    }
+
+    public void ReconstructionValue(float percentage)
+    {
+        int nowcount;
+        if (percentage == 1) nowcount = 5;
+        else if (percentage >= 0.8f) nowcount = 4;
+        else if (percentage >= 0.6f) nowcount = 3;
+        else if (percentage >= 0.4f) nowcount = 2;
+        else if (percentage >= 0.2f) nowcount = 1;
+        else nowcount = 0;
+
+        if (lastvalue == nowcount) return;
+        lastvalue = nowcount;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Reconstruction[i].sprite = i < lastvalue ? OnSprite : OffSprite;
+        }
     }
 
     public void ClickExitGameBtn()

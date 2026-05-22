@@ -49,7 +49,7 @@ public class StartSceneUI : MonoBehaviour
     {
         Zoom.DOKill();
         AddText("시스템 시작");
-        RedLight.DOColor(Color.white, 1f).OnComplete(() =>
+        RedLight.DOColor(new Color(50 / 255f, 255 / 255f, 50 / 255f), 1f).OnComplete(() =>
         {
             Zoom.DOAnchorPos(new Vector2(0, 0), 1.5f);
             Zoom.GetComponent<Image>().DOColor(new Color(0,0,0,0),1f).SetDelay(1f);

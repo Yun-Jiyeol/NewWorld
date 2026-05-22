@@ -64,6 +64,7 @@ public class ChunkCode : MonoBehaviour
                 }
             }
         }
+
         StartBuildRoutine();
     }
 
@@ -75,8 +76,11 @@ public class ChunkCode : MonoBehaviour
         StartCoroutine(BuildRoutine());
     }
 
-    IEnumerator BuildRoutine()
+    public IEnumerator BuildRoutine()
     {
+        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+
         float start = Time.realtimeSinceStartup;
 
         while (MakeWorldQueue.Count > 0)
@@ -423,10 +427,8 @@ public class ChunkCode : MonoBehaviour
     {
         switch (GameManager.Instance.flow)
         {
-            case GameFlow.Start:
             case GameFlow.WatchAllWorld:
                 PutThisWorld();
-                GameManager.Instance.WorldManager.ClickLoadBtn();
                 break;
 
             case GameFlow.MakeOneWorld:
@@ -816,7 +818,11 @@ public class ChunkCode : MonoBehaviour
 
     public Light ChangeLightPower()
     {
-        if (LightBlock == null) LightBlock = Instantiate(new GameObject("LightObject"), gameObject.transform);
+        if (LightBlock == null) 
+        {
+            LightBlock = new GameObject("LightObject");
+            LightBlock.transform.SetParent(transform);
+        }
 
         Light light;
         LightBlock.TryGetComponent<Light>(out light);
