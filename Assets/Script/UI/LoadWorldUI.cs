@@ -15,7 +15,6 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     List<WorldSaveFile> WorldSaveFiles = new List<WorldSaveFile>();
 
     public GameObject StartLoadBtn;
-    public GameObject StartBtn;
     string NowChooseWorldName = null;
 
     GameObject BlockImage = null;
@@ -28,7 +27,6 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     private void Awake()
     {
-        StartBtn.SetActive(false);
         StartLoadBtn.SetActive(false);
         SaveMove();
     }

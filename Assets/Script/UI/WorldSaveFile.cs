@@ -1,57 +1,58 @@
-using TMPro;
-using Unity.VisualScripting;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WorldSaveFile : MonoBehaviour
 {
-    public TextMeshProUGUI WorldName;
-    public TextMeshProUGUI WorldNum;
+    public TapeSave tapeSave;
     string Name;
 
-    public TextMeshProUGUI WorldMakeYear;
-    public TextMeshProUGUI WorldMakeMonth;
-    public TextMeshProUGUI WorldMakeDay;
-
-    public Image WorldIcon;
     public Image Shadow;
-    public Image AllImage;
 
-    public GameObject Check;
     public bool isCheck = false;
  
     public void Onit(string _name)
     {
         Name = _name;
-
         string[] parts = Name.Split('_');
+        GameObject _tape = Instantiate(GameManager.Instance.MaterialManager.Tapes[int.Parse(parts[3])], gameObject.transform);
+        tapeSave = _tape.GetComponent<TapeSave>();
 
-        WorldName.text = parts[0];
+        tapeSave.WorldName.text = parts[0];
 
-        WorldMakeYear.text = parts[1].Substring(0, 4) + '.';
-        WorldMakeMonth.text = parts[1].Substring(4, 2) + '.';
-        WorldMakeDay.text = parts[1].Substring(6, 2);
+        tapeSave.WorldMakeYear.text = parts[1].Substring(0, 4) + '.';
+        tapeSave.WorldMakeMonth.text = parts[1].Substring(4, 2) + '.';
+        tapeSave.WorldMakeDay.text = parts[1].Substring(6, 2);
 
-        WorldNum.text = (char)('A' + int.Parse(parts[2])) 
+        tapeSave.WorldNum.text = (char)('A' + int.Parse(parts[2])) 
             + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
 
-        WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
+        tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
 
-        AllImage.sprite = GameManager.Instance.MaterialManager.Tapes[int.Parse(parts[3])];
-
-        if(int.Parse(parts[3]) == 5)
-        {
-            WorldName.color = Color.white;
-            WorldNum.color = Color.white;
-            WorldMakeYear.color = Color.white;
-            WorldMakeMonth.color = Color.white;
-            WorldMakeDay.color = Color.white;
-        }
-
+        UnCheck();
         if (GameManager.Instance.NowWorldSaveFolder == Name)
         {
             OnCheck();
         } 
+    }
+
+    public void TapeInOnit(string _name)
+    {
+        Name = _name;
+        string[] parts = Name.Split('_');
+        GameObject _tape = Instantiate(GameManager.Instance.MaterialManager.InsertTapes[int.Parse(parts[3])], gameObject.transform);
+        tapeSave = _tape.GetComponent<TapeSave>();
+
+        tapeSave.WorldName.text = parts[0];
+
+        tapeSave.WorldMakeYear.text = parts[1].Substring(0, 4) + '.';
+        tapeSave.WorldMakeMonth.text = parts[1].Substring(4, 2) + '.';
+        tapeSave.WorldMakeDay.text = parts[1].Substring(6, 2);
+
+        tapeSave.WorldNum.text = (char)('A' + int.Parse(parts[2]))
+            + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
+
+        tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
     }
 
     public void ClickWorld()
@@ -71,13 +72,13 @@ public class WorldSaveFile : MonoBehaviour
     public void UnCheck()
     {
         isCheck = false;
-        Check.SetActive(false);
+        tapeSave.Check.SetActive(false);
     }
 
     public void OnCheck()
     {
         isCheck = true;
-        Check.SetActive(true);
+        tapeSave.Check.SetActive(true);
     }
 
     public string GetName()

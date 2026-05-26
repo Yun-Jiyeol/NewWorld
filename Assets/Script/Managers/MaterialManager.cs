@@ -9,5 +9,6 @@ public class MaterialManager : MonoBehaviour
     public Material PreviewMaterial;
     public Material LightMaterial;
 
-    public List<Sprite> Tapes;
+    public List<GameObject> Tapes;
+    public List<GameObject> InsertTapes;
 }

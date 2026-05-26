@@ -29438,6 +29438,7 @@ MonoBehaviour:
   UIManager: {fileID: 36487913}
   MainCamera: {fileID: 963194229}
   CursorMover: {fileID: 0}
+  StartAdditionalUI: {fileID: 0}
   NowWorldSaveFolder: 
 --- !u!114 &1173635527
 MonoBehaviour:
@@ -29514,16 +29515,27 @@ MonoBehaviour:
   PreviewMaterial: {fileID: 2100000, guid: 5263881b6d16c5242946ad672e15f030, type: 2}
   LightMaterial: {fileID: 2100000, guid: c805c93743b0ba849b633fae1077005f, type: 2}
   Tapes:
-  - {fileID: -1498961970, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: -1966037660, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: -1462912426, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 734674905, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 1230571145, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: -1246514621, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 986583764, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 822724285, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 1532194722, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
-  - {fileID: 15865044, guid: fdda9aeee82ec674d8583a0adf72ffbb, type: 3}
+  - {fileID: 1811425269253728360, guid: f8628af456639a44b9bfbb2f1fdc7a83, type: 3}
+  - {fileID: 1811425269253728360, guid: 2ba6e8948ef30c046b622d63ba92d510, type: 3}
+  - {fileID: 1811425269253728360, guid: 7d63913ff1efe284c941b027b5da4ba6, type: 3}
+  - {fileID: 1811425269253728360, guid: 15a9ee33287912f44b111baade3c84d9, type: 3}
+  - {fileID: 1811425269253728360, guid: aa885fba68b1faa41b13acada24d2c10, type: 3}
+  - {fileID: 1811425269253728360, guid: 71376165e95a3c040acbe6da3b33bf1f, type: 3}
+  - {fileID: 1811425269253728360, guid: a46176d4be8ce3d4c859a715e50028d2, type: 3}
+  - {fileID: 1811425269253728360, guid: 6c98630ca00c64b40b32121d0bc2100d, type: 3}
+  - {fileID: 1811425269253728360, guid: 7cc682671f25bdb49898f8f117124bf9, type: 3}
+  - {fileID: 1811425269253728360, guid: 1765c15301af8ef4a985d7e679df3ad3, type: 3}
+  InsertTapes:
+  - {fileID: 4145635408954052768, guid: 9c2c3fe8058a607489111af9aee826d0, type: 3}
+  - {fileID: 2024521307984787921, guid: 0992b97a0068b2948b7970bf07219edb, type: 3}
+  - {fileID: 1783635353802243480, guid: d5619f9a448a1b64b9042cf5d03af765, type: 3}
+  - {fileID: 2426670168299181231, guid: cd29b8a45e2c9fb4fb682cf58aafae8f, type: 3}
+  - {fileID: 2807727360428684820, guid: 36aa24acb9479fa4d887175253208a04, type: 3}
+  - {fileID: 4673526192716299088, guid: be63b18a42aefd647a94672d72cdb732, type: 3}
+  - {fileID: 579087936557012653, guid: 0dd70381552d5ce45baecbd94f1c67cf, type: 3}
+  - {fileID: 2175928947011230771, guid: bc5402ff15739fd44abf95312335240f, type: 3}
+  - {fileID: 479497377106585042, guid: 60508378eba2a0044bd6534feee30e46, type: 3}
+  - {fileID: 9175313910493735545, guid: 4d2c246dcbd54db43b390f10cffa6922, type: 3}
 --- !u!114 &1173635531
 MonoBehaviour:
   m_ObjectHideFlags: 0

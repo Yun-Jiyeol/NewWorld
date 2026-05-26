@@ -252,13 +252,25 @@ public class StartAdditionalUI : MonoBehaviour
         RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
-        _wsf.Onit(NowInTape);
+        _wsf.TapeInOnit(NowInTape);
+        _wsf.Shadow.gameObject.SetActive(true);
+        _wsf.Shadow.GetComponent<BtnClick>().enabled = false;
+
+        TapeSave _tp = _wsf.tapeSave;
+        _wsf.Shadow.transform.SetParent(_tp.gameObject.transform);
+
+        RectTransform rt = _wsf.Shadow.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        rt.localScale = Vector3.one;
+
         _tapeRec.anchorMin = Vector3.one * 0.5f;
         _tapeRec.anchorMax = Vector3.one * 0.5f;
-        _tapeRec.anchoredPosition = new Vector2(295, -295);
-        _tapeRec.sizeDelta = new Vector2(1100, 200);
-        _tapeRec.localScale = new Vector2(0.85f, 0.6f);
-        _wsf.Shadow.gameObject.SetActive(true);
+        _tapeRec.anchoredPosition = new Vector2(295, -670);
+        _tapeRec.sizeDelta = new Vector2(100, 100);
+        _tapeRec.localScale = new Vector2(1f, 1f);
 
         _tapeRec.DOKill();
         _wsf.DOKill();
@@ -275,15 +287,24 @@ public class StartAdditionalUI : MonoBehaviour
             AdditionalShow.gameObject.SetActive(false);
         });
 
-        UpdownCover.DOAnchorPosY(-47.5f, 0.3f).SetDelay(1.2f);
+        UpdownCover.DOAnchorPosY(-47.5f, 0.3f).SetDelay(1.5f);
         OverShow.DOColor(new Color(1, 1, 1, 0), 4f).SetDelay(1.2f).OnComplete(() =>
         {
             OverShow.color = Color.black;
             OverShow.gameObject.SetActive(false);
         });
-        _tapeRec.DOScale(new Vector2(0.75f, 0.3f), 0.8f).SetDelay(0.25f);
-        _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0, 10f), 0.5f).SetDelay(0.35f);
-        _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.2f).OnComplete(() =>
+
+        MeshScaleChanger MSC = _tp.Check.GetComponent<MeshScaleChanger>();
+        MSC.Invoke(nameof(MeshScaleChanger.TapeInMotion), 0.15f);
+        _tp.DownSide.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 50f), 0.35f).SetDelay(0.15f);
+        _tp.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 170f), 0.4f).SetDelay(0.1f);
+        _tapeRec.DOAnchorPos(new Vector2(295, -355), 0.5f);
+
+        _tapeRec.DOScale(new Vector2(0.95f, 0.6f), 0.6f).SetDelay(0.5f);
+        _tp.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 120f), 0.6f).SetDelay(0.5f);
+        _tapeRec.DOAnchorPos(new Vector2(295, -300), 0.6f).SetDelay(0.5f);
+
+        _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.6f).OnComplete(() =>
         {
             _NowSpawnedtape.transform.SetParent(ChangeParent);
             _tapeRec.DOAnchorPos(_tapeRec.anchoredPosition - new Vector2(0,60f) , 0.5f);
