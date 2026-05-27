@@ -1,20 +1,27 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Windows;
-using static UnityEditor.PlayerSettings;
+using UnityEngine.UI;
 
 public class OnInputFieldEnter : MonoBehaviour
 {
+    UI_BtnEffect thisBtnEffect;
+    bool BtnEffect = true;
+
     TMP_InputField thisInput;
     CursorMover cursorMover;
     Coroutine FollowCoroutine = null;
 
     private void Awake()
     {
-        if (!TryGetComponent<TMP_InputField>(out thisInput)) 
+        if (!TryGetComponent<TMP_InputField>(out thisInput))
         {
             enabled = false;
+        }
+
+        if (!TryGetComponent<UI_BtnEffect>(out thisBtnEffect))
+        {
+            BtnEffect = false;
         }
     }
 
@@ -29,6 +36,7 @@ public class OnInputFieldEnter : MonoBehaviour
     void OnSelected(string value)
     {
         if (FollowCoroutine != null) return;
+        if (BtnEffect) thisBtnEffect.HoldChange();
         FollowCoroutine = StartCoroutine(FollowCursor());
     }
 
@@ -38,8 +46,12 @@ public class OnInputFieldEnter : MonoBehaviour
         RectTransform textRect = textComponent.rectTransform;
         RectTransform targetRect = cursorMover.GetComponent<RectTransform>();
 
+        Cursor.lockState = CursorLockMode.Locked;
+
         while (true)
         {
+            Debug.Log("On");
+
             int caretIndex = thisInput.caretPosition;
 
             textComponent.ForceMeshUpdate();
@@ -80,6 +92,9 @@ public class OnInputFieldEnter : MonoBehaviour
 
     void OnEndChange(string value)
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        if (BtnEffect) thisBtnEffect.UnHoldChange();
+
         if (FollowCoroutine != null)
         {
             StopCoroutine(FollowCoroutine);

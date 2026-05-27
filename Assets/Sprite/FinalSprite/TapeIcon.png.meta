@@ -1,0 +1,918 @@
+fileFormatVersion: 2
+guid: ff3029f8a4ca6644fa88fdfc05e53b1c
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TapeIcon_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 804
+        width: 161
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75bf329ac7ea30740a81d797ebe4be27
+      internalID: -1407489487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_1
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 805
+        width: 165
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6788768415795747b5aa54f6d31668c
+      internalID: 1913545247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_2
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 805
+        width: 172
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e96d4fc83c9bd4443b38971af850f67b
+      internalID: -535095291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_3
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 806
+        width: 172
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14804e167af713948a479e09bfbe0ef0
+      internalID: -349349959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_4
+      rect:
+        serializedVersion: 2
+        x: 929
+        y: 803
+        width: 168
+        height: 104
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c15f6194381a4044982511b77b667efa
+      internalID: -1961975659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_5
+      rect:
+        serializedVersion: 2
+        x: 1159
+        y: 805
+        width: 164
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d1b7ea5e0e59cf4ea099da1b428045a
+      internalID: -262507826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_6
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 650
+        width: 161
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f72f3fc42e335c8468ae2cfcc3a06a79
+      internalID: 1701008035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_7
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 650
+        width: 174
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc0bf8659bd96bc49a3cab1f2e0587c3
+      internalID: 441692169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_8
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 648
+        width: 172
+        height: 113
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f96609371e124ee42bc031bc4a04dd66
+      internalID: -433335364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_9
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 648
+        width: 176
+        height: 105
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dffa073cf187ba440b8394aa7dda391a
+      internalID: -439561487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_10
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 649
+        width: 168
+        height: 103
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41f3932a444063b468d428e80f2cffec
+      internalID: -1559884290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_11
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 649
+        width: 166
+        height: 105
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3002edd58b89d424ea39c636432438f8
+      internalID: 248826413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_12
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 485
+        width: 171
+        height: 107
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6405022c5d3be9b4a8870ae2efc0895f
+      internalID: 2059379695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_13
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 490
+        width: 175
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd88027ac4f2ad048901a0b74bae82a8
+      internalID: 7060140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_14
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 488
+        width: 170
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7beb6437cad1933448acd867b5678a1a
+      internalID: -865756952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_15
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 489
+        width: 176
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6ab2c51a4069e4418960ea3f3b2b2e9
+      internalID: 1399632095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_16
+      rect:
+        serializedVersion: 2
+        x: 927
+        y: 478
+        width: 170
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 453152e0e2610cf4b968b919bd468921
+      internalID: 1566485502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_17
+      rect:
+        serializedVersion: 2
+        x: 1154
+        y: 486
+        width: 172
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a9638db5b5773442aeb9aa0c5672632
+      internalID: 1921434821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_18
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 320
+        width: 168
+        height: 106
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8119449971eb5c544870eb3d4785de35
+      internalID: -807563569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_19
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 322
+        width: 175
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8a3e1d2e7064be438a4afefbdf295cc
+      internalID: 2143450328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_20
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 325
+        width: 180
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac807e6807fecff48ad1e4a1c64ec725
+      internalID: -239853866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_21
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 325
+        width: 174
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e7e6e6cb16311f43872e3813257b0b2
+      internalID: -499531211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_22
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 320
+        width: 179
+        height: 110
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 040ab852eb7b94444a48a6edb7f51ce5
+      internalID: 1417749537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_23
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 320
+        width: 175
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06fe766b76b318c4195d65dea9f5ca4e
+      internalID: 1158860504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_24
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 162
+        width: 168
+        height: 105
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40b39beb88c246145ac5931b60268d38
+      internalID: 466432403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_25
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 163
+        width: 174
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7e1230acf059bb40aa775c3b737cc72
+      internalID: 2031501878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_26
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 165
+        width: 180
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a855691ab8cccfe42a75e76dcdb291e8
+      internalID: 1061812919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_27
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 164
+        width: 174
+        height: 103
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8c60554d6cb72a4fa158bf7720eca78
+      internalID: -1766121257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_28
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 163
+        width: 173
+        height: 107
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62d7da6d1cdbf334d87a72198702b355
+      internalID: -989089810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_29
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 162
+        width: 167
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f9f2142ed5d91a4a90ba78c2277427e
+      internalID: -130955385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_30
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4
+        width: 172
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43fcec09a0005a0419cf11d720491fdf
+      internalID: 662229529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_31
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 5
+        width: 174
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc96ebad54daf884eb39f90034c8648a
+      internalID: -688625668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_32
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 5
+        width: 175
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5448155ef20b9245978a7996c97ee5d
+      internalID: -462238545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_33
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 3
+        width: 174
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 231dfe6e71dfedb40b555e96fadc6a65
+      internalID: -1786754278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_34
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 3
+        width: 176
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07d73988bf6773b48910aadb2804bf69
+      internalID: -721785111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TapeIcon_38
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 0
+        width: 166
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e83b24cd2246c50448e57c8f57aaa108
+      internalID: -1820008203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 41a3822b12299784e9168e8f52976bb2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      TapeIcon_0: -1407489487
+      TapeIcon_1: 1913545247
+      TapeIcon_10: -1559884290
+      TapeIcon_11: 248826413
+      TapeIcon_12: 2059379695
+      TapeIcon_13: 7060140
+      TapeIcon_14: -865756952
+      TapeIcon_15: 1399632095
+      TapeIcon_16: 1566485502
+      TapeIcon_17: 1921434821
+      TapeIcon_18: -807563569
+      TapeIcon_19: 2143450328
+      TapeIcon_2: -535095291
+      TapeIcon_20: -239853866
+      TapeIcon_21: -499531211
+      TapeIcon_22: 1417749537
+      TapeIcon_23: 1158860504
+      TapeIcon_24: 466432403
+      TapeIcon_25: 2031501878
+      TapeIcon_26: 1061812919
+      TapeIcon_27: -1766121257
+      TapeIcon_28: -989089810
+      TapeIcon_29: -130955385
+      TapeIcon_3: -349349959
+      TapeIcon_30: 662229529
+      TapeIcon_31: -688625668
+      TapeIcon_32: -462238545
+      TapeIcon_33: -1786754278
+      TapeIcon_34: -721785111
+      TapeIcon_35: 1627651075
+      TapeIcon_36: 2004762623
+      TapeIcon_37: -863135656
+      TapeIcon_38: -1820008203
+      TapeIcon_4: -1961975659
+      TapeIcon_5: -262507826
+      TapeIcon_6: 1701008035
+      TapeIcon_7: 441692169
+      TapeIcon_8: -433335364
+      TapeIcon_9: -439561487
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

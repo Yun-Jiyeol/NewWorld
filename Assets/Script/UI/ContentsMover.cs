@@ -18,10 +18,8 @@ public class ContentsMover : MonoBehaviour
     {
         foreach (RectTransform item in transform)
         {
-            Vector3 localPos =
-                viewport.InverseTransformPoint(item.position);
+            Vector3 localPos = viewport.InverseTransformPoint(item.position);
 
-            // 범위 기준 보간
             float t = Mathf.InverseLerp(
                 topRange,
                 bottomRange,
@@ -30,11 +28,18 @@ public class ContentsMover : MonoBehaviour
 
             t = Mathf.Clamp01(t);
 
-            float width =
-                Mathf.Lerp(minWidth, maxWidth, t);
+            float targetWidth = Mathf.Lerp(minWidth, maxWidth, t);
 
-            item.sizeDelta =
-                new Vector2(width, item.sizeDelta.y);
+            // 현재 RectTransform의 기본 width 기준
+            float baseWidth = item.rect.width;
+
+            if (baseWidth <= 0f) continue;
+
+            float scaleX = targetWidth / baseWidth;
+
+            Vector3 scale = item.localScale;
+            scale.x = scaleX;
+            item.localScale = scale;
         }
     }
 }

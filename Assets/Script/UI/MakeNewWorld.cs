@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class MakeNewWorld : NeedToDoOnit
 {
+    public Transform TapeSpawnTran;
+    TapeSave _SpawnTapeSave;
+
     public TMP_InputField NameField;
 
     public RectTransform ArrowImage;
@@ -16,12 +19,34 @@ public class MakeNewWorld : NeedToDoOnit
 
     public GameObject AdditionalUIIcon;
     GameObject _AdditionalUIIcon = null;
+    public UI_BtnEffect AdditionalUIIconBtnEffect;
+    public Transform SideSpawn;
+
+    public Image WhiteCover;
 
     string SettingName = "NewWorld";
+    string time;
+
+    public RectTransform MainUI;
+
+    private void Awake()
+    {
+        MainUI.anchoredPosition = new Vector2(375f, -900f);
+        WhiteCover.color = new Color(1,1,1,4/5f);
+    }
 
     private void Start()
     {
         OutPutNum = UnityEngine.Random.Range(0, 10);
+        time = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+        GameObject _go = Instantiate(GameManager.Instance.MaterialManager.Tapes[OutPutNum], TapeSpawnTran);
+        _SpawnTapeSave = _go.GetComponent<TapeSave>();
+
+        MainUI.DOAnchorPosY(-75f, 1f);
+        WhiteCover.DOColor(new Color(0,0,0,0), 1.25f);
+
+        StartSettingTape();
     }
 
     public override void Onit()
@@ -33,6 +58,7 @@ public class MakeNewWorld : NeedToDoOnit
     {
         spritenum = _num;
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+        _SpawnTapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
     }
 
     void OnValueChanged(string value)
@@ -45,6 +71,14 @@ public class MakeNewWorld : NeedToDoOnit
         }
 
         SettingName = filtered;
+        if (SettingName == "")
+        {
+            _SpawnTapeSave.WorldName.text = "NewWorld";
+        }
+        else
+        {
+            _SpawnTapeSave.WorldName.text = SettingName;
+        }
     }
 
     public void ResetWorldSetting()
@@ -53,13 +87,13 @@ public class MakeNewWorld : NeedToDoOnit
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
 
         SettingName = "NewWorld";
-        NameField.text = SettingName;
+        NameField.SetTextWithoutNotify(SettingName);
+
+        StartSettingTape();
     }
 
     public void MakeWorld()
     {
-        string time = DateTime.Now.ToString("yyyyMMddHHmmss");
-
         if (SettingName == "")
         {
             SettingName = "NewWorld";
@@ -67,23 +101,37 @@ public class MakeNewWorld : NeedToDoOnit
         GameManager.Instance.NowWorldSaveFolder = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
         SaveAndLoadManager.EnsureSaveFolder();
 
+        GameManager.Instance.NowWorldSaveFolder = null;
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 
     public void DeclineMakeWorld()
     {
-        GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
+        GameManager.Instance.NowWorldSaveFolder = null; 
+        GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 
     public void SpawnAdditionalUIIcons()
     {
         if (_AdditionalUIIcon == null)
         {
-            _AdditionalUIIcon = Instantiate(AdditionalUIIcon, gameObject.transform);
+            _AdditionalUIIcon = Instantiate(AdditionalUIIcon, SideSpawn);
             _AdditionalUIIcon.GetComponent<NeedToDoOnit>().GetParent(gameObject);
         }
 
         ArrowImage.DOScaleX(ArrowImage.localScale.x * -1f , 0f);
         _AdditionalUIIcon.GetComponent<NeedToDoOnit>().Onit();
+    }
+
+    void StartSettingTape()
+    {
+        _SpawnTapeSave.WorldName.text = SettingName;
+        _SpawnTapeSave.WorldNum.text = "";
+
+        _SpawnTapeSave.WorldMakeYear.text = time.Substring(0, 4) + '.';
+        _SpawnTapeSave.WorldMakeMonth.text = time.Substring(4, 2) + '.';
+        _SpawnTapeSave.WorldMakeDay.text = time.Substring(6, 2);
+
+        _SpawnTapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
     }
 }

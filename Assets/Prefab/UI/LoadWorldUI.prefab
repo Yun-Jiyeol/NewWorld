@@ -132,7 +132,9 @@ MonoBehaviour:
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   _text: {fileID: 1057908285591933819}
+  _text2: {fileID: 0}
   _image: {fileID: 911970150350550825}
+  CanChage: 1
 --- !u!1 &3890225640738062629
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +343,9 @@ MonoBehaviour:
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   _text: {fileID: 4023907631333707262}
+  _text2: {fileID: 0}
   _image: {fileID: 8647280347068668377}
+  CanChage: 1
 --- !u!1 &4387319314886374010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,7 +1223,9 @@ MonoBehaviour:
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   _text: {fileID: 7836400351670315213}
+  _text2: {fileID: 0}
   _image: {fileID: 7348449503451639771}
+  CanChage: 1
 --- !u!1 &7836400350615653764
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,8 +1299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 15, y: 0}
+  m_SizeDelta: {x: -30, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7836400351368057543
 MonoBehaviour:
@@ -1335,8 +1341,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewport: {fileID: 7836400350493129282}
-  minWidth: 920
-  maxWidth: 1150
+  minWidth: 970
+  maxWidth: 1190
   topRange: 100
   bottomRange: -1150
 --- !u!1 &7836400351670315203

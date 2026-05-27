@@ -13,16 +13,18 @@ public class WorldIconParent : NeedToDoOnit
 
     bool isOn = false;
     GameObject parent;
+    MakeNewWorld parentMNW;
 
     private void Awake()
     {
         thistransform = gameObject.GetComponent<RectTransform>();
-        thistransform.localScale = Vector3.zero;
+        thistransform.localScale = Vector3.one;
     }
 
     public override void GetParent(GameObject _parent)
     {
         parent = _parent;
+        parentMNW = parent.GetComponent<MakeNewWorld>();
     }
 
     public override void Onit()
@@ -55,11 +57,15 @@ public class WorldIconParent : NeedToDoOnit
 
     void StartMove()
     {
-        thistransform.DOScale(Vector2.one, 0.5f);
+        parentMNW.MainUI.DOKill();
+        parentMNW.AdditionalUIIconBtnEffect.HoldChange();
+        parentMNW.MainUI.DOSizeDelta(new Vector2(1175, 650), 0.5f);
     }
 
     void EndMove()
     {
-        thistransform.DOScale(Vector2.zero, 0.5f);
+        parentMNW.MainUI.DOKill();
+        parentMNW.AdditionalUIIconBtnEffect.UnHoldChange();
+        parentMNW.MainUI.DOSizeDelta(new Vector2(750, 650), 0.5f);
     }
 }

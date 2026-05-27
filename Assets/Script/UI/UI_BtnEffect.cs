@@ -12,24 +12,53 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public Sprite ExitSprite;
 
     public TextMeshProUGUI _text;
+    public TextMeshProUGUI _text2;
     public Image _image;
     Image thisimage;
+
+    public bool CanChage = true;
 
     private void Awake()
     {
         thisimage = GetComponent<Image>();
     }
 
+    public void HoldChange()
+    {
+        CanChage = false;
+        ChangeEffect();
+    }
+
+    public void UnHoldChange()
+    {
+        CanChage = true;
+        UnChangeEffect();
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (!CanChage) return;
+        ChangeEffect();
+    }
+
+    void ChangeEffect()
+    {
         if (_text != null) _text.color = Color.black;
+        if (_text2 != null) _text2.color = Color.black;
         if (_image != null) _image.color = Color.black;
         if (thisimage != null) thisimage.sprite = EnterSprite;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (!CanChage) return;
+        UnChangeEffect();
+    }
+
+    void UnChangeEffect()
+    {
         if (_text != null) _text.color = _SaveColor;
+        if (_text2 != null) _text2.color = _SaveColor;
         if (_image != null) _image.color = _SaveColor;
         if (thisimage != null) thisimage.sprite = ExitSprite;
     }
