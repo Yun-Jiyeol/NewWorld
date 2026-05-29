@@ -98,16 +98,14 @@ public class MakeNewWorld : NeedToDoOnit
         {
             SettingName = "NewWorld";
         }
-        GameManager.Instance.NowWorldSaveFolder = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
-        SaveAndLoadManager.EnsureSaveFolder();
+        string SaveName = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
+        SaveAndLoadManager.EnsureSaveFolder(SaveName);
 
-        GameManager.Instance.NowWorldSaveFolder = null;
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 
     public void DeclineMakeWorld()
     {
-        GameManager.Instance.NowWorldSaveFolder = null; 
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 

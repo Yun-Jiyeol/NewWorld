@@ -88,8 +88,7 @@ public class WorldManager : MonoBehaviour
         {
             ChunkCode chunk = Worlds[i].GetComponent<ChunkCode>();
 
-            GameManager.Instance.UIManager.StartSceneUI
-                .AddText(chunk._name + " 생성 중");
+            GameManager.Instance.UIManager.StartSceneUI.AddText(chunk._name + " 생성 중");
 
             // 코루틴 끝날 때까지 기다림
             yield return StartCoroutine(chunk.BuildRoutine());
@@ -102,5 +101,7 @@ public class WorldManager : MonoBehaviour
             // 한 프레임 쉬기 (선택)
             yield return null;
         }
+
+        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Done);
     }
 }   

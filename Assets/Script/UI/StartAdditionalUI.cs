@@ -11,6 +11,15 @@ public enum StartUIs
     SettingUI
 }
 
+public enum CreateState 
+{
+    Break,
+    Setting,
+    Making,
+    Done,
+    Looking
+}
+
 
 public class StartAdditionalUI : MonoBehaviour
 {
@@ -321,6 +330,8 @@ public class StartAdditionalUI : MonoBehaviour
 
         OverShow.DOColor(new Color(1, 1, 1, 1f), 0.5f);
         UpdownCover.DOAnchorPosY(-115f, 0.3f);
+
+        ChangeCreationState(CreateState.Break);
     }
 
     public void ReconstructionValue(float percentage)
@@ -340,6 +351,11 @@ public class StartAdditionalUI : MonoBehaviour
         {
             Reconstruction[i].sprite = i < lastvalue ? OnSprite : OffSprite;
         }
+    }
+
+    public void ChangeCreationState(CreateState _changingState)
+    {
+        CreationStatus.text = _changingState.ToString();
     }
 
     public void ClickExitGameBtn()

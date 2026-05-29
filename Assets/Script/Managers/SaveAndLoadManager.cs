@@ -162,6 +162,26 @@ public class SaveAndLoadManager : MonoBehaviour
     bool cancelLoading = false;
     List<Coroutine> loadingCoroutines = new List<Coroutine>();
 
+    public static void EnsureSaveFolder(string _saveFolderName)
+    {
+        if (!Directory.Exists(SaveFolder))
+        {
+            Directory.CreateDirectory(SaveFolder);
+            Debug.Log($"[Save] 폴더 생성: {SaveFolder}");
+        }
+
+        if (!string.IsNullOrEmpty(_saveFolderName))
+        {
+            string _worldSaveFolder = System.IO.Path.Combine(SaveFolder, _saveFolderName);
+            string _worldPlayerSetting = System.IO.Path.Combine(_worldSaveFolder, "WorldPlayerSetting");
+
+            Directory.CreateDirectory(_worldSaveFolder);
+            Directory.CreateDirectory(_worldPlayerSetting);
+
+            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+        }
+    }
+
     public static void EnsureSaveFolder()
     {
         if (!Directory.Exists(SaveFolder))
@@ -199,6 +219,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
         EnsureSaveFolder();
 
+        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Setting);
         if (Directory.Exists(WorldPlayerSetting) && Directory.EnumerateFiles(WorldPlayerSetting).Any())
             LoadFile(WorldPlayerSetting);
         else
@@ -228,6 +249,7 @@ public class SaveAndLoadManager : MonoBehaviour
             LoadWorldData(folder);
         }
 
+        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Making);
         GameManager.Instance.WorldManager.LoadAllWorld();
 
         isLoading = false;

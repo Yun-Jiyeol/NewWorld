@@ -153,6 +153,7 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
         string[] parts = NowChooseWorldName.Split('_');
         GameManager.Instance.UIManager.StartSceneUI.AddText('[' + parts[0] + "]테이프를 실행한다.");
+        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Looking);
 
         GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
     }
