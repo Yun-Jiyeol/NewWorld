@@ -131,6 +131,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 1057908285591933819}
   _text2: {fileID: 0}
   _image: {fileID: 911970150350550825}
@@ -342,6 +343,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 4023907631333707262}
   _text2: {fileID: 0}
   _image: {fileID: 8647280347068668377}
@@ -1222,6 +1224,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 7836400351670315213}
   _text2: {fileID: 0}
   _image: {fileID: 7348449503451639771}

@@ -14,7 +14,7 @@ public class MakeNewWorld : NeedToDoOnit
 
     public RectTransform ArrowImage;
     public Image IconSprite;
-    int spritenum = 0;
+    public int spritenum = 0;
     int OutPutNum = 0;
 
     public GameObject AdditionalUIIcon;
@@ -59,6 +59,8 @@ public class MakeNewWorld : NeedToDoOnit
         spritenum = _num;
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
         _SpawnTapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+
+        _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
     }
 
     void OnValueChanged(string value)
@@ -85,6 +87,7 @@ public class MakeNewWorld : NeedToDoOnit
     {
         spritenum = 0;
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+        _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
 
         SettingName = "NewWorld";
         NameField.SetTextWithoutNotify(SettingName);

@@ -13,6 +13,12 @@ public class SettingUI : NeedToDoOnit
 
     public GameObject WorldSettingBtn;
 
+    [Header("Btns")]
+    public UI_BtnEffect SoundBtn;
+    public UI_BtnEffect KeyBtn;
+    public UI_BtnEffect LanguageBtn;
+    public UI_BtnEffect WorlBtn;
+
     int nowpage = -1;
     GameObject NowPage = null;
 
@@ -47,24 +53,38 @@ public class SettingUI : NeedToDoOnit
             Destroy(NowPage);
         }
 
+        UnHoldAll();
+
         switch (num)
         {
             case 0:
                 NowPage = Instantiate(SoundSettingPage, SpawnTransform);
+                SoundBtn.HoldChange();
                 break;
             case 1:
                 NowPage = Instantiate(KeySettingPage, SpawnTransform);
+                KeyBtn.HoldChange();
                 break;
             case 2:
                 NowPage = Instantiate(LanguageSettingPage, SpawnTransform);
+                LanguageBtn.HoldChange();
                 break;
             case 3:
                 NowPage = Instantiate(WorldSettingPage, SpawnTransform);
+                WorlBtn.HoldChange();
                 break;
         }
 
         NowPage.GetComponent<NeedToDoOnit>()?.Onit();
         NowPage.GetComponent<NeedToDoOnit>()?.GetParent(gameObject.transform);
+    }
+
+    void UnHoldAll()
+    {
+        SoundBtn.UnHoldChange();
+        KeyBtn.UnHoldChange();
+        LanguageBtn.UnHoldChange();
+        WorlBtn.UnHoldChange();
     }
 
     private void OnEnable()

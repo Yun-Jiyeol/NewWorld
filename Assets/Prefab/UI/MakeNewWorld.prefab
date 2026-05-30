@@ -166,6 +166,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 2416611434829180070}
@@ -337,6 +338,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 3005057399154959902}
   _text2: {fileID: 0}
   _image: {fileID: 2412658092615785887}
@@ -510,6 +512,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: 0}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 2891278981317126167}
@@ -658,8 +661,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
-  m_sharedMaterial: {fileID: 3486877136713115681, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+  m_sharedMaterial: {fileID: 1740781953565122359, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -856,6 +859,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 3887562085101417134}
   _text2: {fileID: 0}
   _image: {fileID: 6537783078151753978}
@@ -1268,8 +1272,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: NewWorld
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
-  m_sharedMaterial: {fileID: 3486877136713115681, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+  m_sharedMaterial: {fileID: 1740781953565122359, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1982,6 +1986,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 5184213338196569130}
   _text2: {fileID: 6567201943159206343}
   _image: {fileID: 0}
@@ -2291,6 +2296,7 @@ MonoBehaviour:
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
+  ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 1978357599787675749}
   _text2: {fileID: 0}
   _image: {fileID: 3313530878105990199}
@@ -2467,6 +2473,7 @@ MonoBehaviour:
   NameField: {fileID: 3067328531080175255}
   ArrowImage: {fileID: 4741464951390034413}
   IconSprite: {fileID: 2891278981317126167}
+  spritenum: 0
   AdditionalUIIcon: {fileID: 5525952168648211297, guid: 436920013dc8f94469c782517f372008, type: 3}
   AdditionalUIIconBtnEffect: {fileID: 2342145861405248613}
   SideSpawn: {fileID: 5539473293841606462}

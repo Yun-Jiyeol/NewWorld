@@ -14,9 +14,12 @@ public class Keys_UIOnOff : MonoBehaviour, IPointerDownHandler
     public RectTransform ExTendGameObject;
     bool isExtend = false;
 
+    UI_BtnEffect uibtneffect;
+
     private void Awake()
     {
         ParentRect = ParentGameObject.gameObject.GetComponent<RectTransform>();
+        uibtneffect = GetComponent<UI_BtnEffect>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -32,6 +35,8 @@ public class Keys_UIOnOff : MonoBehaviour, IPointerDownHandler
             ParentRect.DOSizeDelta(ParentRect.sizeDelta - new Vector2(0, HowMuchMake), 0.2f);
             Contents.DOSizeDelta(Contents.sizeDelta - new Vector2(0, HowMuchMake), 0.2f);
             ExTendGameObject.DOScaleY(0, 0.2f);
+
+            uibtneffect.UnHoldChange();
         }
         else
         {
@@ -40,6 +45,8 @@ public class Keys_UIOnOff : MonoBehaviour, IPointerDownHandler
             ParentRect.DOSizeDelta(ParentRect.sizeDelta + new Vector2(0, HowMuchMake), 0.2f);
             Contents.DOSizeDelta(Contents.sizeDelta + new Vector2(0, HowMuchMake), 0.2f);
             ExTendGameObject.DOScaleY(1, 0.2f);
+
+            uibtneffect.HoldChange();
         }
     }
 }

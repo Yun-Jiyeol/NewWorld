@@ -50,8 +50,6 @@ public class OnInputFieldEnter : MonoBehaviour
 
         while (true)
         {
-            Debug.Log("On");
-
             int caretIndex = thisInput.caretPosition;
 
             textComponent.ForceMeshUpdate();

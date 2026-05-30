@@ -41,6 +41,8 @@ public class WorldIconParent : NeedToDoOnit
 
                 IconsSpawned.Add(_icon);
             }
+
+            CheckChild();
         }
 
         if (isOn)
@@ -67,5 +69,16 @@ public class WorldIconParent : NeedToDoOnit
         parentMNW.MainUI.DOKill();
         parentMNW.AdditionalUIIconBtnEffect.UnHoldChange();
         parentMNW.MainUI.DOSizeDelta(new Vector2(750, 650), 0.5f);
+    }
+
+    public void CheckChild()
+    {
+        foreach (GameObject btn in IconsSpawned)
+        {
+            btn.GetComponent<UI_BtnEffect>().UnHoldChange();
+        }
+
+        int num = parent.GetComponent<MakeNewWorld>().spritenum;
+        IconsSpawned[num].GetComponent<UI_BtnEffect>().HoldChange();
     }
 }

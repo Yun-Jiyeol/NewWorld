@@ -10,10 +10,12 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
     KeyManager keyManager;
     Coroutine InputCoroutine;
     Keys_KeySettingPage parent;
+    UI_BtnEffect btneffect;
 
     private void Awake()
     {
         thisInput = gameObject.GetComponent<TMP_InputField>();
+        btneffect = gameObject.GetComponent<UI_BtnEffect>();
         keyManager = GameManager.Instance.KeyManager;
 
         thisInput.readOnly = true;
@@ -72,6 +74,7 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
         thisInput.text = "";
 
         Keyboards newKey = new Keyboards();
+        btneffect.HoldChange();
 
         while (true)
         {
@@ -113,6 +116,7 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
         thisInput.DeactivateInputField();
         keyManager.KeyboardDictionary[KeyNum] = newKey;
         parent.isChange = false;
+        btneffect.UnHoldChange();
         GameManager.Instance.SaveAndLoadManager.PlayerSetting_SaveKey();
         Onit();
     }
@@ -121,6 +125,7 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
     {
         thisInput.DeactivateInputField();
         parent.isChange = false;
+        btneffect.UnHoldChange();
         Onit();
     }
 
