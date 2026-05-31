@@ -103,6 +103,7 @@ public class GameManager : MonoBehaviour
 
                 MainCamera.SubCamera.gameObject.SetActive(true);
                 CursorMover?.ChangeCursorState(cursorstate.Follow);
+                CursorMover?.MouseSpriteSetting(false);
 
                 RemoveInTimeSave();
                 break;
@@ -185,6 +186,7 @@ public class GameManager : MonoBehaviour
         MainCamera.TryCheckrot();
         UIManager.Onit();
 
+        CursorMover?.MouseSpriteSetting(true);
         ChangeFlow(GameFlow.WatchAllWorld);
     }
 

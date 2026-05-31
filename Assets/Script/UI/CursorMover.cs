@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum cursorstate
 {
@@ -20,11 +21,16 @@ public class CursorMover : MonoBehaviour
     Coroutine followCoroutine;
     Vector3 nowPos = Vector3.zero;
 
+    public Sprite InGame;
+    public Sprite OutGame;
+    Image thisImage;
+
     private void Start()
     {
         GameManager.Instance.CursorMover = this;
 
         thisTransform = GetComponent<RectTransform>();
+        thisImage = GetComponent<Image>();
 
         screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
 
@@ -119,5 +125,21 @@ public class CursorMover : MonoBehaviour
     {
         nowPos = _Anchorpos;
         thisTransform.DOAnchorPos(_Anchorpos, 0.3f);
+    }
+
+    public void MouseSpriteSetting(bool isInGame)
+    {
+        if (isInGame)
+        {
+            thisImage.sprite = InGame;
+            thisTransform.pivot = new Vector2(0,1);
+            thisTransform.sizeDelta = new Vector2(50, 50);
+        }
+        else
+        {
+            thisImage.sprite = OutGame;
+            thisTransform.pivot = new Vector2(0.35f, 1);
+            thisTransform.sizeDelta = new Vector2(35, 50);
+        }
     }
 }

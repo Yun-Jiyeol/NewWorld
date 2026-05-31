@@ -46,6 +46,7 @@ public class StartAdditionalUI : MonoBehaviour
     public Image NoSignalText;
     public Image NoSignalSide;
     string NowInTape = null;
+    public Transform FirstSpawnTrans;
 
     [Header("StartMotion")]
     public RectTransform MainPos;
@@ -205,6 +206,8 @@ public class StartAdditionalUI : MonoBehaviour
 
     void StartMove()
     {
+        GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
+
         UpSide.DOScale(new Vector2(2f, 2f), 2f);
         MainPos.DOAnchorPos(new Vector2(0, -1080), 0.5f).OnComplete(() =>
         {
@@ -257,7 +260,7 @@ public class StartAdditionalUI : MonoBehaviour
         {
             Destroy(_NowSpawnedtape);
         }
-        _NowSpawnedtape = Instantiate(tape,gameObject.transform);
+        _NowSpawnedtape = Instantiate(tape, FirstSpawnTrans);
         RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
