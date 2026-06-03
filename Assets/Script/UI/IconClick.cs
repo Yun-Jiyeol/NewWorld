@@ -2,7 +2,6 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class IconClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -28,24 +27,34 @@ public class IconClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        transform.DOLocalMoveX(-5f, 0.2f).SetEase(Ease.OutBack);
-        icon.transform.DOLocalMoveX(5f, 0.2f).SetEase(Ease.OutBack);
-        Parent.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutBack);
+        transform.DOKill();
+        icon.transform.DOKill();
+        Parent.transform.DOKill();
+
+        // 부모 크기 1.1배
+        Parent.transform.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.2f)
+            .SetEase(Ease.OutBack);
 
         Animate(hoverHeight);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        transform.DOLocalMoveX(0, 0.2f).SetEase(Ease.OutBack);
-        icon.transform.DOLocalMoveX(9f, 0.2f).SetEase(Ease.OutBack);
-        Parent.transform.DOScale(1f, 0.2f).SetEase(Ease.OutBack);
+        transform.DOKill();
+        icon.transform.DOKill();
+        Parent.transform.DOKill();
+
+        // 원래 크기
+        Parent.transform.DOScale(Vector3.one, 0.2f)
+            .SetEase(Ease.OutBack);
 
         Animate(normalHeight);
     }
 
     void Animate(float target)
     {
+        DOTween.Kill(this);
+
         DOTween.To(
             () => currentHeight,
             x =>
@@ -56,6 +65,8 @@ public class IconClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             },
             target,
             0.2f
-        ).SetEase(Ease.OutBack);
+        )
+        .SetEase(Ease.OutBack)
+        .SetId(this);
     }
 }

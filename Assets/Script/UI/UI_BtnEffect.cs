@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     public Color _SaveColor;
+    public Color _ChangingColor = Color.black;
     public Sprite EnterSprite;
     public Sprite ExitSprite;
     public Sprite ClickSprite;
@@ -15,6 +16,7 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public TextMeshProUGUI _text;
     public TextMeshProUGUI _text2;
     public Image _image;
+    public Image _image2;
     Image thisimage;
 
     public bool CanChage = true;
@@ -22,6 +24,12 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private void Awake()
     {
         thisimage = GetComponent<Image>();
+    }
+
+    public void HoldEnter()
+    {
+        CanChage = false;
+        ChangeEffect();
     }
 
     public void HoldChange()
@@ -44,9 +52,10 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void ChangeEffect()
     {
-        if (_text != null) _text.color = Color.black;
-        if (_text2 != null) _text2.color = Color.black;
-        if (_image != null) _image.color = Color.black;
+        if (_text != null) _text.color = _ChangingColor;
+        if (_text2 != null) _text2.color = _ChangingColor;
+        if (_image != null) _image.color = _ChangingColor;
+        if (_image2 != null) _image2.color = _ChangingColor;
         if (thisimage != null) thisimage.sprite = EnterSprite;
     }
 
@@ -61,6 +70,7 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (_text != null) _text.color = _SaveColor;
         if (_text2 != null) _text2.color = _SaveColor;
         if (_image != null) _image.color = _SaveColor;
+        if (_image2 != null) _image2.color = _SaveColor;
         if (thisimage != null) thisimage.sprite = ExitSprite;
     }
 
@@ -73,9 +83,10 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     void ClickEffect()
     {
         if (ClickSprite == null) return;
-        if (_text != null) _text.color = Color.black;
-        if (_text2 != null) _text2.color = Color.black;
-        if (_image != null) _image.color = Color.black;
+        if (_text != null) _text.color = _ChangingColor;
+        if (_text2 != null) _text2.color = _ChangingColor;
+        if (_image != null) _image.color = _ChangingColor;
+        if (_image2 != null) _image2.color = _ChangingColor;
         if (thisimage != null) thisimage.sprite = ClickSprite;
     }
 

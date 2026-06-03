@@ -96,7 +96,7 @@ public class SelectionUI : MonoBehaviour
         UIBtnsSelectedUIMaterial _slect = Findnowenum();
 
         thistransform.DOKill();
-        thistransform.DOAnchorPosX(-size, 0.5f);
+        thistransform.DOAnchorPosX(-145f-size, 0.5f);
         DestroyAllAdditionalUi();
 
         OffAllUI();
@@ -116,7 +116,7 @@ public class SelectionUI : MonoBehaviour
         nowUIenum = SelectionUIenum.None;
 
         thistransform.DOKill();
-        thistransform.DOAnchorPosX(0f, 0.25f);
+        thistransform.DOAnchorPosX(-145f, 0.25f);
         DestroyAllAdditionalUi();
 
         for (int i = 0; i < uIBtnsSelectedUIMaterials.Count; i++)
@@ -192,6 +192,8 @@ public class SelectionUI : MonoBehaviour
 
     public void OnChangeUISize(Vector2 _size)
     {
+        return;
+
         size = _size.x;
 
         SelectPage.sizeDelta = _size;

@@ -45,12 +45,12 @@ public class UIManager : MonoBehaviour
         RectTransform _Sel = SelectionUI.gameObject.GetComponent<RectTransform>();
 
         _Com.localScale = Vector2.one * 1.2f;
-        _Sel.anchoredPosition = new Vector2(100, 0);
+        _Sel.anchoredPosition = new Vector2(0, 0);
         _Wha.anchoredPosition = new Vector2(0, -120);
 
         _Com.DOScale(Vector2.one, 1f).OnComplete(() =>
         {
-            _Sel.DOAnchorPos(Vector2.zero, 0.5f);
+            _Sel.DOAnchorPos(new Vector2(-145f, 0), 0.5f);
             _Wha.DOAnchorPos(Vector2.zero, 2f);
         });
     }
