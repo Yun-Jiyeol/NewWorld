@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +44,10 @@ public class SelectionUI : MonoBehaviour
     float size = 350f;
 
     public List<GameObject> AdditionalUI = new List<GameObject>();
+
+    [Header("Explain")]
+    public TextMeshProUGUI ExplainText;
+    public Image ExplainImage;
 
     public void Onit()
     {
@@ -109,6 +114,10 @@ public class SelectionUI : MonoBehaviour
         {
             _basic.OnSetting();
         }
+
+        UI_BtnEffect _UIBE = _slect.Btn.GetComponent<UI_BtnEffect>();
+        ExplainText.text = _UIBE._text.text;
+        ExplainImage.sprite = _UIBE._image2.sprite;
     }
 
     public void PopInSettingPanel()
