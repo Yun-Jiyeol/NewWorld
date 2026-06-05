@@ -27,8 +27,6 @@ public class OnInputFieldEnter : MonoBehaviour
 
     private void Start()
     {
-        cursorMover = GameManager.Instance.CursorMover;
-
         thisInput.onSelect.AddListener(OnSelected);
         thisInput.onEndEdit.AddListener(OnEndChange);
     }
@@ -37,6 +35,9 @@ public class OnInputFieldEnter : MonoBehaviour
     {
         if (FollowCoroutine != null) return;
         if (BtnEffect) thisBtnEffect.HoldChange();
+
+        cursorMover = GameManager.Instance.CursorMover;
+
         FollowCoroutine = StartCoroutine(FollowCursor());
     }
 

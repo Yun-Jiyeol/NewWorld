@@ -17,8 +17,8 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     bool isPressed = false;
 
-    float Max = 145f;
-    float Min = -145f;
+    float Max = 122.5f;
+    float Min = -122.5f;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void Setting()
     {
-        float value = Mathf.Lerp(-145f, 145f, GameManager.Instance.BuildManager.alfar);
+        float value = Mathf.Lerp(-Min, Max, GameManager.Instance.BuildManager.alfar);
         childToMove.anchoredPosition = new Vector2(value, -25f);
     }
 
