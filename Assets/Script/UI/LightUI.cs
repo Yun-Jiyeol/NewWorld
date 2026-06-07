@@ -332,16 +332,16 @@ public class LightUI : BasicUI
         switch (targettype)
         {
             case (LightType.Spot):
-                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(230f, 45f), 0.3f);
-                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(45f, 45f), 0.3f);
+                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
+                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
                 SettingAngleGo.SetActive(true);
                 MakeSpere();
                 SettingColor();
                 break;
 
             case (LightType.Point):
-                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(45f, 45f), 0.3f);
-                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(230f, 45f), 0.3f);
+                Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
+                Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
                 SettingAngleGo.SetActive(false);
                 MakeSpere();
                 SettingColor();

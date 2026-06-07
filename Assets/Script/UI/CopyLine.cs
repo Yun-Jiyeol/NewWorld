@@ -17,8 +17,8 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     bool isPressed = false;
 
-    float Max = 145f;
-    float Min = -145f;
+    float Max = 122.5f;
+    float Min = -122.5f;
 
     LightUI lightUI = null;
     MainLightUI MainLightUI = null;
@@ -33,7 +33,7 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         DrawPaletteLine();
 
         Color.RGBToHSV(_lightui._color, out float h, out float s, out float v);
-        float value = Mathf.Lerp(-145f, 145f, h);
+        float value = Mathf.Lerp(Min, Max, h);
 
         childToMove.anchoredPosition = new Vector2(value, -25f);
         _lightui.ChangeLineChoose(GetColorFromPalette(new Vector2(value, 0)));
@@ -46,7 +46,7 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         DrawPaletteLine();
 
         Color.RGBToHSV(_mainLightUI._color, out float h, out float s, out float v);
-        float value = Mathf.Lerp(-145f, 145f, h);
+        float value = Mathf.Lerp(Min, Max, h);
 
         childToMove.anchoredPosition = new Vector2(value, -25f);
         _mainLightUI.ChangeInlineColor(GetColorFromPalette(new Vector2(value, 0)));
