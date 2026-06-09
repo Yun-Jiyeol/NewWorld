@@ -52,7 +52,7 @@ public class PlayerPosUI : BasicUI
 
     IEnumerator ResetCameraPosCR()
     {
-        blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+        blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, GameManager.Instance.UIManager.SelectionUI.transform);
 
         Transform Cam = GameManager.Instance.MainCamera.transform;
 

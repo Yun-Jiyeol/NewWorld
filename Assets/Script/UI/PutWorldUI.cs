@@ -25,7 +25,7 @@ public class PutWorldUI : BasicUI
 
         if (SaveBN == Inputname || Inputname == "") return;
 
-        Instantiate(GameManager.Instance.UIManager.SavedImage, gameObject.transform);
+        Instantiate(GameManager.Instance.UIManager.SavedImage, GameManager.Instance.UIManager.SelectionUI.transform);
 
         GameManager.Instance.SaveAndLoadManager.ChangeName(TargetObject._name, Inputname);
 

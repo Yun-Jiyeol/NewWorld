@@ -120,7 +120,7 @@ public class MoveOneWorldUI : BasicUI
 
         inputManager.TargetGameObject = newCopied;
 
-        GameObject blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+        GameObject blockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, GameManager.Instance.UIManager.SelectionUI.transform);
         GameManager.Instance.UIManager.SelectionUI.AdditionalUI.Add(blockImage);
 
         newChunk.StartBuildRoutine();
