@@ -12,8 +12,7 @@ public class CameraSettingSlider : MonoBehaviour
     public TMP_InputField inputfield;
     public Slider slider;
 
-    public TextMeshProUGUI MaxText;
-    public TextMeshProUGUI MInText;
+    public TextMeshProUGUI WhatSlide;
 
     CameraSetting parent;
     CameraEffect thistype;
@@ -25,10 +24,11 @@ public class CameraSettingSlider : MonoBehaviour
 
     bool isinit = false;
 
-    public void Init(CameraEffect type, CameraSetting cam)
+    public void Init(CameraEffect type, CameraSetting cam, string _name)
     {
         thistype = type;
         parent = cam;
+        WhatSlide.text = _name;
         CameraMaterial = GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().CamMaterial;
 
         Max = parent.CameraNowSetting[thistype].MaxPower;
@@ -38,10 +38,8 @@ public class CameraSettingSlider : MonoBehaviour
         slider.value = NowValue;
 
         slider.minValue = Min;
-        MInText.text = Min.ToString("F1");
 
         slider.maxValue = Max;
-        MaxText.text = Max.ToString("F1");
 
         SettingSlider();
         SettingInputField();

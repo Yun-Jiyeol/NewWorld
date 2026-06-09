@@ -171,7 +171,7 @@ public class CameraSetting : BasicUI
                 GameObject slider = Instantiate(Slider, SpawnPos);
                 slider.transform.SetSiblingIndex(index + 1);
                 SpawnPos.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 300f);
-                slider.GetComponent<CameraSettingSlider>().Init(clickedtype, this);
+                slider.GetComponent<CameraSettingSlider>().Init(clickedtype, this, parent.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text);
                 SlidersSave[clickedtype] = slider;
             }
         }

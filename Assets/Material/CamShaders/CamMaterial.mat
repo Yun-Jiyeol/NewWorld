@@ -31,17 +31,17 @@ Material:
     - _CRTStrength: 0.2
     - _Contrast: 0
     - _ContrastThreshold: 0.5
-    - _Edge: 0
-    - _EdgeStrength: 1
+    - _Edge: 1
+    - _EdgeStrength: 3.7115204
     - _Noise: 0
     - _NoiseStrength: 0.1
     - _OnContrast: 0
     - _PixelSize: 254
-    - _Pixelate: 0
+    - _Pixelate: 1
     - _Posterize: 0
     - _PosterizeSteps: 4
     - _Reverse: 0
-    - _Vignette: 0
-    - _VignetteStrength: 1
+    - _Vignette: 1
+    - _VignetteStrength: 1.7184925
     m_Colors: []
   m_BuildTextureStacks: []

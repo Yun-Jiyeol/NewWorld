@@ -98,7 +98,7 @@ public class CursorMover : MonoBehaviour
         Vector2 dir = (mousePos - screenCenter).normalized;
 
         // 반대 방향으로 멀리 이동
-        Vector2 targetPos = mousePos + dir * 1000f;
+        Vector2 targetPos = mousePos + dir * 1500f;
 
         thisTransform.DOMove(targetPos, 0.5f);
     }

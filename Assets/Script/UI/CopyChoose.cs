@@ -16,8 +16,8 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     Color color;
 
-    float Max = 150f;
-    float Min = -150f;
+    float Max = 122.5f;
+    float Min = -122.5f;
 
     bool isPressed = false;
     LightUI lightui = null;
@@ -34,8 +34,8 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         Color.RGBToHSV(lightui._color, out float h, out float s, out float v);
 
-        float svalue = Mathf.Lerp(-150f, 150f, s);
-        float vvalue = Mathf.Lerp(-150f, 150f, v);
+        float svalue = Mathf.Lerp(Min, Max, s);
+        float vvalue = Mathf.Lerp(Min, Max, v);
 
         childToMove.anchoredPosition = new Vector2(svalue, vvalue);
 
@@ -48,8 +48,8 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         Color.RGBToHSV(MainLightUI._color, out float h, out float s, out float v);
 
-        float svalue = Mathf.Lerp(-150f, 150f, s);
-        float vvalue = Mathf.Lerp(-150f, 150f, v);
+        float svalue = Mathf.Lerp(Min, Max, s);
+        float vvalue = Mathf.Lerp(Min, Max, v);
 
         childToMove.anchoredPosition = new Vector2(svalue, vvalue);
 
