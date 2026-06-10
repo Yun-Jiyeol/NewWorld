@@ -28,6 +28,8 @@ public class WorldSaveFile : MonoBehaviour
             + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
 
         tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
+        if(tapeSave.Check != null)
+            tapeSave.Check.GetComponent<Image>().sprite = tapeSave.WorldIcon.sprite;
 
         UnCheck();
         if (GameManager.Instance.NowWorldSaveFolder == Name)

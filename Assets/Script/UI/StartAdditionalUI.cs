@@ -363,13 +363,6 @@ public class StartAdditionalUI : MonoBehaviour
 
     public void ClickExitGameBtn()
     {
-        if (GameManager.Instance.UIManager.StartSceneUI.isStart)
-        {
-            GameManager.Instance.Exit();
-        }
-        else
-        {
-            GameManager.Instance.UIManager.StartSceneUI.ClickStart();
-        }
+        GameManager.Instance.Exit();
     }
 }

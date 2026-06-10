@@ -10,7 +10,10 @@ Material:
   m_Name: CamMaterial
   m_Shader: {fileID: 4800000, guid: 27fd01da05a15d14e856d913036bc945, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _EDGE_ON
+  - _PIXELATE_ON
+  - _VIGNETTE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -31,17 +34,17 @@ Material:
     - _CRTStrength: 0.2
     - _Contrast: 0
     - _ContrastThreshold: 0.5
-    - _Edge: 1
-    - _EdgeStrength: 3.7115204
+    - _Edge: 0
+    - _EdgeStrength: 1
     - _Noise: 0
     - _NoiseStrength: 0.1
     - _OnContrast: 0
     - _PixelSize: 254
-    - _Pixelate: 1
+    - _Pixelate: 0
     - _Posterize: 0
     - _PosterizeSteps: 4
     - _Reverse: 0
-    - _Vignette: 1
-    - _VignetteStrength: 1.7184925
+    - _Vignette: 0
+    - _VignetteStrength: 1
     m_Colors: []
   m_BuildTextureStacks: []
