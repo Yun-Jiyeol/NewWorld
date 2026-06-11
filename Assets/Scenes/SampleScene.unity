@@ -2732,6 +2732,7 @@ GameObject:
   - component: {fileID: 102624879}
   - component: {fileID: 102624881}
   - component: {fileID: 102624880}
+  - component: {fileID: 102624882}
   m_Layer: 5
   m_Name: Ex
   m_TagString: Untagged
@@ -2779,7 +2780,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC804\uC6D0 \uC885\uB8CC\n"
+  m_text: 0x5350444E
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -2806,10 +2807,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.1
-  m_fontSizeBase: 36
+  m_fontSize: 13.5
+  m_fontSizeBase: 13.5
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -2856,6 +2857,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 102624878}
   m_CullTransparentMesh: 1
+--- !u!114 &102624882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102624878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: fe94dd355114bcf46bccc5cbe24c43a7, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 19
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 13.5
 --- !u!1 &103986493
 GameObject:
   m_ObjectHideFlags: 0
@@ -33780,6 +33801,7 @@ GameObject:
   - component: {fileID: 1173635534}
   - component: {fileID: 1173635535}
   - component: {fileID: 1173635536}
+  - component: {fileID: 1173635537}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -33994,6 +34016,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb7bb2d7659edda44b268083ca60ae50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1173635537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173635524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9d8e71b4bf3e8a40babe6295ea62289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AllText: []
 --- !u!1 &1183565373
 GameObject:
   m_ObjectHideFlags: 0
@@ -50815,7 +50850,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WritingBoard: {fileID: 1440207033}
   RedLight: {fileID: 1510717976}
-  isStart: 0
   maxLineCount: 10
 --- !u!1 &1764435739
 GameObject:
