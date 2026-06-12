@@ -46,6 +46,8 @@ public class MakeNewWorld : NeedToDoOnit
         MainUI.DOAnchorPosY(-75f, 1f);
         WhiteCover.DOColor(new Color(0,0,0,0), 1.25f);
 
+        GameManager.Instance.UIManager.StartSceneUI.AddText("CREATE TAPE");
+
         StartSettingTape();
     }
 

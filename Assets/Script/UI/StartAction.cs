@@ -53,7 +53,7 @@ public class StartAction : MonoBehaviour
 
     IEnumerator StartActionRoutine()
     {
-        StartSceneUI.AddText("시스템 준비");
+        StartSceneUI.AddText("SystemReady");
 
         target.DOSizeDelta(new Vector3(600, 400), 3f);
 
@@ -68,7 +68,7 @@ public class StartAction : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        StartSceneUI.AddText("아무거나 클릭 시스템 시작");
+        StartSceneUI.AddText("ClickAnything");
         while (true)
         {
             if (Input.anyKeyDown)
@@ -84,7 +84,7 @@ public class StartAction : MonoBehaviour
     public void ClickStart()
     {
         target.DOKill();
-        StartSceneUI.AddText("시스템 시작");
+        StartSceneUI.AddText("SystemBoot");
         StartSceneUI.RedLight.DOColor(new Color(50 / 255f, 255 / 255f, 50 / 255f), 1f).OnComplete(() =>
         {
             target.DOAnchorPos(new Vector2(0, 0), 1.5f);

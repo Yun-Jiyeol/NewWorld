@@ -231,13 +231,13 @@ public class StartAdditionalUI : MonoBehaviour
 
     public void SpawnLoadUI()
     {
-        GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 열어본다.");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("OpenDrawer");
         Desk.DOSizeDelta(DeskOriginalPos + DeskAfterPos, 0.7f);
     }
 
     public void DestroyLoadUI()
     {
-        GameManager.Instance.UIManager.StartSceneUI.AddText("서랍을 닫는다.");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("CloseDrawer");
         Desk.DOSizeDelta(DeskOriginalPos, 0.5f);
 
         TapeInMotion();

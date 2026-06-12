@@ -8,7 +8,7 @@ public class TextTranslation : MonoBehaviour
     public StringFont FontSave;
 
     TextMeshProUGUI _text;
-    TranslationManager translationManager;
+    TranslationManager translationManager = null;
 
     private void Awake()
     {
@@ -17,13 +17,15 @@ public class TextTranslation : MonoBehaviour
 
     private void OnEnable()
     {
-        if(!translationManager._AllText.Contains(this))
-            translationManager._AllText.Add(this);
+        if (translationManager == null) return;
+
+        translationManager.AddText(this);
     }
 
     private void Start()
     {
         translationManager = GameManager.Instance.TranslationManager;
+        translationManager.AddText(this);
     }
 
     public void Setting(LanguageEnum _language)
@@ -52,7 +54,6 @@ public class TextTranslation : MonoBehaviour
 
     private void OnDisable()
     {
-        if (translationManager._AllText.Contains(this))
-            translationManager._AllText.Remove(this);
+        translationManager.DelectText(this);
     }
 }

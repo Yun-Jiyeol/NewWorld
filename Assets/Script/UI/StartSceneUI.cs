@@ -22,6 +22,19 @@ public class StartSceneUI : MonoBehaviour
 
     Queue<string> textQueue = new Queue<string>();
     bool isTyping = false;
+
+    [Header("Setting")]
+    public List<TranslationData> ShowText;
+    Dictionary<string, SaveString> SaveData = new Dictionary<string, SaveString>();
+
+    private void Awake()
+    {
+        foreach(TranslationData TD in ShowText)
+        {
+            SaveData.Add(TD.name, TD.Strings);
+        }
+    }
+
     public void AddText(string _text)
     {
         // 꺼져있으면 무시
@@ -56,6 +69,21 @@ public class StartSceneUI : MonoBehaviour
             if (texts.Count > maxLineCount)
             {
                 texts.RemoveAt(texts.Count - 1);
+            }
+
+            switch (GameManager.Instance.TranslationManager.GetLanguage())
+            {
+                case LanguageEnum.Com:
+                    nextText = SaveData[nextText].Com;
+                    break;
+
+                case LanguageEnum.Kor:
+                    nextText = SaveData[nextText].Kor;
+                    break;
+
+                case LanguageEnum.Eng:
+                    nextText = SaveData[nextText].Eng;
+                    break;
             }
 
             yield return StartCoroutine(TypeText(nextText, 0));

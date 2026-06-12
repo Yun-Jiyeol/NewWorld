@@ -65,7 +65,7 @@ public class WorldManager : MonoBehaviour
     {
         GameObject maincam = Camera.main.gameObject;
         SortWorldsByDistance(maincam);
-        GameManager.Instance.UIManager.StartSceneUI.AddText("생성 중");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("GENERATING");
 
         StartCoroutine(LoadAllworld());
     }
@@ -88,7 +88,7 @@ public class WorldManager : MonoBehaviour
         {
             ChunkCode chunk = Worlds[i].GetComponent<ChunkCode>();
 
-            GameManager.Instance.UIManager.StartSceneUI.AddText(chunk._name + " 생성 중");
+            GameManager.Instance.UIManager.StartSceneUI.AddText("WORLD CREATE");
 
             // 코루틴 끝날 때까지 기다림
             yield return StartCoroutine(chunk.BuildRoutine());
