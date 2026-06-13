@@ -164,12 +164,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 2416611434829180070}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &1443677962587764963
 GameObject:
@@ -336,12 +338,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 3005057399154959902}
   _text2: {fileID: 0}
   _image: {fileID: 2412658092615785887}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &2028316381255351277
 GameObject:
@@ -510,12 +514,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: 0}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 2891278981317126167}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &2395186644736429591
 GameObject:
@@ -857,12 +863,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 3887562085101417134}
   _text2: {fileID: 0}
   _image: {fileID: 6537783078151753978}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &2689936832145668889
 GameObject:
@@ -1446,6 +1454,7 @@ GameObject:
   - component: {fileID: 5295490371876028841}
   - component: {fileID: 8121665223544910018}
   - component: {fileID: 3005057399154959902}
+  - component: {fileID: 8678453415458708748}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1470,7 +1479,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 80, y: -3}
+  m_AnchoredPosition: {x: 80, y: 0}
   m_SizeDelta: {x: 150, y: 65}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8121665223544910018
@@ -1501,7 +1510,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCD08\uAE30\uD654"
+  m_text: 0x525354
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
   m_sharedMaterial: {fileID: 3486877136713115681, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
@@ -1528,10 +1537,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -1570,6 +1579,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8678453415458708748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525593169242295090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: bcccc4a5478be5f47b566fde2972d7ab, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    ComSize: 36
+    Korfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    KorSize: 45
+    Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    EngSize: 56
 --- !u!1 &6240720784337577698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1657,6 +1686,7 @@ GameObject:
   - component: {fileID: 967671077459221008}
   - component: {fileID: 531686783271257345}
   - component: {fileID: 1978357599787675749}
+  - component: {fileID: 4544805658018715516}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1681,7 +1711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 60, y: -3}
+  m_AnchoredPosition: {x: 60, y: 0}
   m_SizeDelta: {x: 75, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &531686783271257345
@@ -1712,7 +1742,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC0DD\uC131"
+  m_text: 0x435254
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
   m_sharedMaterial: {fileID: 3486877136713115681, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
@@ -1739,10 +1769,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.5
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -1781,6 +1811,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4544805658018715516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6548890637480299425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 5bd59070129b64d4ab00f174239a5c2b, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    ComSize: 18
+    Korfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    KorSize: 32
+    Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    EngSize: 24
 --- !u!1 &6836739833555126821
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,12 +2034,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 5184213338196569130}
   _text2: {fileID: 6567201943159206343}
   _image: {fileID: 0}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &7484427209239573663
 GameObject:
@@ -2041,6 +2093,7 @@ GameObject:
   - component: {fileID: 6152267596626967714}
   - component: {fileID: 6031842550325215631}
   - component: {fileID: 3887562085101417134}
+  - component: {fileID: 6599804567609841738}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -2065,7 +2118,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 60, y: -3}
+  m_AnchoredPosition: {x: 60, y: 0}
   m_SizeDelta: {x: 75, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6031842550325215631
@@ -2096,7 +2149,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC81C\uAC70"
+  m_text: 0x524D56
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
   m_sharedMaterial: {fileID: 3486877136713115681, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
@@ -2123,10 +2176,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.5
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -2165,6 +2218,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6599804567609841738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8650253964158211306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 6ca32f1c8a3b5aa4093fa6893dd05bba, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    ComSize: 18
+    Korfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    KorSize: 32
+    Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
+    EngSize: 24
 --- !u!1 &8699817841878228722
 GameObject:
   m_ObjectHideFlags: 0
@@ -2294,12 +2367,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 1978357599787675749}
   _text2: {fileID: 0}
   _image: {fileID: 3313530878105990199}
+  _image2: {fileID: 0}
   CanChage: 1
 --- !u!1 &8949779726661964750
 GameObject:

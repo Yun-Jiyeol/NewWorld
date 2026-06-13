@@ -206,6 +206,10 @@ public class StartAdditionalUI : MonoBehaviour
             NamePage.Onit();
         }
 
+        GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
+        GameManager.Instance.WorldManager.DestroyAllWorld();
+        ReconstructionValue(0);
+
         ResetTape();
     }
 

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Strings:
     Com: 0x5245434F4E
-    Kor: "\uAD6C\uC131\uB3C4"
+    Kor: "\uAD6C\uC131\uB960"
     Eng: RECONSTRUCTION

@@ -151,7 +151,6 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         GameManager.Instance.NowWorldSaveFolder = NowChooseWorldName;
 
         GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
-        string[] parts = NowChooseWorldName.Split('_');
         GameManager.Instance.UIManager.StartSceneUI.AddText("TapeIn");
         GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Looking);
 
