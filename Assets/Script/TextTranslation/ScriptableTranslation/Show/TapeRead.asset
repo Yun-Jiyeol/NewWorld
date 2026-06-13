@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
+  m_Name: TapeRead
+  m_EditorClassIdentifier: 
+  Strings:
+    Com: 0x5450455F5349475F444554454354
+    Kor: "\uD68C\uC804\uD558\uB294 \uD14C\uC774\uD504\uB97C \uB530\uB77C, \uAE30\uB85D\uB41C
+      \uC138\uACC4\uC758 \uC2E0\uD638\uAC00 \uD558\uB098\uC529 \uAC10\uC9C0\uB41C\uB2E4."
+    Eng: Along the rotating tape, the signals of a recorded world are detected one
+      by one.

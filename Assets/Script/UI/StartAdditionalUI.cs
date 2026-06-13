@@ -201,6 +201,11 @@ public class StartAdditionalUI : MonoBehaviour
             AdditionalShow.gameObject.SetActive(false);
         });
 
+        if (NowInTape == null)
+        {
+            NamePage.Onit();
+        }
+
         ResetTape();
     }
 

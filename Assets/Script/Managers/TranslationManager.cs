@@ -34,7 +34,7 @@ public class StringFont
 
 public class TranslationManager : MonoBehaviour
 {
-    LanguageEnum NowLanguage = LanguageEnum.Com;
+    LanguageEnum NowLanguage = LanguageEnum.Kor;
     public List<TextTranslation> _AllText;
 
     public void AddText(TextTranslation _text)

@@ -152,7 +152,7 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
         GameManager.Instance.UIManager.StartAdditionalUI.OffThisUI();
         string[] parts = NowChooseWorldName.Split('_');
-        GameManager.Instance.UIManager.StartSceneUI.AddText("PLAY TAPE.");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("TapeIn");
         GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Looking);
 
         GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();

@@ -55,7 +55,7 @@ public class StartAction : MonoBehaviour
     {
         StartSceneUI.AddText("SystemReady");
 
-        target.DOSizeDelta(new Vector3(600, 400), 3f);
+        target.DOSizeDelta(new Vector3(100, 100), 2f);
 
         Vector2 startPos = target.anchoredPosition;
 
@@ -66,7 +66,7 @@ public class StartAction : MonoBehaviour
         .SetEase(Ease.InOutSine)
         .SetLoops(-1, LoopType.Yoyo);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
 
         StartSceneUI.AddText("ClickAnything");
         while (true)

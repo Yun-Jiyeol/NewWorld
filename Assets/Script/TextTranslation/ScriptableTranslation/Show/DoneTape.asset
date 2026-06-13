@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
+  m_Name: DoneTape
+  m_EditorClassIdentifier: 
+  Strings:
+    Com: 0x4E4D445F5450455F53544F52
+    Kor: "\uC774\uB984 \uC801\uD78C \uD14C\uC774\uD504\uAC00 \uBCF4\uAD00\uD568 \uC548\uCABD\uC5D0
+      \uC790\uB9AC\uC7A1\uB294\uB2E4."
+    Eng: The named tape settles into place inside the storage drawer.

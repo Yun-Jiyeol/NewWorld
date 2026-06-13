@@ -46,7 +46,7 @@ public class MakeNewWorld : NeedToDoOnit
         MainUI.DOAnchorPosY(-75f, 1f);
         WhiteCover.DOColor(new Color(0,0,0,0), 1.25f);
 
-        GameManager.Instance.UIManager.StartSceneUI.AddText("CREATE TAPE");
+        GameManager.Instance.UIManager.StartSceneUI.AddText("CreateTape");
 
         StartSettingTape();
     }
@@ -106,11 +106,15 @@ public class MakeNewWorld : NeedToDoOnit
         string SaveName = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
         SaveAndLoadManager.EnsureSaveFolder(SaveName);
 
+        GameManager.Instance.UIManager.StartSceneUI.AddText("DoneTape");
+
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 
     public void DeclineMakeWorld()
     {
+        GameManager.Instance.UIManager.StartSceneUI.AddText("DestroyTape");
+
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 

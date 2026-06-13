@@ -13,8 +13,6 @@ public class StartSceneUI : MonoBehaviour
 
     [Header("Setting")]
     public int maxLineCount = 10;
-    float MintypingSpeed = 0.02f;
-    float MaxtypingSpeed = 0.05f;
 
     List<string> texts = new List<string>();
 
@@ -95,30 +93,46 @@ public class StartSceneUI : MonoBehaviour
 
     IEnumerator TypeText(string targetText, int lineIndex)
     {
-        string current = "";
+        if (string.IsNullOrEmpty(targetText))
+            yield break;
 
-        for (int i = 0; i < targetText.Length; i++)
+        float totalTime = 1f;
+        float timer = 0f;
+        int lastCount = 0;
+
+        while (timer < totalTime)
         {
-            // 꺼지면 종료
             if (!gameObject.activeInHierarchy)
-            {
                 yield break;
-            }
 
-            float typingSpeed =
-                Random.Range(MintypingSpeed, MaxtypingSpeed);
+            timer += Time.deltaTime;
 
-            current += targetText[i];
+            int count = Mathf.FloorToInt((timer / totalTime) * targetText.Length);
+            count = Mathf.Clamp(count, 0, targetText.Length);
 
-            if (lineIndex < texts.Count)
+            if (count != lastCount)
             {
-                texts[lineIndex] = current;
+                string current = targetText.Substring(0, count);
+
+                if (lineIndex < texts.Count)
+                {
+                    texts[lineIndex] = current;
+                }
+
+                RefreshBoard();
+
+                lastCount = count;
             }
 
-            RefreshBoard();
-
-            yield return new WaitForSeconds(typingSpeed);
+            yield return null;
         }
+
+        if (lineIndex < texts.Count)
+        {
+            texts[lineIndex] = targetText;
+        }
+
+        RefreshBoard();
     }
 
     void RefreshBoard()
