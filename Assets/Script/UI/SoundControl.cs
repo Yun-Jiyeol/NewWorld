@@ -57,11 +57,10 @@ public class SoundControl : NeedToDoOnit
         switch (thisSoundEnum)
         {
             case SoundEnum.Main:
-                soundManager.MainSoundVolume += i;
+                soundManager.SetMainVolume(soundManager.MainSoundVolume + i);
                 break;
         }
 
-        soundManager.CheckSounds();
         Setting();
     }
 }

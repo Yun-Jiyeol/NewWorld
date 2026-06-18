@@ -25,17 +25,34 @@ public class StartSceneUI : MonoBehaviour
     public List<TranslationData> ShowText;
     Dictionary<string, SaveString> SaveData = new Dictionary<string, SaveString>();
 
+    [Header("Sound")]
+    private AudioClip WordTypeSound;
+
+    [Header("Text Sound Random Thickness")]
+    [SerializeField] private float minLineSoundPitch = 0.86f;
+    [SerializeField] private float maxLineSoundPitch = 1.08f;
+
+    [SerializeField] private float minLineSoundVolume = 0.42f;
+    [SerializeField] private float maxLineSoundVolume = 0.58f;
+
+    private float currentLineSoundPitch = 1f;
+    private float currentLineSoundVolume = 0.5f;
+
     private void Awake()
     {
-        foreach(TranslationData TD in ShowText)
+        foreach (TranslationData TD in ShowText)
         {
             SaveData.Add(TD.name, TD.Strings);
         }
     }
 
+    private void Start()
+    {
+        WordTypeSound = ScreenTextFinalSoundFactory.CreateFinalScreenTextAppear();
+    }
+
     public void AddText(string _text)
     {
-        // 꺼져있으면 무시
         if (!gameObject.activeInHierarchy)
             return;
 
@@ -43,8 +60,7 @@ public class StartSceneUI : MonoBehaviour
 
         if (!isTyping)
         {
-            typingCoroutine =
-                StartCoroutine(ProcessQueue());
+            typingCoroutine = StartCoroutine(ProcessQueue());
         }
     }
 
@@ -54,7 +70,6 @@ public class StartSceneUI : MonoBehaviour
 
         while (textQueue.Count > 0)
         {
-            // 비활성화되면 종료
             if (!gameObject.activeInHierarchy)
             {
                 break;
@@ -84,11 +99,26 @@ public class StartSceneUI : MonoBehaviour
                     break;
             }
 
+            SetRandomLineSoundThickness();
+
             yield return StartCoroutine(TypeText(nextText, 0));
         }
 
         isTyping = false;
         typingCoroutine = null;
+    }
+
+    void SetRandomLineSoundThickness()
+    {
+        currentLineSoundPitch = Random.Range(minLineSoundPitch, maxLineSoundPitch);
+
+        float thickness01 = Mathf.InverseLerp(maxLineSoundPitch, minLineSoundPitch, currentLineSoundPitch);
+
+        currentLineSoundVolume = Mathf.Lerp(
+            minLineSoundVolume,
+            maxLineSoundVolume,
+            thickness01
+        );
     }
 
     IEnumerator TypeText(string targetText, int lineIndex)
@@ -120,6 +150,15 @@ public class StartSceneUI : MonoBehaviour
                 }
 
                 RefreshBoard();
+
+                if (targetText[count - 1] != ' ')
+                {
+                    GameManager.Instance.SoundManager.PlayEffect(
+                        WordTypeSound,
+                        currentLineSoundVolume,
+                        currentLineSoundPitch
+                    );
+                }
 
                 lastCount = count;
             }

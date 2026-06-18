@@ -29,6 +29,9 @@ public class MakeNewWorld : NeedToDoOnit
 
     public RectTransform MainUI;
 
+    [Header("Sound")]
+    private AudioClip WordTypeSound;
+
     private void Awake()
     {
         MainUI.anchoredPosition = new Vector2(375f, -900f);
@@ -47,6 +50,8 @@ public class MakeNewWorld : NeedToDoOnit
         WhiteCover.DOColor(new Color(0,0,0,0), 1.25f);
 
         GameManager.Instance.UIManager.StartSceneUI.AddText("CreateTape");
+
+        WordTypeSound = WireConnect03SoundFactory.CreateWireConnect03();
 
         StartSettingTape();
     }
@@ -75,6 +80,7 @@ public class MakeNewWorld : NeedToDoOnit
         }
 
         SettingName = filtered;
+        GameManager.Instance.SoundManager.PlayEffect(WordTypeSound);
         if (SettingName == "")
         {
             _SpawnTapeSave.WorldName.text = "NewWorld";
