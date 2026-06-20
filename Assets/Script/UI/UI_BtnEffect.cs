@@ -1,9 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
+public enum MouseOnSound 
+{
+    None,
+    DigitalSound,
+    ResetSound,
+    NameSound,
+    IconSound,
+}
+
+public enum ClickSound
+{
+    None,
+    DigitalSound,
+    NameSound,
+    IconSound,
+}
+
 
 public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
@@ -20,6 +36,10 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     Image thisimage;
 
     public bool CanChage = true;
+
+    [Header("Sound")]
+    public MouseOnSound mouseOnSound = MouseOnSound.None;
+    public ClickSound clickSound = ClickSound.None;
 
     private void Awake()
     {
@@ -47,7 +67,12 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!CanChage) return;
+
         ChangeEffect();
+        if (mouseOnSound != MouseOnSound.None)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(mouseOnSound));
+        } 
     }
 
     void ChangeEffect()
@@ -77,7 +102,12 @@ public class UI_BtnEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnPointerDown(PointerEventData eventData)
     {
         if (!CanChage) return;
+
         ClickEffect();
+        if (clickSound != ClickSound.None)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(clickSound));
+        }
     }
 
     void ClickEffect()

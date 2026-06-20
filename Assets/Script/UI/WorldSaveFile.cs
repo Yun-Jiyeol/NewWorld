@@ -81,6 +81,8 @@ public class WorldSaveFile : MonoBehaviour
     {
         isCheck = true;
         tapeSave.Check.SetActive(true);
+
+        GameManager.Instance.SoundManager.PlayEffect(CassetteLiftClackSoundFactory.CreateCassetteLiftClack_05_ClearCassetteClack());
     }
 
     public string GetName()

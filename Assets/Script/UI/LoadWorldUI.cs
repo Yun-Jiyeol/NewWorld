@@ -25,6 +25,10 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     public RectTransform Desk;
     public RectTransform Btns;
 
+    [Header("Sound")]
+    private AudioClip DeskOpenSound;
+    private AudioClip DeskCloseSound;
+
     private void Awake()
     {
         StartLoadBtn.SetActive(false);
@@ -34,6 +38,9 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     public override void Onit()
     {
         NowChooseWorldName= GameManager.Instance.NowWorldSaveFolder;
+
+        DeskOpenSound = DrawerSoundFactory.CreateDrawerOpen();
+        DeskCloseSound = DrawerSoundFactory.CreateDrawerClose();
 
         SettingSaveWorlds();
         CheckLoadBtn();
@@ -197,6 +204,8 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         BG.DOColor(OriginalColor, 0.2f);
         Desk.DOAnchorPos(OriginalDeskPos, 0.7f);
         Btns.DOAnchorPos(OriginalBtnsPos, 0.5f);
+
+        GameManager.Instance.SoundManager.PlayEffect(DeskOpenSound);
     }
 
     public void OnEnd()
@@ -205,6 +214,8 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
         BG.DOColor(AfterColor, 0.1f);
         Btns.DOAnchorPos(AftersBtnsPos, 0.3f);
+        GameManager.Instance.SoundManager.PlayEffect(DeskCloseSound);
+
         Desk.DOAnchorPos(AfterDeskPos, 0.5f).OnComplete(() =>
         {
             Destroy(gameObject);

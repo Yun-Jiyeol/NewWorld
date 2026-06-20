@@ -63,11 +63,14 @@ public class MakeNewWorld : NeedToDoOnit
 
     public override void Onit(int _num)
     {
+        if (spritenum == _num) return;
+
         spritenum = _num;
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
         _SpawnTapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.IconSound));
 
-        _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
+        if (_AdditionalUIIcon != null) _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
     }
 
     void OnValueChanged(string value)
@@ -95,7 +98,7 @@ public class MakeNewWorld : NeedToDoOnit
     {
         spritenum = 0;
         IconSprite.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
-        _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
+        if(_AdditionalUIIcon != null) _AdditionalUIIcon.GetComponent<WorldIconParent>().CheckChild();
 
         SettingName = "NewWorld";
         NameField.SetTextWithoutNotify(SettingName);
@@ -133,6 +136,7 @@ public class MakeNewWorld : NeedToDoOnit
         }
 
         ArrowImage.DOScaleX(ArrowImage.localScale.x * -1f , 0f);
+
         _AdditionalUIIcon.GetComponent<NeedToDoOnit>().Onit();
     }
 

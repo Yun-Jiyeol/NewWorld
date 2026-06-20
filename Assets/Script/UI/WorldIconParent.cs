@@ -61,6 +61,8 @@ public class WorldIconParent : NeedToDoOnit
     {
         parentMNW.MainUI.DOKill();
         parentMNW.AdditionalUIIconBtnEffect.HoldChange();
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.NameSound));
+
         parentMNW.MainUI.DOSizeDelta(new Vector2(1175, 650), 0.5f);
     }
 
