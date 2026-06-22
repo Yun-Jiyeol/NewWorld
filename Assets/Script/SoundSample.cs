@@ -1,220 +1,295 @@
 using UnityEngine;
 
-public static class ScreenTextFinalSoundFactory
+public static class ScreenTypingDotSoundFactory
 {
     private const int SampleRate = 44100;
 
     // =========================================================
-    // 최종 글자 생성 사운드 - 깔끔한 단타 버전
+    // 선택된 Tape Typing 계열 5개
     //
-    // 느낌:
-    // - 뒤에 끄는 느낌 제거
-    // - 글자가 화면에 딱 찍히는 짧은 전기 점등음
-    // - 글자 1개마다 재생해도 부담 적게
+    // Dot1 = 기존 03 CleanReadDot
+    // Dot2 = 기존 04 OldTapeGrain
+    // Dot3 = 기존 05 LowRecordPrint
+    // Dot4 = 기존 07 ReadThenGlow
+    // Dot5 = 기존 09 DryRecordTick
+    //
+    // 각 DotPitch 값으로 내부 음 높이 조절 가능
     // =========================================================
 
-    public static AudioClip CreateFinalScreenTextAppear()
+    [Header("Pitch")]
+    public static float Dot1Pitch = 1f;
+    public static float Dot2Pitch = 1f;
+    public static float Dot3Pitch = 1f;
+    public static float Dot4Pitch = 1f;
+    public static float Dot5Pitch = 1f;
+
+    // =========================================================
+    // dot1
+    // 짧게 읽고 바로 출력되는 깔끔한 느낌
+    // =========================================================
+
+    public static AudioClip CreateDot1()
     {
-        string name = "Final_Screen_Text_Appear_Clean_Click";
-
-        float duration = 0.007f;
-        float targetPeak = 0.105f;
-
+        string name = "dot1";
+        float duration = 0.052f;
         int sampleCount = Mathf.CeilToInt(SampleRate * duration);
         float[] samples = new float[sampleCount];
+
+        float pitch = Mathf.Max(0.01f, Dot1Pitch);
+
+        float readNoise = 0f;
+        float phase = Random.Range(0f, 1000f);
 
         for (int i = 0; i < sampleCount; i++)
         {
             float t = i / (float)sampleCount;
             float time = i / (float)SampleRate;
 
-            // 거의 즉시 켜지고 바로 꺼지는 형태
-            float envelope = CreateCleanClickEnvelope(t);
+            float readEnv = Mathf.Exp(-Mathf.Pow(t - 0.20f, 2f) * 90f);
+            float dotEnv = SharpEnvelope(t, 0.08f, 9.5f);
 
-            // 화면에 글자가 딱 점등되는 중심음
-            float phosphorClick = Mathf.Sin(2f * Mathf.PI * 1650f * time) * 0.34f;
+            float raw = Random.Range(-1f, 1f);
+            readNoise = Mathf.Lerp(readNoise, raw, 0.065f);
 
-            // 작고 건조한 전기 점
-            float electricDot = Mathf.Sin(2f * Mathf.PI * 5200f * time) * 0.11f;
+            float read = readNoise * 0.055f * readEnv;
 
-            // 약간 각진 디지털 클릭감
-            float digitalEdge = Mathf.Sign(Mathf.Sin(2f * Mathf.PI * 2800f * time)) * 0.055f;
+            float dot =
+                Mathf.Sin(2f * Mathf.PI * 690f * pitch * time + phase) *
+                0.12f *
+                dotEnv;
 
-            // 아주 짧은 입자감만 남김
-            float grain = Random.Range(-1f, 1f) * 0.025f;
-
-            float value =
-                phosphorClick +
-                electricDot +
-                digitalEdge +
-                grain;
-
-            samples[i] = value * envelope;
+            samples[i] = read + dot;
         }
 
-        RemoveClick(samples);
-        NormalizeSamples(samples, targetPeak);
+        Finish(samples, 0.115f, 18);
 
-        AudioClip clip = AudioClip.Create(name, samples.Length, 1, SampleRate, false);
+        AudioClip clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
         clip.SetData(samples, 0);
-
         return clip;
     }
 
-    private static float CreateCleanClickEnvelope(float t)
-    {
-        float attackRatio = 0.08f;
-
-        if (t < attackRatio)
-        {
-            float attackT = t / attackRatio;
-            return Mathf.SmoothStep(0f, 1f, attackT);
-        }
-
-        float decayT = (t - attackRatio) / (1f - attackRatio);
-
-        // 숫자가 클수록 뒤가 더 빨리 사라짐
-        return Mathf.Pow(1f - decayT, 12f);
-    }
-
-    private static void RemoveClick(float[] samples)
-    {
-        int fadeSampleCount = Mathf.Min(12, samples.Length / 5);
-
-        for (int i = 0; i < fadeSampleCount; i++)
-        {
-            float t = i / (float)fadeSampleCount;
-
-            samples[i] *= t;
-            samples[samples.Length - 1 - i] *= t;
-        }
-    }
-
-    private static void NormalizeSamples(float[] samples, float targetPeak)
-    {
-        float max = 0f;
-
-        for (int i = 0; i < samples.Length; i++)
-        {
-            float abs = Mathf.Abs(samples[i]);
-
-            if (abs > max)
-            {
-                max = abs;
-            }
-        }
-
-        if (max <= 0f)
-            return;
-
-        float multiplier = targetPeak / max;
-
-        for (int i = 0; i < samples.Length; i++)
-        {
-            samples[i] *= multiplier;
-        }
-    }
-}
-
-public static class WireConnect03SoundFactory
-{
-    private const int SampleRate = 44100;
-
     // =========================================================
-    // 3번 샘플
-    // 낡은 단자가 맞물리는 소리
-    // 약간 낮은 금속 접점 + 전기 스파크
+    // dot2
+    // 낡은 테이프 노이즈가 살짝 섞인 출력
     // =========================================================
-    public static AudioClip CreateWireConnect03()
+
+    public static AudioClip CreateDot2()
     {
-        string name = "WireConnect_03_Old_Terminal_Contact";
-
-        float duration = 0.034f;
-        float contactFreq = 1250f;
-        float sparkFreq = 4100f;
-        float bodyFreq = 280f;
-
-        float contactAmount = 0.30f;
-        float sparkAmount = 0.17f;
-        float bodyAmount = 0.16f;
-        float noiseAmount = 0.12f;
-        float crackleAmount = 0.06f;
-
-        float attackRatio = 0.06f;
-        float decayPower = 7.2f;
-        float targetPeak = 0.17f;
-
+        string name = "dot2";
+        float duration = 0.086f;
         int sampleCount = Mathf.CeilToInt(SampleRate * duration);
         float[] samples = new float[sampleCount];
 
-        float lastNoise = 0f;
-        float sparkPhase = Random.Range(0f, 1000f);
-        float contactPhase = Random.Range(0f, 1000f);
+        float pitch = Mathf.Max(0.01f, Dot2Pitch);
+
+        float grainA = 0f;
+        float grainB = 0f;
+        float phase = Random.Range(0f, 1000f);
 
         for (int i = 0; i < sampleCount; i++)
         {
             float t = i / (float)sampleCount;
             float time = i / (float)SampleRate;
 
-            float envelope = CreateContactEnvelope(t, attackRatio, decayPower);
+            float grainEnv =
+                Mathf.Sin(t * Mathf.PI) *
+                Mathf.Pow(1f - t, 2.2f);
 
-            // 단자가 닿는 중심 접점음
-            float contactTone = Mathf.Sin(
-                2f * Mathf.PI * contactFreq * time + contactPhase
-            ) * contactAmount;
+            float printEnv = SharpEnvelope(t, 0.13f, 6.4f);
 
-            // 전기가 붙는 순간의 고주파 스파크
-            float sparkTone = Mathf.Sin(
-                2f * Mathf.PI * sparkFreq * time + sparkPhase
-            ) * sparkAmount;
+            float rawA = Random.Range(-1f, 1f);
+            float rawB = Random.Range(-1f, 1f);
 
-            // 살짝 각진 전기 접촉감
-            float squareSpark = Mathf.Sign(
-                Mathf.Sin(2f * Mathf.PI * sparkFreq * 0.5f * time)
-            ) * sparkAmount * 0.35f;
+            grainA = Mathf.Lerp(grainA, rawA, 0.045f);
+            grainB = Mathf.Lerp(grainB, rawB, 0.18f);
 
-            // 낮은 단자 몸통 울림
-            float bodyTone = Mathf.Sin(2f * Mathf.PI * bodyFreq * time) * bodyAmount;
+            float oldGrain =
+                grainA * 0.075f * grainEnv +
+                grainB * 0.022f * Mathf.Pow(1f - t, 5f);
 
-            // 부드러운 전기 노이즈
-            float rawNoise = Random.Range(-1f, 1f);
-            lastNoise = Mathf.Lerp(lastNoise, rawNoise, 0.32f);
-            float electricNoise = lastNoise * noiseAmount;
+            float print =
+                Mathf.Sin(2f * Mathf.PI * 575f * pitch * time + phase) *
+                0.125f *
+                printEnv;
 
-            // 초반에만 아주 약한 스파크 입자
-            float earlySparkGate = t < 0.28f ? 1f : 0f;
-            float randomSpark = 0f;
-
-            if (Random.value > 0.88f)
-            {
-                randomSpark = Random.Range(-1f, 1f) * crackleAmount * earlySparkGate;
-            }
-
-            // 뒤로 갈수록 고주파를 빨리 죽여서 질질 끌리지 않게
-            float sparkEnvelope = Mathf.Pow(1f - t, decayPower + 3f);
-            float bodyEnvelope = Mathf.Pow(1f - t, decayPower * 0.7f);
-
-            float value =
-                contactTone * envelope +
-                sparkTone * sparkEnvelope +
-                squareSpark * sparkEnvelope +
-                bodyTone * bodyEnvelope +
-                electricNoise * envelope +
-                randomSpark;
-
-            samples[i] = value;
+            samples[i] = oldGrain + print;
         }
 
-        RemoveClick(samples);
-        NormalizeSamples(samples, targetPeak);
+        Finish(samples, 0.13f, 30);
 
-        AudioClip clip = AudioClip.Create(name, samples.Length, 1, SampleRate, false);
+        AudioClip clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
         clip.SetData(samples, 0);
-
         return clip;
     }
 
-    private static float CreateContactEnvelope(float t, float attackRatio, float decayPower)
+    // =========================================================
+    // dot3
+    // 기록 장치가 짧게 읽고 낮게 찍는 느낌
+    // =========================================================
+
+    public static AudioClip CreateDot3()
+    {
+        string name = "dot3";
+        float duration = 0.082f;
+        int sampleCount = Mathf.CeilToInt(SampleRate * duration);
+        float[] samples = new float[sampleCount];
+
+        float pitch = Mathf.Max(0.01f, Dot3Pitch);
+
+        float read = 0f;
+        float phaseA = Random.Range(0f, 1000f);
+        float phaseB = Random.Range(0f, 1000f);
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = i / (float)sampleCount;
+            float time = i / (float)SampleRate;
+
+            float readEnv =
+                Mathf.Exp(-Mathf.Pow(t - 0.26f, 2f) * 42f) *
+                Mathf.Pow(1f - t, 1.7f);
+
+            float bodyEnv = SharpEnvelope(t, 0.12f, 5.8f);
+
+            float raw = Random.Range(-1f, 1f);
+            read = Mathf.Lerp(read, raw, 0.055f);
+
+            float readPart = read * 0.080f * readEnv;
+
+            float body =
+                Mathf.Sin(2f * Mathf.PI * 420f * pitch * time + phaseA) *
+                0.105f *
+                bodyEnv;
+
+            float print =
+                Mathf.Sin(2f * Mathf.PI * 710f * pitch * time + phaseB) *
+                0.050f *
+                Mathf.Pow(1f - t, 8f);
+
+            samples[i] = readPart + body + print;
+        }
+
+        Finish(samples, 0.125f, 28);
+
+        AudioClip clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    // =========================================================
+    // dot4
+    // 테이프 읽힘 뒤에 아주 작은 화면 점등이 붙는 느낌
+    // =========================================================
+
+    public static AudioClip CreateDot4()
+    {
+        string name = "dot4";
+        float duration = 0.090f;
+        int sampleCount = Mathf.CeilToInt(SampleRate * duration);
+        float[] samples = new float[sampleCount];
+
+        float pitch = Mathf.Max(0.01f, Dot4Pitch);
+
+        float readNoise = 0f;
+        float phaseA = Random.Range(0f, 1000f);
+        float phaseB = Random.Range(0f, 1000f);
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = i / (float)sampleCount;
+            float time = i / (float)SampleRate;
+
+            float readT = Mathf.Clamp01(t / 0.62f);
+
+            float readEnv =
+                Mathf.Sin(readT * Mathf.PI) *
+                Mathf.Pow(1f - t, 2.1f);
+
+            float glowEnv =
+                Mathf.Exp(-Mathf.Pow(t - 0.56f, 2f) * 90f) *
+                Mathf.Pow(1f - t, 1.5f);
+
+            float raw = Random.Range(-1f, 1f);
+            readNoise = Mathf.Lerp(readNoise, raw, 0.070f);
+
+            float read = readNoise * 0.080f * readEnv;
+
+            float print =
+                Mathf.Sin(2f * Mathf.PI * 610f * pitch * time + phaseA) *
+                0.095f *
+                SharpEnvelope(t, 0.10f, 7.0f);
+
+            float glow =
+                Mathf.Sin(2f * Mathf.PI * 1150f * pitch * time + phaseB) *
+                0.040f *
+                glowEnv;
+
+            samples[i] = read + print + glow;
+        }
+
+        Finish(samples, 0.125f, 30);
+
+        AudioClip clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    // =========================================================
+    // dot5
+    // 조금 더 건조한 기록 출력음
+    // =========================================================
+
+    public static AudioClip CreateDot5()
+    {
+        string name = "dot5";
+        float duration = 0.048f;
+        int sampleCount = Mathf.CeilToInt(SampleRate * duration);
+        float[] samples = new float[sampleCount];
+
+        float pitch = Mathf.Max(0.01f, Dot5Pitch);
+
+        float grain = 0f;
+        float phaseA = Random.Range(0f, 1000f);
+        float phaseB = Random.Range(0f, 1000f);
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = i / (float)sampleCount;
+            float time = i / (float)SampleRate;
+
+            float raw = Random.Range(-1f, 1f);
+            grain = Mathf.Lerp(grain, raw, 0.14f);
+
+            float grainEnv = Mathf.Pow(1f - t, 5.5f);
+            float tickEnv = SharpEnvelope(t, 0.08f, 9.0f);
+
+            float dryGrain = grain * 0.045f * grainEnv;
+
+            float body =
+                Mathf.Sin(2f * Mathf.PI * 530f * pitch * time + phaseA) *
+                0.10f *
+                tickEnv;
+
+            float edge =
+                Mathf.Sin(2f * Mathf.PI * 920f * pitch * time + phaseB) *
+                0.035f *
+                Mathf.Pow(1f - t, 11f);
+
+            samples[i] = dryGrain + body + edge;
+        }
+
+        Finish(samples, 0.115f, 16);
+
+        AudioClip clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    // =========================================================
+    // 공용 유틸
+    // =========================================================
+
+    private static float SharpEnvelope(float t, float attackRatio, float decayPower)
     {
         if (t < attackRatio)
         {
@@ -226,9 +301,15 @@ public static class WireConnect03SoundFactory
         return Mathf.Pow(1f - decayT, decayPower);
     }
 
-    private static void RemoveClick(float[] samples)
+    private static void Finish(float[] samples, float targetPeak, int fadeSamples)
     {
-        int fadeSampleCount = Mathf.Min(16, samples.Length / 5);
+        RemoveClick(samples, fadeSamples);
+        NormalizeSamples(samples, targetPeak);
+    }
+
+    private static void RemoveClick(float[] samples, int maxFadeSampleCount)
+    {
+        int fadeSampleCount = Mathf.Min(maxFadeSampleCount, samples.Length / 6);
 
         for (int i = 0; i < fadeSampleCount; i++)
         {
@@ -248,9 +329,7 @@ public static class WireConnect03SoundFactory
             float abs = Mathf.Abs(samples[i]);
 
             if (abs > max)
-            {
                 max = abs;
-            }
         }
 
         if (max <= 0f)
@@ -615,16 +694,16 @@ public static class SoundChoose
         switch (_MouseSound)
         {
             case MouseOnSound.DigitalSound:
-                return DigitalWindowSoundFactory.CreateButtonClick_03_LowPanelTap();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             case MouseOnSound.ResetSound:
-                return DigitalWindowSoundFactory.CreateButtonClick_01_SoftDataTap();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             case MouseOnSound.NameSound:
-                return DigitalWindowSoundFactory.CreateWindowOn_01_ShortSystemPop();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             case MouseOnSound.IconSound:
-                return DigitalWindowSoundFactory.CreateButtonClick_05_OldWindowSelect();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             default: return null;
         }
@@ -635,441 +714,15 @@ public static class SoundChoose
         switch (_ClickSound)
         {
             case ClickSound.DigitalSound:
-                return DigitalWindowSoundFactory.CreateButtonClick_05_OldWindowSelect();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             case ClickSound.NameSound:
-                return DigitalWindowSoundFactory.CreateWindowOn_02_SoftWindowEnable();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             case ClickSound.IconSound:
-                return DigitalWindowSoundFactory.CreateWindowOn_05_SelectOpenPop();
+                return ScreenTypingDotSoundFactory.CreateDot2();
 
             default: return null;
-        }
-    }
-}
-
-public static class DigitalWindowSoundFactory
-{
-    private const int SampleRate = 44100;
-
-    // =========================================================
-    // 버튼 클릭 사운드 5개
-    // SoftScreenTap + DataSelectClick 느낌 기반
-    // =========================================================
-
-    // 1. 부드러운 디지털 터치
-    public static AudioClip CreateButtonClick_01_SoftDataTap()
-    {
-        return CreateDigitalButtonClick(
-            name: "ButtonClick_01_Soft_Data_Tap",
-            duration: 0.050f,
-            mainFreq: 980f,
-            highFreq: 3000f,
-            lowFreq: 240f,
-            mainAmount: 0.23f,
-            highAmount: 0.045f,
-            lowAmount: 0.055f,
-            noiseAmount: 0.022f,
-            squareAmount: 0.045f,
-            decayPower: 6.4f,
-            targetPeak: 0.16f
-        );
-    }
-
-    // 3. 낮고 부드러운 패널 클릭
-    public static AudioClip CreateButtonClick_03_LowPanelTap()
-    {
-        return CreateDigitalButtonClick(
-            name: "ButtonClick_03_Low_Panel_Tap",
-            duration: 0.058f,
-            mainFreq: 780f,
-            highFreq: 2500f,
-            lowFreq: 210f,
-            mainAmount: 0.22f,
-            highAmount: 0.035f,
-            lowAmount: 0.075f,
-            noiseAmount: 0.026f,
-            squareAmount: 0.035f,
-            decayPower: 5.9f,
-            targetPeak: 0.16f
-        );
-    }
-
-    // 5. 구식 창 선택 클릭
-    public static AudioClip CreateButtonClick_05_OldWindowSelect()
-    {
-        return CreateDigitalButtonClick(
-            name: "ButtonClick_05_Old_Window_Select",
-            duration: 0.064f,
-            mainFreq: 860f,
-            highFreq: 2900f,
-            lowFreq: 230f,
-            mainAmount: 0.24f,
-            highAmount: 0.050f,
-            lowAmount: 0.070f,
-            noiseAmount: 0.038f,
-            squareAmount: 0.055f,
-            decayPower: 5.6f,
-            targetPeak: 0.17f
-        );
-    }
-
-    // =========================================================
-    // 창 켜짐 사운드 5개
-    // SystemPopOn 느낌 기반
-    // =========================================================
-
-    // 1. 짧은 시스템 팝업
-    public static AudioClip CreateWindowOn_01_ShortSystemPop()
-    {
-        return CreateDigitalWindowOn(
-            name: "WindowOn_01_Short_System_Pop",
-            duration: 0.080f,
-            startFreq: 820f,
-            endFreq: 1500f,
-            highFreq: 4200f,
-            lowFreq: 260f,
-            bodyAmount: 0.23f,
-            highAmount: 0.065f,
-            lowAmount: 0.045f,
-            noiseAmount: 0.022f,
-            squareAmount: 0.050f,
-            secondPulseDelay: 0.40f,
-            secondPulseAmount: 0.20f,
-            decayPower: 4.9f,
-            targetPeak: 0.17f
-        );
-    }
-
-    // 2. 부드러운 창 활성화
-    public static AudioClip CreateWindowOn_02_SoftWindowEnable()
-    {
-        return CreateDigitalWindowOn(
-            name: "WindowOn_02_Soft_Window_Enable",
-            duration: 0.095f,
-            startFreq: 720f,
-            endFreq: 1320f,
-            highFreq: 3600f,
-            lowFreq: 240f,
-            bodyAmount: 0.235f,
-            highAmount: 0.055f,
-            lowAmount: 0.055f,
-            noiseAmount: 0.025f,
-            squareAmount: 0.040f,
-            secondPulseDelay: 0.44f,
-            secondPulseAmount: 0.18f,
-            decayPower: 4.3f,
-            targetPeak: 0.17f
-        );
-    }
-
-    // 3. 데이터 창 점등
-    public static AudioClip CreateWindowOn_03_DataWindowBlink()
-    {
-        return CreateDigitalWindowOn(
-            name: "WindowOn_03_Data_Window_Blink",
-            duration: 0.072f,
-            startFreq: 1020f,
-            endFreq: 1750f,
-            highFreq: 4700f,
-            lowFreq: 280f,
-            bodyAmount: 0.225f,
-            highAmount: 0.075f,
-            lowAmount: 0.035f,
-            noiseAmount: 0.018f,
-            squareAmount: 0.070f,
-            secondPulseDelay: 0.36f,
-            secondPulseAmount: 0.24f,
-            decayPower: 5.2f,
-            targetPeak: 0.165f
-        );
-    }
-
-    // 4. 구식 시스템 창 켜짐
-    public static AudioClip CreateWindowOn_04_OldSystemWindow()
-    {
-        return CreateDigitalWindowOn(
-            name: "WindowOn_04_Old_System_Window",
-            duration: 0.110f,
-            startFreq: 620f,
-            endFreq: 1180f,
-            highFreq: 3100f,
-            lowFreq: 210f,
-            bodyAmount: 0.25f,
-            highAmount: 0.050f,
-            lowAmount: 0.075f,
-            noiseAmount: 0.040f,
-            squareAmount: 0.040f,
-            secondPulseDelay: 0.46f,
-            secondPulseAmount: 0.17f,
-            decayPower: 3.9f,
-            targetPeak: 0.18f
-        );
-    }
-
-    // 5. 선택 후 창 열림
-    public static AudioClip CreateWindowOn_05_SelectOpenPop()
-    {
-        return CreateDigitalWindowOn(
-            name: "WindowOn_05_Select_Open_Pop",
-            duration: 0.088f,
-            startFreq: 900f,
-            endFreq: 1600f,
-            highFreq: 4400f,
-            lowFreq: 260f,
-            bodyAmount: 0.235f,
-            highAmount: 0.070f,
-            lowAmount: 0.045f,
-            noiseAmount: 0.022f,
-            squareAmount: 0.060f,
-            secondPulseDelay: 0.32f,
-            secondPulseAmount: 0.26f,
-            decayPower: 4.7f,
-            targetPeak: 0.17f
-        );
-    }
-
-    // =========================================================
-    // 내부 생성 함수 - 버튼 클릭
-    // =========================================================
-
-    private static AudioClip CreateDigitalButtonClick(
-        string name,
-        float duration,
-        float mainFreq,
-        float highFreq,
-        float lowFreq,
-        float mainAmount,
-        float highAmount,
-        float lowAmount,
-        float noiseAmount,
-        float squareAmount,
-        float decayPower,
-        float targetPeak
-    )
-    {
-        int sampleCount = Mathf.CeilToInt(SampleRate * duration);
-        float[] samples = new float[sampleCount];
-
-        float lastNoise = 0f;
-        float phaseOffset = Random.Range(0f, 1000f);
-
-        for (int i = 0; i < sampleCount; i++)
-        {
-            float t = i / (float)sampleCount;
-            float time = i / (float)SampleRate;
-
-            float envelope = CreateClickEnvelope(t, decayPower);
-
-            float mainTone =
-                Mathf.Sin(2f * Mathf.PI * mainFreq * time + phaseOffset) *
-                mainAmount;
-
-            float highTone =
-                Mathf.Sin(2f * Mathf.PI * highFreq * time) *
-                highAmount;
-
-            float lowTone = 0f;
-
-            if (lowFreq > 0f)
-            {
-                lowTone =
-                    Mathf.Sin(2f * Mathf.PI * lowFreq * time) *
-                    lowAmount;
-            }
-
-            float square =
-                Mathf.Sign(Mathf.Sin(2f * Mathf.PI * highFreq * 0.5f * time)) *
-                squareAmount;
-
-            float rawNoise = Random.Range(-1f, 1f);
-            lastNoise = Mathf.Lerp(lastNoise, rawNoise, 0.20f);
-            float noise = lastNoise * noiseAmount;
-
-            float value =
-                mainTone +
-                highTone +
-                lowTone +
-                square +
-                noise;
-
-            samples[i] = value * envelope;
-        }
-
-        RemoveClick(samples, 32);
-        NormalizeSamples(samples, targetPeak);
-
-        AudioClip clip = AudioClip.Create(name, samples.Length, 1, SampleRate, false);
-        clip.SetData(samples, 0);
-
-        return clip;
-    }
-
-    // =========================================================
-    // 내부 생성 함수 - 창 켜짐
-    // =========================================================
-
-    private static AudioClip CreateDigitalWindowOn(
-        string name,
-        float duration,
-        float startFreq,
-        float endFreq,
-        float highFreq,
-        float lowFreq,
-        float bodyAmount,
-        float highAmount,
-        float lowAmount,
-        float noiseAmount,
-        float squareAmount,
-        float secondPulseDelay,
-        float secondPulseAmount,
-        float decayPower,
-        float targetPeak
-    )
-    {
-        int sampleCount = Mathf.CeilToInt(SampleRate * duration);
-        float[] samples = new float[sampleCount];
-
-        float lastNoise = 0f;
-        float phaseOffset = Random.Range(0f, 1000f);
-
-        for (int i = 0; i < sampleCount; i++)
-        {
-            float t = i / (float)sampleCount;
-            float time = i / (float)SampleRate;
-
-            float envelope = CreateWindowOnEnvelope(t, decayPower);
-
-            float freq = Mathf.Lerp(
-                startFreq,
-                endFreq,
-                Mathf.SmoothStep(0f, 1f, t)
-            );
-
-            float bodyTone =
-                Mathf.Sin(2f * Mathf.PI * freq * time + phaseOffset) *
-                bodyAmount;
-
-            float highTone =
-                Mathf.Sin(2f * Mathf.PI * highFreq * time) *
-                highAmount;
-
-            float lowTone = 0f;
-
-            if (lowFreq > 0f)
-            {
-                lowTone =
-                    Mathf.Sin(2f * Mathf.PI * lowFreq * time) *
-                    lowAmount;
-            }
-
-            float square =
-                Mathf.Sign(Mathf.Sin(2f * Mathf.PI * highFreq * 0.5f * time)) *
-                squareAmount;
-
-            float rawNoise = Random.Range(-1f, 1f);
-            lastNoise = Mathf.Lerp(lastNoise, rawNoise, 0.22f);
-            float noise = lastNoise * noiseAmount;
-
-            float secondPulse = CreateSecondPulse(t, secondPulseDelay) * secondPulseAmount;
-
-            float value =
-                bodyTone +
-                highTone +
-                lowTone +
-                square +
-                noise;
-
-            samples[i] = value * envelope + value * secondPulse;
-        }
-
-        RemoveClick(samples, 48);
-        NormalizeSamples(samples, targetPeak);
-
-        AudioClip clip = AudioClip.Create(name, samples.Length, 1, SampleRate, false);
-        clip.SetData(samples, 0);
-
-        return clip;
-    }
-
-    private static float CreateClickEnvelope(float t, float decayPower)
-    {
-        float attackRatio = 0.08f;
-
-        if (t < attackRatio)
-        {
-            float attackT = t / attackRatio;
-            return Mathf.SmoothStep(0f, 1f, attackT);
-        }
-
-        float decayT = (t - attackRatio) / (1f - attackRatio);
-        return Mathf.Pow(1f - decayT, decayPower);
-    }
-
-    private static float CreateWindowOnEnvelope(float t, float decayPower)
-    {
-        float attackRatio = 0.10f;
-
-        if (t < attackRatio)
-        {
-            float attackT = t / attackRatio;
-            return Mathf.SmoothStep(0f, 1f, attackT);
-        }
-
-        float decayT = (t - attackRatio) / (1f - attackRatio);
-        return Mathf.Pow(1f - decayT, decayPower);
-    }
-
-    private static float CreateSecondPulse(float t, float delay)
-    {
-        float width = 0.16f;
-
-        if (t < delay)
-            return 0f;
-
-        float pulseT = (t - delay) / width;
-
-        if (pulseT < 0f || pulseT > 1f)
-            return 0f;
-
-        return Mathf.Sin(pulseT * Mathf.PI) * Mathf.Pow(1f - pulseT, 2f);
-    }
-
-    private static void RemoveClick(float[] samples, int maxFadeSampleCount)
-    {
-        int fadeSampleCount = Mathf.Min(maxFadeSampleCount, samples.Length / 6);
-
-        for (int i = 0; i < fadeSampleCount; i++)
-        {
-            float t = i / (float)fadeSampleCount;
-
-            samples[i] *= t;
-            samples[samples.Length - 1 - i] *= t;
-        }
-    }
-
-    private static void NormalizeSamples(float[] samples, float targetPeak)
-    {
-        float max = 0f;
-
-        for (int i = 0; i < samples.Length; i++)
-        {
-            float abs = Mathf.Abs(samples[i]);
-
-            if (abs > max)
-            {
-                max = abs;
-            }
-        }
-
-        if (max <= 0f)
-            return;
-
-        float multiplier = targetPeak / max;
-
-        for (int i = 0; i < samples.Length; i++)
-        {
-            samples[i] *= multiplier;
         }
     }
 }

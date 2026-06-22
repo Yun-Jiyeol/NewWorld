@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Strings:
     Com: 0x554E4D5F5450455F575254
-    Kor: "\uC544\uC9C1 \uC774\uB984 \uC5C6\uB294 \uD14C\uC774\uD504\uAC00 \uAEBC\uB0B4\uC9C0\uACE0,
-      \uAE30\uB85D \uAC00\uB2A5\uD55C \uC0C1\uD0DC\uB85C \uC804\uD658\uB41C\uB2E4."
-    Eng: An unnamed tape is retrieved and switched to a writable state.
+    Kor: "\uC774\uB984 \uC5C6\uB294 \uD14C\uC774\uD504\uB97C \uAEBC\uB0C8\uC2B5\uB2C8\uB2E4.
+      \uAE30\uB85D \uB300\uAE30 \uC0C1\uD0DC\uB85C \uC124\uC815\uD569\uB2C8\uB2E4."
+    Eng: Unnamed tape retrieved. Setting to write-ready state.

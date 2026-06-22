@@ -34162,7 +34162,6 @@ GameObject:
   - component: {fileID: 1173635535}
   - component: {fileID: 1173635536}
   - component: {fileID: 1173635537}
-  - component: {fileID: 1173635538}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -34392,18 +34391,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AllText: []
---- !u!114 &1173635538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1173635524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f7dbc039b64b2944ae42b492a5bad59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1183565373
 GameObject:
   m_ObjectHideFlags: 0
@@ -42180,8 +42167,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -51298,7 +51285,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WritingBoard: {fileID: 1440207033}
   RedLight: {fileID: 1510717976}
-  maxLineCount: 10
   ShowText:
   - {fileID: 11400000, guid: 69584d4ce0fc70c40920ce718ea481fd, type: 2}
   - {fileID: 11400000, guid: ca82af4774ca2944f997d0c0f24eaca6, type: 2}

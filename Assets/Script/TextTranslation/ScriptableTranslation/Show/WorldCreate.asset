@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WorldCreate
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x5349475F5245434F4E5F57524C44
-    Kor: "\uD769\uC5B4\uC9C4 \uC2E0\uD638\uAC00 \uD558\uB098\uC758 \uC138\uACC4\uB85C
-      \uC7AC\uAD6C\uC131\uB41C\uB2E4."
-    Eng: Scattered signals are reconstructed into a single world.
+    Com: 0x5349475F544F5F57524C44
+    Kor: "\uC5C5\uB85C\uB4DC\uB41C \uC2E0\uD638\uB97C \uD558\uB098\uC758 \uC138\uACC4\uB85C
+      \uAD6C\uC131\uD569\uB2C8\uB2E4."
+    Eng: Constructing a single world from the uploaded signals.

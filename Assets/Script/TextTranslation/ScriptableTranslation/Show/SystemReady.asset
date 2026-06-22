@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SystemReady
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x5553525F4143435F4445544543544544
+    Com: 0x5553525F4143435F444554
     Kor: "\uB4F1\uB85D\uB41C \uC0AC\uC6A9\uC790\uC758 \uC811\uADFC \uC2E0\uD638\uB97C
       \uAC10\uC9C0\uD588\uC2B5\uB2C8\uB2E4. \uCD08\uAE30 \uC900\uBE44 \uC808\uCC28\uB97C
       \uC2DC\uC791\uD569\uB2C8\uB2E4."

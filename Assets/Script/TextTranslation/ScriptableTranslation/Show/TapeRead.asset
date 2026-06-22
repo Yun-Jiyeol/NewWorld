@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: TapeRead
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x5450455F5349475F444554454354
-    Kor: "\uD68C\uC804\uD558\uB294 \uD14C\uC774\uD504\uB97C \uB530\uB77C, \uAE30\uB85D\uB41C
-      \uC138\uACC4\uC758 \uC2E0\uD638\uAC00 \uD558\uB098\uC529 \uAC10\uC9C0\uB41C\uB2E4."
-    Eng: Along the rotating tape, the signals of a recorded world are detected one
-      by one.
+    Com: 0x5450455F524541445F5550
+    Kor: "\uD14C\uC774\uD504 \uD310\uB3C5\uC744 \uC9C4\uD589\uD569\uB2C8\uB2E4. \uAC10\uC9C0\uB41C
+      \uC2E0\uD638\uB97C \uC21C\uC11C\uB300\uB85C \uC5C5\uB85C\uB4DC\uD569\uB2C8\uB2E4."
+    Eng: Proceeding with tape reading. Uploading detected signals in sequence.

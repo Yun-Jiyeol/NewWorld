@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OpenDrawer
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x4F4C445F5354475F56494557
-    Kor: "\uB0A1\uC740 \uBCF4\uAD00\uD568\uC744 \uC5F4\uC5B4 \uC548\uCABD\uC5D0 \uB0A8\uC740
-      \uAE30\uB85D\uC744 \uB4E4\uC5EC\uB2E4\uBCF8\uB2E4."
-    Eng: Open the old storage drawer and look at the records left inside.
+    Com: 0x5354475F4F504E5F4C5354
+    Kor: "\uBCF4\uAD00\uD568\uC744 \uAC1C\uBC29\uD569\uB2C8\uB2E4. \uC81C\uC791\uB41C
+      \uD14C\uC774\uD504 \uBAA9\uB85D\uC744 \uCD9C\uB825\uD569\uB2C8\uB2E4."
+    Eng: Opening storage drawer. Outputting the list of created tapes.

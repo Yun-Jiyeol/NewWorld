@@ -12,7 +12,7 @@ public class StartSceneUI : MonoBehaviour
     public Image RedLight;
 
     [Header("Setting")]
-    public int maxLineCount = 10;
+    int maxLineCount = 14;
 
     List<string> texts = new List<string>();
 
@@ -48,7 +48,7 @@ public class StartSceneUI : MonoBehaviour
 
     private void Start()
     {
-        WordTypeSound = ScreenTextFinalSoundFactory.CreateFinalScreenTextAppear();
+        WordTypeSound = ScreenTypingDotSoundFactory.CreateDot1();
     }
 
     public void AddText(string _text)

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CloseDrawer
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x4F4C445F5354475F4C434B
-    Kor: "\uC624\uB798\uB41C \uAE08\uC18D\uC74C\uC774 \uC6B8\uB9AC\uACE0, \uBCF4\uAD00\uD568\uC774
-      \uCC9C\uCC9C\uD788 \uC7A0\uAE34\uB2E4."
-    Eng: An old metallic sound echoes, and the storage drawer slowly locks.
+    Com: 0x5354475F434C535F535254
+    Kor: "\uBCF4\uAD00\uD568\uC744 \uB2EB\uC2B5\uB2C8\uB2E4. \uBAA8\uB4E0 \uD14C\uC774\uD504\uB97C
+      \uC815\uB9AC\uD569\uB2C8\uB2E4."
+    Eng: Closing storage drawer. Organizing all tapes.

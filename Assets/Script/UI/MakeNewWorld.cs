@@ -51,7 +51,7 @@ public class MakeNewWorld : NeedToDoOnit
 
         GameManager.Instance.UIManager.StartSceneUI.AddText("CreateTape");
 
-        WordTypeSound = WireConnect03SoundFactory.CreateWireConnect03();
+        WordTypeSound = ScreenTypingDotSoundFactory.CreateDot5();
 
         StartSettingTape();
     }
@@ -84,6 +84,7 @@ public class MakeNewWorld : NeedToDoOnit
 
         SettingName = filtered;
         GameManager.Instance.SoundManager.PlayEffect(WordTypeSound);
+
         if (SettingName == "")
         {
             _SpawnTapeSave.WorldName.text = "NewWorld";

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DoneTape
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x4E4D445F5450455F53544F52
-    Kor: "\uC774\uB984 \uC801\uD78C \uD14C\uC774\uD504\uAC00 \uBCF4\uAD00\uD568 \uC548\uCABD\uC5D0
-      \uC790\uB9AC\uC7A1\uB294\uB2E4."
-    Eng: The named tape settles into place inside the storage drawer.
+    Com: 0x5450455F5354475F535254
+    Kor: "\uC900\uBE44\uB41C \uD14C\uC774\uD504\uB97C \uBCF4\uAD00\uD568 \uC548\uCABD\uC5D0
+      \uC815\uB9AC\uD569\uB2C8\uB2E4."
+    Eng: Organizing the prepared tape inside the storage drawer.

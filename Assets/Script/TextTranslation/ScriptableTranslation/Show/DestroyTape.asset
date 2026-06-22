@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Strings:
     Com: 0x554E4D5F5450455F445343
-    Kor: "\uC774\uB984 \uC5C6\uB294 \uD14C\uC774\uD504\uAC00 \uD3D0\uAE30\uB41C\uB2E4."
-    Eng: The unnamed tape is discarded.
+    Kor: "\uC774\uB984 \uC5C6\uB294 \uD14C\uC774\uD504\uB97C \uD3D0\uAE30\uD569\uB2C8\uB2E4."
+    Eng: Discarding unnamed tape.
