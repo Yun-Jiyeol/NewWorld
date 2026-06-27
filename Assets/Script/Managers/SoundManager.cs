@@ -2,113 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum LoopSoundType
-{
-    None,
-
-    CassetteSelect,
-    DrawerMove,
-    TapeRunning,
-    WorldLoading,
-    SystemProcessing
-}
-
-public static class ForLoopSound
-{
-    public static AudioClip CallStartSound(LoopSoundType _name)
-    {
-        switch (_name)
-        {
-            case LoopSoundType.None:
-                return null;
-
-            case LoopSoundType.CassetteSelect:
-                return null;
-                // return CassetteSelectLoopSoundFactory.CreateCassetteSelect_Start();
-
-            case LoopSoundType.DrawerMove:
-                return null;
-                // return DrawerLoopSoundFactory.CreateDrawerMove_Start();
-
-            case LoopSoundType.TapeRunning:
-                return null;
-                // return TapeLoopSoundFactory.CreateTapeRunning_Start();
-
-            case LoopSoundType.WorldLoading:
-                return null;
-                // return WorldLoadingLoopSoundFactory.CreateWorldLoading_Start();
-
-            case LoopSoundType.SystemProcessing:
-                return null;
-                // return SystemProcessingLoopSoundFactory.CreateSystemProcessing_Start();
-        }
-
-        return null;
-    }
-
-    public static AudioClip CallLoopSound(LoopSoundType _name)
-    {
-        switch (_name)
-        {
-            case LoopSoundType.None:
-                return null;
-
-            case LoopSoundType.CassetteSelect:
-                return null;
-                // return CassetteSelectLoopSoundFactory.CreateCassetteSelect_Loop();
-
-            case LoopSoundType.DrawerMove:
-                return null;
-                // return DrawerLoopSoundFactory.CreateDrawerMove_Loop();
-
-            case LoopSoundType.TapeRunning:
-                return null;
-                // return TapeLoopSoundFactory.CreateTapeRunning_Loop();
-
-            case LoopSoundType.WorldLoading:
-                return null;
-                // return WorldLoadingLoopSoundFactory.CreateWorldLoading_Loop();
-
-            case LoopSoundType.SystemProcessing:
-                return null;
-                // return SystemProcessingLoopSoundFactory.CreateSystemProcessing_Loop();
-        }
-
-        return null;
-    }
-
-    public static AudioClip CallEndSound(LoopSoundType _name)
-    {
-        switch (_name)
-        {
-            case LoopSoundType.None:
-                return null;
-
-            case LoopSoundType.CassetteSelect:
-                return null;
-                // return CassetteSelectLoopSoundFactory.CreateCassetteSelect_End();
-
-            case LoopSoundType.DrawerMove:
-                return null;
-                // return DrawerLoopSoundFactory.CreateDrawerMove_End();
-
-            case LoopSoundType.TapeRunning:
-                return null;
-                // return TapeLoopSoundFactory.CreateTapeRunning_End();
-
-            case LoopSoundType.WorldLoading:
-                return null;
-                // return WorldLoadingLoopSoundFactory.CreateWorldLoading_End();
-
-            case LoopSoundType.SystemProcessing:
-                return null;
-                // return SystemProcessingLoopSoundFactory.CreateSystemProcessing_End();
-        }
-
-        return null;
-    }
-}
-
 public class SoundManager : MonoBehaviour
 {
     [Header("Volume")]
@@ -116,32 +9,17 @@ public class SoundManager : MonoBehaviour
     [Range(0f, 1f)] public float EffectVolume = 1f;
     [Range(0f, 1f)] public float BGMVolume = 1f;
 
+    [Header("Effect Source Pool")]
+    [SerializeField] private int startEffectSourceCount = 10;
+    [SerializeField] private int maxEffectSourceCount = 30;
+
     private Transform effectParent;
     private Transform bgmParent;
-    private Transform loopParent;
 
-    private AudioSource effectSource;
     private AudioSource bgmSource;
 
-    private readonly Dictionary<string, PlayingLoopSound> playingLoopSounds =
-        new Dictionary<string, PlayingLoopSound>();
-
-    private class PlayingLoopSound
-    {
-        public string Key;
-        public LoopSoundType SoundType;
-
-        public AudioClip StartClip;
-        public AudioClip LoopClip;
-        public AudioClip EndClip;
-
-        public GameObject SourceObject;
-        public AudioSource Source;
-        public Coroutine Coroutine;
-
-        public float Volume;
-        public float Pitch;
-    }
+    private readonly List<AudioSource> effectSources = new List<AudioSource>();
+    private readonly Dictionary<AudioSource, Coroutine> effectReturnRoutines = new Dictionary<AudioSource, Coroutine>();
 
     private void Awake()
     {
@@ -160,22 +38,14 @@ public class SoundManager : MonoBehaviour
         bgmObj.transform.SetParent(transform);
         bgmObj.transform.localPosition = Vector3.zero;
         bgmParent = bgmObj.transform;
-
-        GameObject loopObj = new GameObject("LoopSounds");
-        loopObj.transform.SetParent(transform);
-        loopObj.transform.localPosition = Vector3.zero;
-        loopParent = loopObj.transform;
     }
 
     private void CreateAudioSources()
     {
-        GameObject effectObj = new GameObject("EffectSource");
-        effectObj.transform.SetParent(effectParent);
-        effectObj.transform.localPosition = Vector3.zero;
-
-        effectSource = effectObj.AddComponent<AudioSource>();
-        effectSource.playOnAwake = false;
-        effectSource.loop = false;
+        for (int i = 0; i < startEffectSourceCount; i++)
+        {
+            CreateEffectSource();
+        }
 
         GameObject bgmObj = new GameObject("BGMSource");
         bgmObj.transform.SetParent(bgmParent);
@@ -186,35 +56,71 @@ public class SoundManager : MonoBehaviour
         bgmSource.loop = true;
     }
 
+    private AudioSource CreateEffectSource()
+    {
+        GameObject effectObj = new GameObject("EffectSource_" + effectSources.Count);
+        effectObj.transform.SetParent(effectParent);
+        effectObj.transform.localPosition = Vector3.zero;
+
+        AudioSource source = effectObj.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = false;
+        source.clip = null;
+        source.pitch = 1f;
+        source.volume = 1f;
+
+        effectSources.Add(source);
+        return source;
+    }
+
+    private AudioSource GetFreeEffectSource()
+    {
+        for (int i = 0; i < effectSources.Count; i++)
+        {
+            if (!effectSources[i].isPlaying)
+            {
+                return effectSources[i];
+            }
+        }
+
+        if (effectSources.Count < maxEffectSourceCount)
+        {
+            return CreateEffectSource();
+        }
+
+        return GetOldestOrFirstEffectSource();
+    }
+
+    private AudioSource GetOldestOrFirstEffectSource()
+    {
+        if (effectSources.Count <= 0)
+            return CreateEffectSource();
+
+        return effectSources[0];
+    }
+
     // ==============================
-    // Effect Sound
+    // Effect Sound - AudioClip 방식
     // ==============================
 
     public void PlayEffect(AudioClip clip)
     {
-        if (clip == null) return;
-        if (effectSource == null) return;
-
-        effectSource.pitch = 1f;
-        effectSource.PlayOneShot(clip, GetFinalEffectVolume());
+        PlayEffect(clip, 1f, 1f);
     }
 
     public void PlayEffect(AudioClip clip, float volume)
     {
-        if (clip == null) return;
-        if (effectSource == null) return;
-
-        effectSource.pitch = 1f;
-        effectSource.PlayOneShot(clip, GetFinalEffectVolume() * Mathf.Clamp01(volume));
+        PlayEffect(clip, volume, 1f);
     }
 
     public void PlayEffect(AudioClip clip, float volume, float pitch)
     {
         if (clip == null) return;
-        if (effectSource == null) return;
 
-        effectSource.pitch = Mathf.Max(0.01f, pitch);
-        effectSource.PlayOneShot(clip, GetFinalEffectVolume() * Mathf.Clamp01(volume));
+        float finalVolume = GetFinalEffectVolume() * Mathf.Clamp01(volume);
+        float finalPitch = Mathf.Max(0.01f, pitch);
+
+        PlayEffectWithPooledSource(clip, finalVolume, finalPitch);
     }
 
     // ==============================
@@ -223,19 +129,28 @@ public class SoundManager : MonoBehaviour
 
     public void PlayEffect(SoundData soundData)
     {
-        PlayEffect(soundData, 1f, 1f);
+        PlayEffect(soundData, 1f, 1f, 1f);
     }
 
     public void PlayEffect(SoundData soundData, float volumeMultiplier)
     {
-        PlayEffect(soundData, volumeMultiplier, 1f);
+        PlayEffect(soundData, volumeMultiplier, 1f, 1f);
     }
 
     public void PlayEffect(SoundData soundData, float volumeMultiplier, float pitchMultiplier)
     {
+        PlayEffect(soundData, volumeMultiplier, pitchMultiplier, 1f);
+    }
+
+    public void PlayEffect(
+        SoundData soundData,
+        float volumeMultiplier,
+        float pitchMultiplier,
+        float speedMultiplier
+    )
+    {
         if (soundData == null) return;
         if (!soundData.IsValid()) return;
-        if (effectSource == null) return;
 
         float finalVolume =
             GetFinalEffectVolume() *
@@ -243,11 +158,59 @@ public class SoundManager : MonoBehaviour
             Mathf.Clamp01(volumeMultiplier);
 
         float finalPitch =
-            Mathf.Max(0.01f, soundData.GetPitch() * pitchMultiplier);
+            soundData.GetPitch() *
+            soundData.GetSpeed() *
+            Mathf.Max(0.01f, pitchMultiplier) *
+            Mathf.Max(0.01f, speedMultiplier);
 
-        effectSource.pitch = finalPitch;
-        effectSource.PlayOneShot(soundData.Clip, finalVolume);
-        effectSource.pitch = 1f;
+        finalPitch = Mathf.Max(0.01f, finalPitch);
+
+        PlayEffectWithPooledSource(soundData.Clip, finalVolume, finalPitch);
+    }
+
+    private void PlayEffectWithPooledSource(AudioClip clip, float volume, float pitch)
+    {
+        if (clip == null) return;
+
+        AudioSource source = GetFreeEffectSource();
+
+        if (effectReturnRoutines.TryGetValue(source, out Coroutine oldRoutine))
+        {
+            if (oldRoutine != null)
+                StopCoroutine(oldRoutine);
+
+            effectReturnRoutines.Remove(source);
+        }
+
+        source.Stop();
+        source.clip = clip;
+        source.volume = volume;
+        source.pitch = pitch;
+        source.loop = false;
+        source.Play();
+
+        float returnTime = clip.length / Mathf.Max(0.01f, pitch);
+        Coroutine routine = StartCoroutine(ReturnEffectSourceAfterPlay(source, returnTime));
+        effectReturnRoutines[source] = routine;
+    }
+
+    private IEnumerator ReturnEffectSourceAfterPlay(AudioSource source, float delay)
+    {
+        yield return new WaitForSeconds(delay + 0.05f);
+
+        if (source != null)
+        {
+            source.Stop();
+            source.clip = null;
+            source.pitch = 1f;
+            source.volume = 1f;
+            source.loop = false;
+        }
+
+        if (source != null && effectReturnRoutines.ContainsKey(source))
+        {
+            effectReturnRoutines.Remove(source);
+        }
     }
 
     // ==============================
@@ -264,6 +227,7 @@ public class SoundManager : MonoBehaviour
 
         bgmSource.clip = clip;
         bgmSource.volume = GetFinalBGMVolume();
+        bgmSource.pitch = 1f;
         bgmSource.loop = true;
         bgmSource.Play();
     }
@@ -288,207 +252,6 @@ public class SoundManager : MonoBehaviour
         if (bgmSource == null) return;
 
         bgmSource.UnPause();
-    }
-
-    // ==============================
-    // Loop Sound
-    // string key + enum type
-    // Start -> Loop -> End
-    // EffectVolume 기준
-    // ==============================
-
-    public void PlayNamedLoop(string key, LoopSoundType soundType)
-    {
-        PlayNamedLoop(key, soundType, 1f, 1f);
-    }
-
-    public void PlayNamedLoop(string key, LoopSoundType soundType, float volume)
-    {
-        PlayNamedLoop(key, soundType, volume, 1f);
-    }
-
-    public void PlayNamedLoop(string key, LoopSoundType soundType, float volume, float pitch)
-    {
-        if (string.IsNullOrEmpty(key))
-        {
-            Debug.LogWarning("LoopSound key가 비어있습니다.");
-            return;
-        }
-
-        if (soundType == LoopSoundType.None)
-            return;
-
-        AudioClip startClip = ForLoopSound.CallStartSound(soundType);
-        AudioClip loopClip = ForLoopSound.CallLoopSound(soundType);
-        AudioClip endClip = ForLoopSound.CallEndSound(soundType);
-
-        if (loopClip == null)
-        {
-            Debug.LogWarning($"LoopClip이 없습니다: {soundType}");
-            return;
-        }
-
-        // 같은 이름이면 기존 사운드 제거 후 덮어쓰기
-        if (playingLoopSounds.ContainsKey(key))
-        {
-            StopNamedLoopImmediate(key);
-        }
-
-        GameObject sourceObj = new GameObject("LoopSound_" + key + "_" + soundType);
-        sourceObj.transform.SetParent(loopParent);
-        sourceObj.transform.localPosition = Vector3.zero;
-
-        AudioSource source = sourceObj.AddComponent<AudioSource>();
-        source.playOnAwake = false;
-        source.loop = false;
-        source.spatialBlend = 0f;
-
-        PlayingLoopSound playing = new PlayingLoopSound();
-        playing.Key = key;
-        playing.SoundType = soundType;
-        playing.StartClip = startClip;
-        playing.LoopClip = loopClip;
-        playing.EndClip = endClip;
-        playing.SourceObject = sourceObj;
-        playing.Source = source;
-        playing.Volume = Mathf.Clamp01(volume);
-        playing.Pitch = Mathf.Max(0.01f, pitch);
-
-        playingLoopSounds.Add(key, playing);
-
-        playing.Coroutine = StartCoroutine(PlayNamedLoopRoutine(playing));
-    }
-
-    private IEnumerator PlayNamedLoopRoutine(PlayingLoopSound playing)
-    {
-        if (playing == null) yield break;
-        if (playing.Source == null) yield break;
-        if (playing.LoopClip == null) yield break;
-
-        AudioSource source = playing.Source;
-
-        source.volume = GetFinalLoopVolume(playing.Volume);
-        source.pitch = playing.Pitch;
-        source.loop = false;
-
-        if (playing.StartClip != null)
-        {
-            source.clip = playing.StartClip;
-            source.Play();
-
-            float waitTime = playing.StartClip.length / playing.Pitch;
-            yield return new WaitForSeconds(waitTime);
-        }
-
-        if (source == null) yield break;
-
-        source.Stop();
-        source.clip = playing.LoopClip;
-        source.volume = GetFinalLoopVolume(playing.Volume);
-        source.pitch = playing.Pitch;
-        source.loop = true;
-        source.Play();
-    }
-
-    public void StopNamedLoop(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-            return;
-
-        if (!playingLoopSounds.TryGetValue(key, out PlayingLoopSound playing))
-            return;
-
-        playingLoopSounds.Remove(key);
-
-        if (playing.Coroutine != null)
-        {
-            StopCoroutine(playing.Coroutine);
-            playing.Coroutine = null;
-        }
-
-        StartCoroutine(StopNamedLoopRoutine(playing));
-    }
-
-    private IEnumerator StopNamedLoopRoutine(PlayingLoopSound playing)
-    {
-        if (playing == null) yield break;
-        if (playing.Source == null) yield break;
-
-        AudioSource source = playing.Source;
-
-        source.Stop();
-        source.loop = false;
-
-        if (playing.EndClip != null)
-        {
-            source.clip = playing.EndClip;
-            source.volume = GetFinalLoopVolume(playing.Volume);
-            source.pitch = playing.Pitch;
-            source.Play();
-
-            float waitTime = playing.EndClip.length / playing.Pitch;
-            yield return new WaitForSeconds(waitTime);
-        }
-
-        if (playing.SourceObject != null)
-        {
-            Destroy(playing.SourceObject);
-        }
-    }
-
-    public void StopNamedLoopImmediate(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-            return;
-
-        if (!playingLoopSounds.TryGetValue(key, out PlayingLoopSound playing))
-            return;
-
-        playingLoopSounds.Remove(key);
-
-        if (playing.Coroutine != null)
-        {
-            StopCoroutine(playing.Coroutine);
-            playing.Coroutine = null;
-        }
-
-        if (playing.Source != null)
-        {
-            playing.Source.Stop();
-        }
-
-        if (playing.SourceObject != null)
-        {
-            Destroy(playing.SourceObject);
-        }
-    }
-
-    public bool IsNamedLoopPlaying(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-            return false;
-
-        return playingLoopSounds.ContainsKey(key);
-    }
-
-    public void StopAllNamedLoops()
-    {
-        List<string> keys = new List<string>(playingLoopSounds.Keys);
-
-        for (int i = 0; i < keys.Count; i++)
-        {
-            StopNamedLoop(keys[i]);
-        }
-    }
-
-    public void StopAllNamedLoopsImmediate()
-    {
-        List<string> keys = new List<string>(playingLoopSounds.Keys);
-
-        for (int i = 0; i < keys.Count; i++)
-        {
-            StopNamedLoopImmediate(keys[i]);
-        }
     }
 
     // ==============================
@@ -523,11 +286,6 @@ public class SoundManager : MonoBehaviour
         return Mathf.Clamp01(MainSoundVolume * BGMVolume);
     }
 
-    private float GetFinalLoopVolume(float volume)
-    {
-        return Mathf.Clamp01(MainSoundVolume * EffectVolume * volume);
-    }
-
     private void ApplyVolumes()
     {
         if (bgmSource != null)
@@ -535,24 +293,17 @@ public class SoundManager : MonoBehaviour
             bgmSource.volume = GetFinalBGMVolume();
         }
 
-        ApplyLoopVolumes();
-    }
-
-    private void ApplyLoopVolumes()
-    {
-        foreach (KeyValuePair<string, PlayingLoopSound> pair in playingLoopSounds)
+        for (int i = 0; i < effectSources.Count; i++)
         {
-            PlayingLoopSound playing = pair.Value;
+            AudioSource source = effectSources[i];
 
-            if (playing == null) continue;
-            if (playing.Source == null) continue;
+            if (source == null)
+                continue;
 
-            playing.Source.volume = GetFinalLoopVolume(playing.Volume);
+            if (source.isPlaying)
+            {
+                source.volume = Mathf.Min(source.volume, GetFinalEffectVolume());
+            }
         }
-    }
-
-    private void OnDestroy()
-    {
-        StopAllNamedLoopsImmediate();
     }
 }

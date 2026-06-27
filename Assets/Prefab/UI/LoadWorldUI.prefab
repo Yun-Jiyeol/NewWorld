@@ -1815,3 +1815,5 @@ MonoBehaviour:
   BG: {fileID: 7836400352440138534}
   Desk: {fileID: 7836400350615653767}
   Btns: {fileID: 3326356916155996787}
+  DeskOpenSound: {fileID: 11400000, guid: 7b19e35705e83f34b83f53b27c1a5f96, type: 2}
+  DeskCloseSound: {fileID: 11400000, guid: 6f60ca38a090db549b56e6e86ba61cbf, type: 2}

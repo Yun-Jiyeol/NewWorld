@@ -1,104 +1,101 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class OnInputFieldEnter : MonoBehaviour
 {
     UI_BtnEffect thisBtnEffect;
-    bool BtnEffect = true;
+    bool hasBtnEffect = true;
 
     TMP_InputField thisInput;
-    CursorMover cursorMover;
-    Coroutine FollowCoroutine = null;
+    bool isSelected = false;
 
     private void Awake()
     {
         if (!TryGetComponent<TMP_InputField>(out thisInput))
         {
             enabled = false;
+            return;
         }
 
         if (!TryGetComponent<UI_BtnEffect>(out thisBtnEffect))
         {
-            BtnEffect = false;
+            hasBtnEffect = false;
         }
     }
 
     private void Start()
     {
         thisInput.onSelect.AddListener(OnSelected);
-        thisInput.onEndEdit.AddListener(OnEndChange);
+        thisInput.onDeselect.AddListener(OnDeselected);
+        thisInput.onSubmit.AddListener(OnSubmitted);
+    }
+
+    private void Update()
+    {
+        if (!isSelected) return;
+
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            DeselectInputField();
+        }
     }
 
     void OnSelected(string value)
     {
-        if (FollowCoroutine != null) return;
-        if (BtnEffect) thisBtnEffect.HoldChange();
+        if (isSelected) return;
 
-        cursorMover = GameManager.Instance.CursorMover;
+        isSelected = true;
 
-        FollowCoroutine = StartCoroutine(FollowCursor());
+        if (hasBtnEffect)
+            thisBtnEffect.HoldChange();
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            SoundChoose.CallAudio(ClickSound.NameSound)
+        );
     }
 
-    IEnumerator FollowCursor()
+    void OnSubmitted(string value)
     {
-        TMP_Text textComponent = thisInput.textComponent;
-        RectTransform textRect = textComponent.rectTransform;
-        RectTransform targetRect = cursorMover.GetComponent<RectTransform>();
-
-        Cursor.lockState = CursorLockMode.Locked;
-
-        while (true)
-        {
-            int caretIndex = thisInput.caretPosition;
-
-            textComponent.ForceMeshUpdate();
-            var textInfo = textComponent.textInfo;
-
-            Vector3 localPos;
-
-            if (caretIndex == 0)
-            {
-                if (textInfo.characterCount > 0)
-                {
-                    var firstChar = textInfo.characterInfo[0];
-                    localPos = firstChar.bottomRight;
-                }
-                else
-                {
-                    // 텍스트가 아예 없을 때 (텍스트 시작점 기준)
-                    localPos = Vector3.zero;
-                }
-            }
-            else
-            {
-                if (caretIndex > textInfo.characterCount)
-                    caretIndex = textInfo.characterCount;
-
-                var charInfo = textInfo.characterInfo[caretIndex - 1];
-                localPos = charInfo.bottomRight;
-            }
-
-            Vector3 worldPos = textRect.TransformPoint(localPos);
-            Vector3 finalLocalPos = targetRect.parent.InverseTransformPoint(worldPos);
-
-            cursorMover.ChangeCursorState(finalLocalPos);
-
-            yield return null;
-        }
+        DeselectInputField();
     }
 
-    void OnEndChange(string value)
+    void OnDeselected(string value)
     {
-        Cursor.lockState = CursorLockMode.Confined;
-        if (BtnEffect) thisBtnEffect.UnHoldChange();
+        EndSelectState();
+    }
 
-        if (FollowCoroutine != null)
-        {
-            StopCoroutine(FollowCoroutine);
-            FollowCoroutine= null;
-        }
-        cursorMover.ChangeBeforeState();
+    void DeselectInputField()
+    {
+        thisInput.DeactivateInputField();
+
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
+        EndSelectState();
+    }
+
+    void EndSelectState()
+    {
+        if (!isSelected) return;
+
+        isSelected = false;
+
+        if (hasBtnEffect)
+            thisBtnEffect.UnHoldChange();
+    }
+
+    private void OnDisable()
+    {
+        EndSelectState();
+    }
+
+    private void OnDestroy()
+    {
+        if (thisInput == null) return;
+
+        thisInput.onSelect.RemoveListener(OnSelected);
+        thisInput.onDeselect.RemoveListener(OnDeselected);
+        thisInput.onSubmit.RemoveListener(OnSubmitted);
     }
 }

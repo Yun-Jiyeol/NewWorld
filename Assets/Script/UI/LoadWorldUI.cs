@@ -26,8 +26,8 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     public RectTransform Btns;
 
     [Header("Sound")]
-    private AudioClip DeskOpenSound;
-    private AudioClip DeskCloseSound;
+    public SoundData DeskOpenSound;
+    public SoundData DeskCloseSound;
 
     private void Awake()
     {
@@ -38,9 +38,6 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     public override void Onit()
     {
         NowChooseWorldName= GameManager.Instance.NowWorldSaveFolder;
-
-        DeskOpenSound = DrawerSoundFactory.CreateDrawerOpen();
-        DeskCloseSound = DrawerSoundFactory.CreateDrawerClose();
 
         SettingSaveWorlds();
         CheckLoadBtn();

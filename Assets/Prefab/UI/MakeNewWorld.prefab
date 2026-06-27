@@ -173,8 +173,8 @@ MonoBehaviour:
   _image: {fileID: 2416611434829180070}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 1
-  clickSound: 2
+  mouseOnSound: 5
+  clickSound: 0
 --- !u!1 &1443677962587764963
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +350,7 @@ MonoBehaviour:
   _image2: {fileID: 0}
   CanChage: 1
   mouseOnSound: 2
-  clickSound: 1
+  clickSound: 2
 --- !u!1 &2028316381255351277
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,7 +527,7 @@ MonoBehaviour:
   _image: {fileID: 2891278981317126167}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 1
+  mouseOnSound: 0
   clickSound: 0
 --- !u!1 &2395186644736429591
 GameObject:
@@ -879,7 +879,7 @@ MonoBehaviour:
   _image2: {fileID: 0}
   CanChage: 1
   mouseOnSound: 1
-  clickSound: 1
+  clickSound: 5
 --- !u!1 &2689936832145668889
 GameObject:
   m_ObjectHideFlags: 0

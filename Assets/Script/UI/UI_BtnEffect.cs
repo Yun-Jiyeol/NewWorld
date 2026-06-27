@@ -10,14 +10,19 @@ public enum MouseOnSound
     ResetSound,
     NameSound,
     IconSound,
+    IconExpand,
 }
 
 public enum ClickSound
 {
     None,
     DigitalSound,
+    ResetSound,
     NameSound,
     IconSound,
+    Destroy,
+    IconExpand,
+    WordTyping,
 }
 
 

@@ -26,7 +26,8 @@ public class StartSceneUI : MonoBehaviour
     Dictionary<string, SaveString> SaveData = new Dictionary<string, SaveString>();
 
     [Header("Sound")]
-    private AudioClip WordTypeSound;
+    public SoundData WordStartSound;
+    public SoundData WordTypeSound;
 
     [Header("Text Sound Random Thickness")]
     [SerializeField] private float minLineSoundPitch = 0.86f;
@@ -44,11 +45,6 @@ public class StartSceneUI : MonoBehaviour
         {
             SaveData.Add(TD.name, TD.Strings);
         }
-    }
-
-    private void Start()
-    {
-        WordTypeSound = ScreenTypingDotSoundFactory.CreateDot1();
     }
 
     public void AddText(string _text)
@@ -100,6 +96,8 @@ public class StartSceneUI : MonoBehaviour
             }
 
             SetRandomLineSoundThickness();
+
+            GameManager.Instance.SoundManager.PlayEffect(WordStartSound);
 
             yield return StartCoroutine(TypeText(nextText, 0));
         }

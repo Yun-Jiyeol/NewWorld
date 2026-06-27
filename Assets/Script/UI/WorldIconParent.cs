@@ -61,15 +61,19 @@ public class WorldIconParent : NeedToDoOnit
     {
         parentMNW.MainUI.DOKill();
         parentMNW.AdditionalUIIconBtnEffect.HoldChange();
-        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.NameSound));
 
-        parentMNW.MainUI.DOSizeDelta(new Vector2(1175, 650), 0.5f);
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.IconExpand));
+
+        parentMNW.MainUI.DOSizeDelta(new Vector2(1200, 650), 0.5f);
     }
 
     void EndMove()
     {
         parentMNW.MainUI.DOKill();
         parentMNW.AdditionalUIIconBtnEffect.UnHoldChange();
+
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.IconExpand));
+
         parentMNW.MainUI.DOSizeDelta(new Vector2(750, 650), 0.5f);
     }
 

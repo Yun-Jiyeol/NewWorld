@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public static class ScreenTypingDotSoundFactory
 {
@@ -689,38 +690,92 @@ public static class DrawerSoundFactory
 
 public static class SoundChoose
 {
-    public static AudioClip CallAudio(MouseOnSound _MouseSound)
+    private const string SoundFolderPath = "Sound";
+
+    private static bool isLoaded = false;
+    private static Dictionary<string, SoundData> soundDictionary;
+
+    public static void Load()
     {
+        if (isLoaded)
+            return;
+
+        soundDictionary = new Dictionary<string, SoundData>();
+
+        SoundData[] soundDatas = Resources.LoadAll<SoundData>(SoundFolderPath);
+
+        for (int i = 0; i < soundDatas.Length; i++)
+        {
+            SoundData soundData = soundDatas[i];
+
+            if (soundData == null)
+                continue;
+
+            string key = soundData.name;
+
+            if (soundDictionary.ContainsKey(key))
+            {
+                Debug.LogWarning("중복된 SoundData 이름: " + key);
+                continue;
+            }
+
+            soundDictionary.Add(key, soundData);
+        }
+
+        isLoaded = true;
+    }
+
+    public static SoundData CallAudio(MouseOnSound _MouseSound)
+    {
+        Load();
+
         switch (_MouseSound)
         {
             case MouseOnSound.DigitalSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["Nock"]; //기본 버튼 접촉 시
 
             case MouseOnSound.ResetSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["HorseWorkSound"]; //리셋 버튼 접촉 시
 
             case MouseOnSound.NameSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["HorseWorkSound"]; //테이프 이름 접촉 시
 
             case MouseOnSound.IconSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["Swipe"]; //아이콘 버튼 접촉 시
+
+            case MouseOnSound.IconExpand:
+                return soundDictionary["Nock"]; //테이프 생성 시 아이콘 페이지 확장/축소 접촉 시
 
             default: return null;
         }
     }
 
-    public static AudioClip CallAudio(ClickSound _ClickSound)
+    public static SoundData CallAudio(ClickSound _ClickSound)
     {
+        Load();
+
         switch (_ClickSound)
         {
             case ClickSound.DigitalSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["Tap"]; //기본 버튼 클릭 시
+
+            case ClickSound.ResetSound:
+                return soundDictionary["BtnClick"]; //리셋 버튼 클릭 시
 
             case ClickSound.NameSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["Tap"]; //테이프 이름 클릭 시
 
             case ClickSound.IconSound:
-                return ScreenTypingDotSoundFactory.CreateDot2();
+                return soundDictionary["Print"]; //아이콘 버튼 클릭 시
+
+            case ClickSound.Destroy:
+                return soundDictionary["WoodFalling"]; //제거 버튼 클릭 시
+
+            case ClickSound.IconExpand:
+                return soundDictionary["AirSound"]; //테이프 생성 시 아이콘 페이지 확장/축소 클릭 시
+
+            case ClickSound.WordTyping:
+                return soundDictionary["WaterFalling"]; //테이프 생성 시 아이콘 페이지 확장/축소 클릭 시
 
             default: return null;
         }

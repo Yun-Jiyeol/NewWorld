@@ -191,4 +191,4 @@ MonoBehaviour:
   _image2: {fileID: 0}
   CanChage: 1
   mouseOnSound: 4
-  clickSound: 3
+  clickSound: 4
