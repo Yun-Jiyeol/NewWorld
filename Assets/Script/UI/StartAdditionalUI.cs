@@ -53,6 +53,13 @@ public class StartAdditionalUI : MonoBehaviour
     public RectTransform UpSide;
     public Image NoiseImage;
     public Image OutSideImage;
+    bool CanEject = true;
+
+    [Header("StartMotionSound")]
+    public SoundData Insert1;
+    public SoundData Insert2;
+    public SoundData Eject;
+
 
     [Header("WorldStatus")]
     public TextMeshProUGUI CreationStatus;
@@ -180,6 +187,7 @@ public class StartAdditionalUI : MonoBehaviour
 
     public void ClickEjectBtn()
     {
+        if (!CanEject) return;
         if (NowInTape == null) return;
         if (GameManager.Instance.NowWorldSaveFolder == null) return;
 
@@ -200,6 +208,8 @@ public class StartAdditionalUI : MonoBehaviour
         {
             AdditionalShow.gameObject.SetActive(false);
         });
+
+        GameManager.Instance.SoundManager.PlayEffect(Eject);
 
         if (NowInTape == null)
         {
@@ -274,11 +284,13 @@ public class StartAdditionalUI : MonoBehaviour
         {
             Destroy(_NowSpawnedtape);
         }
+        CanEject = false;
+
         _NowSpawnedtape = Instantiate(tape, FirstSpawnTrans);
         RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
-        _wsf.TapeInOnit(NowInTape);
+        _wsf.TapeInOnit(NowInTape);                                     //테이프 소환
         _wsf.Shadow.gameObject.SetActive(true);
         _wsf.Shadow.GetComponent<BtnClick>().enabled = false;
 
@@ -303,18 +315,17 @@ public class StartAdditionalUI : MonoBehaviour
         AdditionalShow.DOKill();
         NoSignalText.DOKill();
 
-        AdditionalShow.gameObject.SetActive(true);
+        AdditionalShow.gameObject.SetActive(true);                      //순간 노이즈 생성
         AdditionalShow.DOColor(new Color(1, 1, 1, 1), 0f).SetDelay(0.1f).OnComplete(() =>
         {
-            NoSignalText.DOColor(new Color(1, 1, 1, 0), 0f);
+            NoSignalText.DOColor(new Color(1, 1, 1, 0), 0f);            //순간 노이즈 치우기
         });
         AdditionalShow.DOColor(new Color(1, 1, 1, 0), 0f).SetDelay(0.4f).OnComplete(() =>
         {
             AdditionalShow.gameObject.SetActive(false);
         });
 
-        UpdownCover.DOAnchorPosY(-47.5f, 0.3f).SetDelay(1.5f);
-        OverShow.DOColor(new Color(1, 1, 1, 0), 4f).SetDelay(1.2f).OnComplete(() =>
+        OverShow.DOColor(new Color(1, 1, 1, 0), 4f).SetDelay(1.2f).OnComplete(() =>     //노이즈 치우기
         {
             OverShow.color = Color.black;
             OverShow.gameObject.SetActive(false);
@@ -324,11 +335,22 @@ public class StartAdditionalUI : MonoBehaviour
         MSC.Invoke(nameof(MeshScaleChanger.TapeInMotion), 0.15f);
         _tp.DownSide.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 50f), 0.35f).SetDelay(0.15f);
         _tp.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 170f), 0.4f).SetDelay(0.1f);
-        _tapeRec.DOAnchorPos(new Vector2(295, -355), 0.5f);
+        _tapeRec.DOAnchorPos(new Vector2(295, -355), 0.5f);        //테이프 올리기
 
-        _tapeRec.DOScale(new Vector2(0.95f, 0.6f), 0.6f).SetDelay(0.5f);
+        _tapeRec.DOScale(new Vector2(0.95f, 0.6f), 0.6f).SetDelay(0.5f).OnStart(() =>
+        {
+            GameManager.Instance.SoundManager.PlayEffect(Insert1);
+        });                //테이프 넣기
         _tp.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(920f, 120f), 0.6f).SetDelay(0.5f);
         _tapeRec.DOAnchorPos(new Vector2(295, -300), 0.6f).SetDelay(0.5f);
+
+        UpdownCover.DOAnchorPosY(-47.5f, 0.3f).SetDelay(1.5f).OnStart(() =>
+        {
+            GameManager.Instance.SoundManager.PlayEffect(Insert2);
+        }).OnComplete(() =>                 //커버 내리기
+        {
+            CanEject = true;
+        });
 
         _wsf.Shadow.DOColor(new Color(0,0,0,0.9f), 0.75f).SetDelay(0.6f).OnComplete(() =>
         {

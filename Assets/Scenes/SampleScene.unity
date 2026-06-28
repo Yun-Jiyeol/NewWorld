@@ -14253,6 +14253,7 @@ GameObject:
   - component: {fileID: 517162934}
   - component: {fileID: 517162933}
   - component: {fileID: 517162935}
+  - component: {fileID: 517162936}
   m_Layer: 5
   m_Name: OverShow
   m_TagString: Untagged
@@ -14349,6 +14350,19 @@ MonoBehaviour:
   - {fileID: 2106606244, guid: b63f08618c34d8d4e81cf011940647b3, type: 3}
   - {fileID: -1327549307, guid: b63f08618c34d8d4e81cf011940647b3, type: 3}
   changeInterval: 0.1
+--- !u!114 &517162936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517162931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb0d435477a84ae49b5a6b52ce59a695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SoundData: {fileID: 11400000, guid: d7a23efb66e418047bb5ebe9d01cecdc, type: 2}
 --- !u!1 &518442666
 GameObject:
   m_ObjectHideFlags: 0
@@ -43700,6 +43714,9 @@ MonoBehaviour:
   UpSide: {fileID: 231310690}
   NoiseImage: {fileID: 278913135}
   OutSideImage: {fileID: 811810904}
+  Insert1: {fileID: 11400000, guid: 03630101fc85bdf489267dcc3bb72b24, type: 2}
+  Insert2: {fileID: 11400000, guid: cf5f179713f65844091670eb56b1ad88, type: 2}
+  Eject: {fileID: 11400000, guid: da093732a34518244934c68696aec274, type: 2}
   CreationStatus: {fileID: 1806493964}
   Reconstruction:
   - {fileID: 290291271}
@@ -46089,6 +46106,7 @@ GameObject:
   - component: {fileID: 1568589099}
   - component: {fileID: 1568589098}
   - component: {fileID: 1568589097}
+  - component: {fileID: 1568589100}
   m_Layer: 5
   m_Name: Spitout
   m_TagString: Untagged
@@ -46194,6 +46212,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568589095}
   m_CullTransparentMesh: 1
+--- !u!114 &1568589100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568589095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d23c509616be824eb17892f2c930334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isForDown: 0
+  OnData: {fileID: 11400000, guid: 6cc7184a2c588714497d1031d4b88233, type: 2}
+  BtnDownData: {fileID: 11400000, guid: 77e2c7557baa9584286784072c7301a0, type: 2}
+  BtnUpData: {fileID: 0}
 --- !u!1 &1576085348
 GameObject:
   m_ObjectHideFlags: 0
@@ -51889,6 +51923,7 @@ GameObject:
   - component: {fileID: 1789117679}
   - component: {fileID: 1789117681}
   - component: {fileID: 1789117680}
+  - component: {fileID: 1789117684}
   - component: {fileID: 1789117682}
   - component: {fileID: 1789117683}
   m_Layer: 5
@@ -52011,6 +52046,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChangedImage: {fileID: 1350690143}
   ChangingColor: {r: 0.43644354, g: 0.78431374, b: 0.3882353, a: 1}
+--- !u!114 &1789117684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789117678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d23c509616be824eb17892f2c930334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isForDown: 0
+  OnData: {fileID: 11400000, guid: 6cc7184a2c588714497d1031d4b88233, type: 2}
+  BtnDownData: {fileID: 11400000, guid: 77e2c7557baa9584286784072c7301a0, type: 2}
+  BtnUpData: {fileID: 11400000, guid: 1d3c27f9596ec06429f2efb4b605423e, type: 2}
 --- !u!1 &1789734716
 GameObject:
   m_ObjectHideFlags: 0
@@ -55632,6 +55683,7 @@ GameObject:
   - component: {fileID: 1899419689}
   - component: {fileID: 1899419692}
   - component: {fileID: 1899419691}
+  - component: {fileID: 1899419694}
   - component: {fileID: 1899419690}
   - component: {fileID: 1899419693}
   m_Layer: 5
@@ -55754,6 +55806,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChangedImage: {fileID: 1132194119}
   ChangingColor: {r: 0.43644354, g: 0.78431374, b: 0.3882353, a: 1}
+--- !u!114 &1899419694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899419688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d23c509616be824eb17892f2c930334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isForDown: 0
+  OnData: {fileID: 11400000, guid: 6cc7184a2c588714497d1031d4b88233, type: 2}
+  BtnDownData: {fileID: 11400000, guid: 77e2c7557baa9584286784072c7301a0, type: 2}
+  BtnUpData: {fileID: 11400000, guid: 1d3c27f9596ec06429f2efb4b605423e, type: 2}
 --- !u!1 &1902721308
 GameObject:
   m_ObjectHideFlags: 0
@@ -57838,6 +57906,7 @@ GameObject:
   - component: {fileID: 1957268527}
   - component: {fileID: 1957268526}
   - component: {fileID: 1957268525}
+  - component: {fileID: 1957268528}
   m_Layer: 5
   m_Name: OffGame
   m_TagString: Untagged
@@ -57884,9 +57953,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnityEvent:
     m_PersistentCalls:
-      m_Calls: []
-  UnityDownEvent:
-    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1488728543}
         m_TargetAssemblyTypeName: StartAdditionalUI, Assembly-CSharp
@@ -57900,6 +57966,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  UnityDownEvent:
+    m_PersistentCalls:
+      m_Calls: []
   OnOffObject: 0
   OnEnter: {fileID: 0}
   ClickOnOff: 0
@@ -57944,6 +58013,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1957268523}
   m_CullTransparentMesh: 1
+--- !u!114 &1957268528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957268523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d23c509616be824eb17892f2c930334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isForDown: 0
+  OnData: {fileID: 11400000, guid: 6cc7184a2c588714497d1031d4b88233, type: 2}
+  BtnDownData: {fileID: 11400000, guid: 77e2c7557baa9584286784072c7301a0, type: 2}
+  BtnUpData: {fileID: 11400000, guid: 1d3c27f9596ec06429f2efb4b605423e, type: 2}
 --- !u!1 &1959751951
 GameObject:
   m_ObjectHideFlags: 0

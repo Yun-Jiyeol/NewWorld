@@ -780,6 +780,13 @@ public static class SoundChoose
             default: return null;
         }
     }
+
+    public static SoundData FindSound(string _name)
+    {
+        Load();
+
+        return soundDictionary[_name];
+    }
 }
 
 public static class CassetteLiftClackSoundFactory

@@ -15,16 +15,24 @@ public class SoundManager : MonoBehaviour
 
     private Transform effectParent;
     private Transform bgmParent;
+    private Transform loopParent;
 
     private AudioSource bgmSource;
 
     private readonly List<AudioSource> effectSources = new List<AudioSource>();
     private readonly Dictionary<AudioSource, Coroutine> effectReturnRoutines = new Dictionary<AudioSource, Coroutine>();
 
+    private readonly Dictionary<string, AudioSource> loopSoundSources = new Dictionary<string, AudioSource>();
+
     private void Awake()
     {
         CreateParents();
         CreateAudioSources();
+    }
+
+    private void Start()
+    {
+        PlayEffect(SoundChoose.FindSound("PowerOn"));
     }
 
     private void CreateParents()
@@ -38,6 +46,11 @@ public class SoundManager : MonoBehaviour
         bgmObj.transform.SetParent(transform);
         bgmObj.transform.localPosition = Vector3.zero;
         bgmParent = bgmObj.transform;
+
+        GameObject loopObj = new GameObject("LoopSounds");
+        loopObj.transform.SetParent(transform);
+        loopObj.transform.localPosition = Vector3.zero;
+        loopParent = loopObj.transform;
     }
 
     private void CreateAudioSources()
@@ -214,6 +227,190 @@ public class SoundManager : MonoBehaviour
     }
 
     // ==============================
+    // Loop Sound - SoundData 반복 재생
+    // ==============================
+
+    public void ToggleLoopSound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        ToggleLoopSound(soundData.name, soundData);
+    }
+
+    public void ToggleLoopSound(SoundData soundData, bool isPlay)
+    {
+        if (soundData == null) return;
+
+        ToggleLoopSound(soundData.name, soundData, isPlay);
+    }
+
+    public void ToggleLoopSound(string key, SoundData soundData)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        if (IsLoopSoundPlaying(key))
+        {
+            StopLoopSound(key);
+        }
+        else
+        {
+            PlayLoopSound(key, soundData);
+        }
+    }
+
+    public void ToggleLoopSound(string key, SoundData soundData, bool isPlay)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        if (isPlay)
+        {
+            PlayLoopSound(key, soundData);
+        }
+        else
+        {
+            StopLoopSound(key);
+        }
+    }
+
+    public void ToggleLoopSound(
+        string key,
+        SoundData soundData,
+        bool isPlay,
+        float volumeMultiplier,
+        float pitchMultiplier,
+        float speedMultiplier
+    )
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        if (isPlay)
+        {
+            PlayLoopSound(key, soundData, volumeMultiplier, pitchMultiplier, speedMultiplier);
+        }
+        else
+        {
+            StopLoopSound(key);
+        }
+    }
+
+    public void PlayLoopSound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        PlayLoopSound(soundData.name, soundData, 1f, 1f, 1f);
+    }
+
+    public void PlayLoopSound(string key, SoundData soundData)
+    {
+        PlayLoopSound(key, soundData, 1f, 1f, 1f);
+    }
+
+    public void PlayLoopSound(
+        string key,
+        SoundData soundData,
+        float volumeMultiplier,
+        float pitchMultiplier,
+        float speedMultiplier
+    )
+    {
+        if (string.IsNullOrEmpty(key)) return;
+        if (soundData == null) return;
+        if (!soundData.IsValid()) return;
+
+        if (loopSoundSources.ContainsKey(key))
+        {
+            StopLoopSound(key);
+        }
+
+        GameObject loopObj = new GameObject("LoopSound_" + key);
+        loopObj.transform.SetParent(loopParent);
+        loopObj.transform.localPosition = Vector3.zero;
+
+        AudioSource source = loopObj.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = true;
+        source.clip = soundData.Clip;
+
+        float finalVolume =
+            GetFinalEffectVolume() *
+            Mathf.Clamp01(soundData.Volume) *
+            Mathf.Clamp01(volumeMultiplier);
+
+        float finalPitch =
+            soundData.GetPitch() *
+            soundData.GetSpeed() *
+            Mathf.Max(0.01f, pitchMultiplier) *
+            Mathf.Max(0.01f, speedMultiplier);
+
+        source.volume = finalVolume;
+        source.pitch = Mathf.Max(0.01f, finalPitch);
+
+        loopSoundSources.Add(key, source);
+
+        source.Play();
+    }
+
+    public void StopLoopSound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        StopLoopSound(soundData.name);
+    }
+
+    public void StopLoopSound(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        if (!loopSoundSources.TryGetValue(key, out AudioSource source))
+            return;
+
+        loopSoundSources.Remove(key);
+
+        if (source != null)
+        {
+            GameObject obj = source.gameObject;
+            source.Stop();
+            source.clip = null;
+            Destroy(obj);
+        }
+    }
+
+    public bool IsLoopSoundPlaying(SoundData soundData)
+    {
+        if (soundData == null) return false;
+
+        return IsLoopSoundPlaying(soundData.name);
+    }
+
+    public bool IsLoopSoundPlaying(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return false;
+
+        if (!loopSoundSources.TryGetValue(key, out AudioSource source))
+            return false;
+
+        if (source == null)
+        {
+            loopSoundSources.Remove(key);
+            return false;
+        }
+
+        return source.isPlaying;
+    }
+
+    public void StopAllLoopSounds()
+    {
+        List<string> keys = new List<string>(loopSoundSources.Keys);
+
+        for (int i = 0; i < keys.Count; i++)
+        {
+            StopLoopSound(keys[i]);
+        }
+
+        loopSoundSources.Clear();
+    }
+
+    // ==============================
     // BGM Sound
     // ==============================
 
@@ -296,6 +493,19 @@ public class SoundManager : MonoBehaviour
         for (int i = 0; i < effectSources.Count; i++)
         {
             AudioSource source = effectSources[i];
+
+            if (source == null)
+                continue;
+
+            if (source.isPlaying)
+            {
+                source.volume = Mathf.Min(source.volume, GetFinalEffectVolume());
+            }
+        }
+
+        foreach (KeyValuePair<string, AudioSource> pair in loopSoundSources)
+        {
+            AudioSource source = pair.Value;
 
             if (source == null)
                 continue;
