@@ -12,6 +12,8 @@ public enum SoundEnum
 public class SoundPage : NeedToDoOnit
 {
     public SoundControl MainSoundControl;
+    public SoundControl EffectSoundControl;
+    public SoundControl BGMSoundControl;
 
     SoundManager soundManager;
 
@@ -20,5 +22,7 @@ public class SoundPage : NeedToDoOnit
         soundManager = GameManager.Instance.SoundManager;
 
         MainSoundControl.Onit();
+        EffectSoundControl.Onit();
+        BGMSoundControl.Onit();
     }
 }

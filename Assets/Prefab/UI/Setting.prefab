@@ -128,13 +128,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 6317601613361841885}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &723663340613810530
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,13 +444,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 6191252522812922149}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &2922479321211431616
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,13 +929,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 3550284226739214833}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &6129692925894695718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,13 +1144,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 7529528758146101149}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &7390171103307296465
 GameObject:
   m_ObjectHideFlags: 0
@@ -1267,13 +1283,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 612375661529263257}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &8750708136944148722
 GameObject:
   m_ObjectHideFlags: 0

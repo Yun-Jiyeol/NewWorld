@@ -21,8 +21,9 @@ public class SoundManager : MonoBehaviour
 
     private readonly List<AudioSource> effectSources = new List<AudioSource>();
     private readonly Dictionary<AudioSource, Coroutine> effectReturnRoutines = new Dictionary<AudioSource, Coroutine>();
+    private readonly HashSet<AudioSource> ignoreVolumeControlSources = new HashSet<AudioSource>();
 
-    private readonly Dictionary<string, AudioSource> loopSoundSources = new Dictionary<string, AudioSource>();
+    private readonly Dictionary<string, AudioSource> loopSoundSources = new Dictionary<string, AudioSource>(); 
 
     private void Awake()
     {
@@ -183,6 +184,11 @@ public class SoundManager : MonoBehaviour
 
     private void PlayEffectWithPooledSource(AudioClip clip, float volume, float pitch)
     {
+        PlayEffectWithPooledSource(clip, volume, pitch, false);
+    }
+
+    private void PlayEffectWithPooledSource(AudioClip clip, float volume, float pitch, bool ignoreVolumeControl)
+    {
         if (clip == null) return;
 
         AudioSource source = GetFreeEffectSource();
@@ -195,10 +201,17 @@ public class SoundManager : MonoBehaviour
             effectReturnRoutines.Remove(source);
         }
 
+        ignoreVolumeControlSources.Remove(source);
+
+        if (ignoreVolumeControl)
+        {
+            ignoreVolumeControlSources.Add(source);
+        }
+
         source.Stop();
         source.clip = clip;
-        source.volume = volume;
-        source.pitch = pitch;
+        source.volume = Mathf.Clamp01(volume);
+        source.pitch = Mathf.Max(0.01f, pitch);
         source.loop = false;
         source.Play();
 
@@ -218,12 +231,32 @@ public class SoundManager : MonoBehaviour
             source.pitch = 1f;
             source.volume = 1f;
             source.loop = false;
+
+            ignoreVolumeControlSources.Remove(source);
         }
 
         if (source != null && effectReturnRoutines.ContainsKey(source))
         {
             effectReturnRoutines.Remove(source);
         }
+    }
+
+    public void PlayEffectIgnoreVolume(SoundData soundData, float volume)
+    {
+        if (soundData == null) return;
+        if (!soundData.IsValid()) return;
+
+        float finalVolume =
+            Mathf.Clamp01(soundData.Volume) *
+            Mathf.Clamp01(volume);
+
+        float finalPitch =
+            soundData.GetPitch() *
+            soundData.GetSpeed();
+
+        finalPitch = Mathf.Max(0.01f, finalPitch);
+
+        PlayEffectWithPooledSource(soundData.Clip, finalVolume, finalPitch, true);
     }
 
     // ==============================
@@ -495,6 +528,9 @@ public class SoundManager : MonoBehaviour
             AudioSource source = effectSources[i];
 
             if (source == null)
+                continue;
+
+            if (ignoreVolumeControlSources.Contains(source))
                 continue;
 
             if (source.isPlaying)

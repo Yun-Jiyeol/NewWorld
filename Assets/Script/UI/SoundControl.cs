@@ -32,6 +32,14 @@ public class SoundControl : NeedToDoOnit
             case SoundEnum.Main:
                 NowValue = soundManager.MainSoundVolume;
                 break;
+
+            case SoundEnum.Effect:
+                NowValue = soundManager.EffectVolume;
+                break;
+
+            case SoundEnum.Music:
+                NowValue = soundManager.BGMVolume;
+                break;
         }
 
         int count = Mathf.RoundToInt(NowValue * 10f);
@@ -58,6 +66,20 @@ public class SoundControl : NeedToDoOnit
         {
             case SoundEnum.Main:
                 soundManager.SetMainVolume(soundManager.MainSoundVolume + i);
+                soundManager.PlayEffectIgnoreVolume(SoundChoose.CallAudio(ClickSound.SoundSettingBtn)
+                    , soundManager.MainSoundVolume);
+                break;
+
+            case SoundEnum.Effect:
+                soundManager.SetEffectVolume(soundManager.EffectVolume + i);
+                soundManager.PlayEffectIgnoreVolume(SoundChoose.CallAudio(ClickSound.SoundSettingBtn)
+                    , soundManager.MainSoundVolume * soundManager.EffectVolume);
+                break;
+
+            case SoundEnum.Music:
+                soundManager.SetBGMVolume(soundManager.BGMVolume + i);
+                soundManager.PlayEffectIgnoreVolume(SoundChoose.CallAudio(ClickSound.SoundSettingBtn)
+                    , soundManager.MainSoundVolume * soundManager.BGMVolume);
                 break;
         }
 

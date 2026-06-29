@@ -746,6 +746,9 @@ public static class SoundChoose
             case MouseOnSound.IconExpand:
                 return soundDictionary["Nock"]; //테이프 생성 시 아이콘 페이지 확장/축소 접촉 시
 
+            case MouseOnSound.SoundSettingBtn:
+                return soundDictionary["Tack"]; //사운드 세팅 창 접촉 시
+
             default: return null;
         }
     }
@@ -776,6 +779,9 @@ public static class SoundChoose
 
             case ClickSound.WordTyping:
                 return soundDictionary["WaterFalling"]; //테이프 생성 시 아이콘 페이지 확장/축소 클릭 시
+
+            case ClickSound.SoundSettingBtn:
+                return soundDictionary["Bip"]; //사운드 세팅 창 클릭 시
 
             default: return null;
         }

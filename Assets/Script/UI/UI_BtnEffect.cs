@@ -11,6 +11,7 @@ public enum MouseOnSound
     NameSound,
     IconSound,
     IconExpand,
+    SoundSettingBtn,
 }
 
 public enum ClickSound
@@ -23,6 +24,7 @@ public enum ClickSound
     Destroy,
     IconExpand,
     WordTyping,
+    SoundSettingBtn,
 }
 
 
