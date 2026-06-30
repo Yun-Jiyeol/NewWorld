@@ -16,6 +16,8 @@ public class Keys_UIOnOff : MonoBehaviour, IPointerDownHandler
 
     UI_BtnEffect uibtneffect;
 
+    public ClickSound clickSound = ClickSound.None;
+
     private void Awake()
     {
         ParentRect = ParentGameObject.gameObject.GetComponent<RectTransform>();
@@ -27,6 +29,11 @@ public class Keys_UIOnOff : MonoBehaviour, IPointerDownHandler
         if (DOTween.IsTweening(ParentRect)) return;
         if (DOTween.IsTweening(Contents)) return;
         if (DOTween.IsTweening(ExTendGameObject)) return;
+
+        if (clickSound != ClickSound.None)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(clickSound));
+        }
 
         if (isExtend)
         {

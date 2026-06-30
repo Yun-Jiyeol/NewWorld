@@ -749,6 +749,9 @@ public static class SoundChoose
             case MouseOnSound.SoundSettingBtn:
                 return soundDictionary["Tack"]; //사운드 세팅 창 접촉 시
 
+            case MouseOnSound.SettingPageSelect:
+                return soundDictionary["TouchSlide"]; //새팅 페이지 선택 시
+
             default: return null;
         }
     }
@@ -782,6 +785,12 @@ public static class SoundChoose
 
             case ClickSound.SoundSettingBtn:
                 return soundDictionary["Bip"]; //사운드 세팅 창 클릭 시
+
+            case ClickSound.SettingPageSelect:
+                return soundDictionary["HitSkin"]; //새팅 페이지 선택 시
+
+            case ClickSound.SimplyUITap:
+                return soundDictionary["SimplyUITap"]; //새팅 페이지 선택 시
 
             default: return null;
         }

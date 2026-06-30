@@ -12,6 +12,8 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
     Keys_KeySettingPage parent;
     UI_BtnEffect btneffect;
 
+    public ClickSound clickSound = ClickSound.None;
+
     private void Awake()
     {
         thisInput = gameObject.GetComponent<TMP_InputField>();
@@ -60,6 +62,12 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
         if (InputCoroutine != null)
         {
             StopCoroutine(InputCoroutine);
+        }
+
+
+        if (clickSound != ClickSound.None)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(clickSound));
         }
 
         parent.isChange = true;

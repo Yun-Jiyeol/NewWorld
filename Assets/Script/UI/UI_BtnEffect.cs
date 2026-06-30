@@ -12,6 +12,7 @@ public enum MouseOnSound
     IconSound,
     IconExpand,
     SoundSettingBtn,
+    SettingPageSelect,
 }
 
 public enum ClickSound
@@ -25,6 +26,8 @@ public enum ClickSound
     IconExpand,
     WordTyping,
     SoundSettingBtn,
+    SettingPageSelect,
+    SimplyUITap,
 }
 
 
