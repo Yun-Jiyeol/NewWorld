@@ -1383,7 +1383,7 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0
 --- !u!1 &2987426099319860360
 GameObject:
@@ -2485,7 +2485,7 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0
 --- !u!1 &4952393103323797210
 GameObject:
@@ -4756,7 +4756,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00077977614}
+  m_AnchoredPosition: {x: 0, y: 0.0002650047}
   m_SizeDelta: {x: 0, y: 150}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &7966816580156080310
@@ -4998,7 +4998,7 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0
 --- !u!1 &8117137388777073519
 GameObject:
@@ -5458,7 +5458,7 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0
 --- !u!1 &8275043623579276790
 GameObject:
@@ -5673,7 +5673,7 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0
 --- !u!1 &8576601776002890397
 GameObject:
@@ -5942,5 +5942,5 @@ MonoBehaviour:
   _image: {fileID: 0}
   _image2: {fileID: 0}
   CanChage: 1
-  mouseOnSound: 0
+  mouseOnSound: 6
   clickSound: 0

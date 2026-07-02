@@ -309,7 +309,7 @@ MonoBehaviour:
   SpawnTransform: {fileID: 597002474771590310}
   SoundSettingPage: {fileID: 3157478702144970079, guid: 877098ec5264b0c42936bb0d4d2eb3a8, type: 3}
   KeySettingPage: {fileID: 3157478702144970079, guid: e7c112dcfadaa0940903e37340cb3fc0, type: 3}
-  LanguageSettingPage: {fileID: 0}
+  LanguageSettingPage: {fileID: 2465748468500622088, guid: 08facdc39ea0b0b4c96eb6e3a37c1c1b, type: 3}
   WorldSettingPage: {fileID: 893882638790545227, guid: f68b3034d8b61fe4ab8b086b2b3f6bc4, type: 3}
   WorldSettingBtn: {fileID: 5946963919120582842}
   SoundBtn: {fileID: 8817645667772375382}
