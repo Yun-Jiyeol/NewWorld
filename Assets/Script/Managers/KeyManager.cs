@@ -201,15 +201,19 @@ public class KeyManager : MonoBehaviour
     }
 
     public string GetKeyFromKeyCode(Keyboards keyboard)
-    {  // A ~ Z
+    {
+        LanguageEnum nowLanguage = GameManager.Instance.TranslationManager.GetLanguage();
+
         string output = "";
+
         if (keyboard.shiftClick)
         {
-            output = "Shift + ";
+            output += GetShiftText(nowLanguage);
         }
 
         KeyCode key = keyboard.key;
 
+        // A ~ Z
         if (key >= KeyCode.A && key <= KeyCode.Z)
         {
             return output + key.ToString();
@@ -227,77 +231,128 @@ public class KeyManager : MonoBehaviour
             return output + key.ToString();
         }
 
+        return output + GetSpecialKeyText(key, nowLanguage);
+    }
+
+    string GetShiftText(LanguageEnum language)
+    {
+        switch (language)
+        {
+            case LanguageEnum.Kor:
+                return "쉬프트 + ";
+
+            case LanguageEnum.Eng:
+                return "Shift + ";
+
+            case LanguageEnum.Com:
+                return "0x534846 + "; // SHF
+
+            default:
+                return "Shift + ";
+        }
+    }
+
+    string GetSpecialKeyText(KeyCode key, LanguageEnum language)
+    {
         switch (key)
         {
             // 마우스
             case KeyCode.Mouse0:
-                return output + "왼쪽 클릭";
+                return GetLanguageText(language, "왼쪽 클릭", "Left Click", "0x4C434B"); // LCK
 
             case KeyCode.Mouse1:
-                return output + "오른쪽 클릭";
+                return GetLanguageText(language, "오른쪽 클릭", "Right Click", "0x52434B"); // RCK
 
             case KeyCode.Mouse2:
-                return output + "휠 클릭";
+                return GetLanguageText(language, "휠 클릭", "Wheel Click", "0x57434B"); // WCK
+
 
             // 특수키
             case KeyCode.Tab:
-                return output + "Tab";
+                return GetLanguageText(language, "탭", "Tab", "0x544142"); // TAB
+
+            case KeyCode.Delete:
+                return GetLanguageText(language, "삭제", "Delete", "0x44454C"); // DELECT
 
             case KeyCode.LeftShift:
-                return output + "LeftShift";
+                return GetLanguageText(language, "왼쪽 쉬프트", "Left Shift", "0x4C5F534846"); // L_SHF
+
             case KeyCode.RightShift:
-                return output + "RightShift";
+                return GetLanguageText(language, "오른쪽 쉬프트", "Right Shift", "0x525F534846"); // R_SHF
 
             case KeyCode.LeftControl:
-                return output + "LeftControl";
+                return GetLanguageText(language, "왼쪽 컨트롤", "Left Control", "0x4C5F4354524C"); // L_CTRL
+
             case KeyCode.RightControl:
-                return output + "RightControl";
+                return GetLanguageText(language, "오른쪽 컨트롤", "Right Control", "0x525F4354524C"); // R_CTRL
 
             case KeyCode.LeftAlt:
-                return output + "LeftAlt";
+                return GetLanguageText(language, "왼쪽 알트", "Left Alt", "0x4C5F414C54"); // L_ALT
+
             case KeyCode.RightAlt:
-                return output + "RightAlt";
+                return GetLanguageText(language, "오른쪽 알트", "Right Alt", "0x525F414C54"); // R_ALT
 
             case KeyCode.Space:
-                return output + "Space";
+                return GetLanguageText(language, "스페이스", "Space", "0x535043"); // SPC
+
 
             // 방향키
             case KeyCode.UpArrow:
-                return output + "위 화살표";
+                return GetLanguageText(language, "위 화살표", "Up Arrow", "0x55505F415252"); // UP_ARR
 
             case KeyCode.DownArrow:
-                return output + "아래 화살표";
+                return GetLanguageText(language, "아래 화살표", "Down Arrow", "0x444E5F415252"); // DN_ARR
 
             case KeyCode.LeftArrow:
-                return output + "왼쪽 화살표";
+                return GetLanguageText(language, "왼쪽 화살표", "Left Arrow", "0x4C46545F415252"); // LFT_ARR
 
             case KeyCode.RightArrow:
-                return output + "오른쪽 화살표";
+                return GetLanguageText(language, "오른쪽 화살표", "Right Arrow", "0x5247545F415252"); // RGT_ARR
 
+
+            // 기호
             case KeyCode.LeftBracket:
-                return output + "[";
+                return "[";
 
             case KeyCode.RightBracket:
-                return output + "]";
+                return "]";
 
             case KeyCode.Semicolon:
-                return output + ";";
+                return ";";
 
             case KeyCode.Quote:
-                return output + "'";
+                return "'";
 
             case KeyCode.Period:
-                return output + ".";
+                return ".";
 
             case KeyCode.Slash:
-                return output + "/";
+                return "/";
 
             case KeyCode.Comma:
-                return output + ",";
-        }
+                return ",";
 
-        // 기본값
-        return output + key.ToString();
+            default:
+                return key.ToString();
+        }
+    }
+
+    string GetLanguageText(LanguageEnum language, string kor, string eng, string com)
+    {
+        switch (language)
+        {
+            case LanguageEnum.Kor:
+                return kor;
+
+            case LanguageEnum.Eng:
+                return eng;
+
+            case LanguageEnum.Com:
+                return com;
+
+            default:
+                return eng;
+        }
     }
 
     public KeyCode? CheckKeyCode(KeyCode key)
@@ -333,6 +388,7 @@ public class KeyManager : MonoBehaviour
 
             // 특수키
             case KeyCode.Tab:
+            case KeyCode.Delete:
             case KeyCode.Space:
             case KeyCode.LeftControl:
             case KeyCode.RightControl:

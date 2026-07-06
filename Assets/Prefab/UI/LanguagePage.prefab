@@ -970,7 +970,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00019151707}
+  m_AnchoredPosition: {x: 0, y: 0.00017404568}
   m_SizeDelta: {x: 0, y: 275}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &7135896764223102578
@@ -1279,6 +1279,7 @@ GameObject:
   - component: {fileID: 7703157859891920092}
   - component: {fileID: 6217630139837345704}
   - component: {fileID: 4988113572465129434}
+  - component: {fileID: 5384741610716066733}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1334,7 +1335,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC5B8\uC5B4 \uC120\uD0DD"
+  m_text: 0x4C414E475F53454C
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
   m_sharedMaterial: {fileID: 112815297285175050, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
@@ -1403,6 +1404,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5384741610716066733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8348835882204404537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: db38a2a78d989554198a557368f64ceb, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
+    ComSize: 36
+    Korfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
+    KorSize: 42
+    Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
+    EngSize: 38
 --- !u!1 &8623253195166187345
 GameObject:
   m_ObjectHideFlags: 0
