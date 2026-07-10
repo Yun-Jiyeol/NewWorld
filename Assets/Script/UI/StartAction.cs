@@ -53,6 +53,8 @@ public class StartAction : MonoBehaviour
 
     IEnumerator StartActionRoutine()
     {
+        yield return new WaitForSeconds(1f);
+
         StartSceneUI.AddText("SystemReady");
 
         target.DOSizeDelta(new Vector3(100, 100), 2f);

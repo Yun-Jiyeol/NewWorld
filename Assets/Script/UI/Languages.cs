@@ -43,6 +43,8 @@ public class Languages : MonoBehaviour
 
         GameManager.Instance.SoundManager.PlayEffect(SoundChoose.CallAudio(ClickSound.SimplyUITap));
         Setting();
+
+        GameManager.Instance.SaveAndLoadManager.PlayerSetting_SaveLanguage();
     }
 
     void Setting()

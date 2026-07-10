@@ -117,6 +117,20 @@ public class ColorSaveData
 }
 
 [System.Serializable]
+public class SoundSettingSave
+{
+    public float Main;
+    public float Effect;
+    public float BGM;
+}
+
+[System.Serializable]
+public class LanguageSettingSave
+{
+    public LanguageEnum Language;
+}
+
+[System.Serializable]
 public class PlayerPositionSave
 {
     //ÁÂÇ¥
@@ -985,6 +999,68 @@ public class SaveAndLoadManager : MonoBehaviour
         File.WriteAllText(path, JsonUtility.ToJson(keysaves, true));
     }
 
+    public void PlayerSetting_SaveSound()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "SoundSetting.json");
+
+        SoundManager soundManager = GameManager.Instance.SoundManager;
+
+        SoundSettingSave soundSave = new SoundSettingSave()
+        {
+            Main = soundManager.MainSoundVolume,
+            Effect = soundManager.EffectVolume,
+            BGM = soundManager.BGMVolume
+        };
+
+        File.WriteAllText(path, JsonUtility.ToJson(soundSave, true));
+    }
+
+    public void PlayerSetting_LoadSound()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "SoundSetting.json");
+
+        if (!File.Exists(path)) return;
+
+        string json = File.ReadAllText(path);
+        SoundSettingSave soundSave = JsonUtility.FromJson<SoundSettingSave>(json);
+
+        SoundManager soundManager = GameManager.Instance.SoundManager;
+
+        soundManager.SetMainVolume(soundSave.Main);
+        soundManager.SetEffectVolume(soundSave.Effect);
+        soundManager.SetBGMVolume(soundSave.BGM);
+    }
+
+    public void PlayerSetting_SaveLanguage()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "LanguageSetting.json");
+
+        TranslationManager translationManager = GameManager.Instance.TranslationManager;
+
+        LanguageSettingSave languageSave = new LanguageSettingSave()
+        {
+            Language = translationManager.GetLanguage()
+        };
+
+        File.WriteAllText(path, JsonUtility.ToJson(languageSave, true));
+    }
+
+    public void PlayerSetting_LoadLanguage()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "LanguageSetting.json");
+
+        if (!File.Exists(path)) return;
+
+        string json = File.ReadAllText(path);
+        LanguageSettingSave languageSave = JsonUtility.FromJson<LanguageSettingSave>(json);
+
+        GameManager.Instance.TranslationManager.ChangeLanguage(languageSave.Language);
+    }
+
     void LoadStartFile(string _path)
     {
         if (!Directory.Exists(_path))
@@ -1002,6 +1078,14 @@ public class SaveAndLoadManager : MonoBehaviour
             {
                 case "KeySetting.json":
                     PlayerSetting_LoadKey(file);
+                    break;
+
+                case "SoundSetting.json":
+                    PlayerSetting_LoadSound();
+                    break;
+
+                case "LanguageSetting.json":
+                    PlayerSetting_LoadLanguage();
                     break;
             }
         }

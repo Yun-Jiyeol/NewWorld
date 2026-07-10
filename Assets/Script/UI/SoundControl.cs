@@ -84,5 +84,6 @@ public class SoundControl : NeedToDoOnit
         }
 
         Setting();
+        GameManager.Instance.SaveAndLoadManager.PlayerSetting_SaveSound();
     }
 }
