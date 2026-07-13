@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TextTranslation : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class TextTranslation : MonoBehaviour
 
     TextMeshProUGUI _text;
     TranslationManager translationManager = null;
+
+    public UnityEvent AdditionalEffect;
 
     private void Awake()
     {
@@ -30,6 +33,11 @@ public class TextTranslation : MonoBehaviour
 
     public void Setting(LanguageEnum _language)
     {
+        if (AdditionalEffect != null) AdditionalEffect?.Invoke();
+
+
+        if (TD == null) return;
+
         switch (_language)
         {
             case LanguageEnum.Com:

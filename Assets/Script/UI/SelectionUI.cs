@@ -115,6 +115,21 @@ public class SelectionUI : MonoBehaviour
             _basic.OnSetting();
         }
 
+        Settingtext(_slect);
+    }
+
+    public void Settingtext(UIBtnsSelectedUIMaterial _slect)
+    {
+        UI_BtnEffect _UIBE = _slect.Btn.GetComponent<UI_BtnEffect>();
+        ExplainText.text = _UIBE._text.text;
+        ExplainImage.sprite = _UIBE._image2.sprite;
+    }
+
+    public void Settingtext()
+    {
+        UIBtnsSelectedUIMaterial _slect = Findnowenum();
+        if (_slect == null) return;
+
         UI_BtnEffect _UIBE = _slect.Btn.GetComponent<UI_BtnEffect>();
         ExplainText.text = _UIBE._text.text;
         ExplainImage.sprite = _UIBE._image2.sprite;

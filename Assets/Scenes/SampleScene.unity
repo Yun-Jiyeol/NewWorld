@@ -1792,6 +1792,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 4ec656c99af0e954aaf8fa175ad32a47, type: 2}
     EngSize: 38
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &58199649
 GameObject:
   m_ObjectHideFlags: 0
@@ -2904,6 +2907,9 @@ MonoBehaviour:
     KorSize: 19
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 13
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &103986493
 GameObject:
   m_ObjectHideFlags: 0
@@ -4000,6 +4006,9 @@ MonoBehaviour:
     KorSize: 24
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 27
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &159089386
 GameObject:
   m_ObjectHideFlags: 0
@@ -8853,6 +8862,7 @@ GameObject:
   - component: {fileID: 332899863}
   - component: {fileID: 332899865}
   - component: {fileID: 332899864}
+  - component: {fileID: 332899866}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -8900,7 +8910,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAD11\uC6D0"
+  m_text: 0x4C4754
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -8927,10 +8937,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -8977,6 +8987,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 332899862}
   m_CullTransparentMesh: 1
+--- !u!114 &332899866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332899862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 6c8620238c35e7d449eba1dd0220e740, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &340517069
 GameObject:
   m_ObjectHideFlags: 0
@@ -10472,6 +10505,7 @@ GameObject:
   - component: {fileID: 413209023}
   - component: {fileID: 413209025}
   - component: {fileID: 413209024}
+  - component: {fileID: 413209026}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -10519,7 +10553,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC774\uB984"
+  m_text: 0x4E414D
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -10546,10 +10580,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -10596,6 +10630,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413209022}
   m_CullTransparentMesh: 1
+--- !u!114 &413209026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413209022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 47301ff5230e13140bacf20e6cdb7e06, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &413230292
 GameObject:
   m_ObjectHideFlags: 0
@@ -16310,6 +16367,7 @@ GameObject:
   - component: {fileID: 597411150}
   - component: {fileID: 597411152}
   - component: {fileID: 597411151}
+  - component: {fileID: 597411153}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -16357,7 +16415,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC124\uC815"
+  m_text: 0x434647
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -16384,10 +16442,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -16434,6 +16492,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 597411149}
   m_CullTransparentMesh: 1
+--- !u!114 &597411153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597411149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: eaf6078f7e264654481456c33376705f, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &600043642
 GameObject:
   m_ObjectHideFlags: 0
@@ -20338,6 +20419,7 @@ GameObject:
   - component: {fileID: 728708960}
   - component: {fileID: 728708962}
   - component: {fileID: 728708961}
+  - component: {fileID: 728708963}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -20385,7 +20467,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAD11\uC6D0"
+  m_text: 0x4C4754
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -20412,10 +20494,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -20462,6 +20544,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 728708959}
   m_CullTransparentMesh: 1
+--- !u!114 &728708963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728708959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 6c8620238c35e7d449eba1dd0220e740, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &728791052
 GameObject:
   m_ObjectHideFlags: 0
@@ -23510,6 +23615,7 @@ GameObject:
   - component: {fileID: 827299642}
   - component: {fileID: 827299644}
   - component: {fileID: 827299643}
+  - component: {fileID: 827299645}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -23557,7 +23663,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC870\uC815"
+  m_text: 0x41444A
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -23584,10 +23690,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -23634,6 +23740,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 827299641}
   m_CullTransparentMesh: 1
+--- !u!114 &827299645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827299641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 2eaeae9c71e0e7746addd60deb0cf5f8, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &828152515
 GameObject:
   m_ObjectHideFlags: 0
@@ -25784,6 +25913,9 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &881716468
 GameObject:
   m_ObjectHideFlags: 0
@@ -26207,6 +26339,9 @@ MonoBehaviour:
     KorSize: 24
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 27
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &902194644
 GameObject:
   m_ObjectHideFlags: 0
@@ -26370,6 +26505,7 @@ GameObject:
   - component: {fileID: 912848500}
   - component: {fileID: 912848502}
   - component: {fileID: 912848501}
+  - component: {fileID: 912848503}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -26417,7 +26553,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC124\uCE58"
+  m_text: 0x504C43
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -26444,10 +26580,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -26494,6 +26630,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 912848499}
   m_CullTransparentMesh: 1
+--- !u!114 &912848503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912848499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 59b1dcef7da698047a2cf7b8a30f6c28, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &913094534
 GameObject:
   m_ObjectHideFlags: 0
@@ -27138,6 +27297,9 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &943592466
 GameObject:
   m_ObjectHideFlags: 0
@@ -30268,6 +30430,9 @@ MonoBehaviour:
     KorSize: 28
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 20
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1033600506
 GameObject:
   m_ObjectHideFlags: 0
@@ -31903,6 +32068,9 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1086338911
 GameObject:
   m_ObjectHideFlags: 0
@@ -35333,6 +35501,9 @@ MonoBehaviour:
     KorSize: 28
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 20
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1219180453
 GameObject:
   m_ObjectHideFlags: 0
@@ -36976,6 +37147,7 @@ GameObject:
   - component: {fileID: 1275301361}
   - component: {fileID: 1275301363}
   - component: {fileID: 1275301362}
+  - component: {fileID: 1275301364}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -37023,7 +37195,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCD94\uC801"
+  m_text: 0x54524B
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -37050,10 +37222,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -37100,6 +37272,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1275301360}
   m_CullTransparentMesh: 1
+--- !u!114 &1275301364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275301360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 5ebe38aad9d5e1545bcc4ae6dbe6ec5d, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1278123876
 GameObject:
   m_ObjectHideFlags: 0
@@ -39213,6 +39408,7 @@ GameObject:
   - component: {fileID: 1344078769}
   - component: {fileID: 1344078771}
   - component: {fileID: 1344078770}
+  - component: {fileID: 1344078772}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -39260,7 +39456,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC2DC\uC57C"
+  m_text: 0x565745
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -39287,10 +39483,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -39337,6 +39533,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344078768}
   m_CullTransparentMesh: 1
+--- !u!114 &1344078772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344078768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 85a6147c9d345314a840d0cb974e0f26, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1345723157
 GameObject:
   m_ObjectHideFlags: 0
@@ -43300,6 +43519,9 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1478200086
 GameObject:
   m_ObjectHideFlags: 0
@@ -50051,6 +50273,9 @@ MonoBehaviour:
     KorSize: 24
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 27
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1719036048
 GameObject:
   m_ObjectHideFlags: 0
@@ -50215,6 +50440,7 @@ GameObject:
   - component: {fileID: 1725209429}
   - component: {fileID: 1725209431}
   - component: {fileID: 1725209430}
+  - component: {fileID: 1725209432}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -50262,7 +50488,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC124\uCE58"
+  m_text: 0x504C43
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -50289,10 +50515,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -50339,6 +50565,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1725209428}
   m_CullTransparentMesh: 1
+--- !u!114 &1725209432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1725209428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 59b1dcef7da698047a2cf7b8a30f6c28, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1725288593
 GameObject:
   m_ObjectHideFlags: 0
@@ -51031,6 +51280,7 @@ GameObject:
   - component: {fileID: 1754822550}
   - component: {fileID: 1754822552}
   - component: {fileID: 1754822551}
+  - component: {fileID: 1754822553}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -51078,7 +51328,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCE21\uC815"
+  m_text: 0x4D5352
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -51105,10 +51355,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -51155,6 +51405,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1754822549}
   m_CullTransparentMesh: 1
+--- !u!114 &1754822553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754822549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: e7768097a37a0d04d8c6dc1ff25367d9, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1759983372
 GameObject:
   m_ObjectHideFlags: 0
@@ -54134,6 +54407,7 @@ GameObject:
   - component: {fileID: 1857074457}
   - component: {fileID: 1857074459}
   - component: {fileID: 1857074458}
+  - component: {fileID: 1857074460}
   m_Layer: 5
   m_Name: ExplainText
   m_TagString: Untagged
@@ -54159,7 +54433,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: 0}
-  m_SizeDelta: {x: 75, y: 50}
+  m_SizeDelta: {x: 200, y: 45}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1857074458
 MonoBehaviour:
@@ -54211,9 +54485,9 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 36
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -54258,6 +54532,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857074456}
   m_CullTransparentMesh: 1
+--- !u!114 &1857074460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857074456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 0}
+  FontSave:
+    Comfont: {fileID: 0}
+    ComSize: 0
+    Korfont: {fileID: 0}
+    KorSize: 0
+    Engfont: {fileID: 0}
+    EngSize: 0
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1663501597}
+        m_TargetAssemblyTypeName: SelectionUI, Assembly-CSharp
+        m_MethodName: Settingtext
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1858786382
 GameObject:
   m_ObjectHideFlags: 0
@@ -57704,6 +58013,9 @@ MonoBehaviour:
     KorSize: 28
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1946488763
 GameObject:
   m_ObjectHideFlags: 0
@@ -58352,6 +58664,7 @@ GameObject:
   - component: {fileID: 1971667424}
   - component: {fileID: 1971667426}
   - component: {fileID: 1971667425}
+  - component: {fileID: 1971667427}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -58399,7 +58712,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC2DC\uC57C+"
+  m_text: 0x565745
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
   m_sharedMaterial: {fileID: -629247847323660511, guid: b759feab0f933cb4b87562061680926d, type: 2}
@@ -58426,10 +58739,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.3
-  m_fontSizeBase: 24
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 12
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -58476,6 +58789,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971667423}
   m_CullTransparentMesh: 1
+--- !u!114 &1971667427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971667423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 85a6147c9d345314a840d0cb974e0f26, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    ComSize: 15
+    Korfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    KorSize: 20
+    Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
+    EngSize: 15
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1973679100
 GameObject:
   m_ObjectHideFlags: 0
@@ -59955,6 +60291,9 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2025506448
 GameObject:
   m_ObjectHideFlags: 0
