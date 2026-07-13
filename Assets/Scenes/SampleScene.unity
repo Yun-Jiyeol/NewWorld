@@ -51335,6 +51335,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d572fe5420bd3974181e2f9e6cdea584, type: 2}
   - {fileID: 11400000, guid: 4ade920d69d1de14dbdc0cb861764e07, type: 2}
   - {fileID: 11400000, guid: 724965c803a905d4c92396ffcec14da0, type: 2}
+  - {fileID: 11400000, guid: 548be81a6e4469c4daab61c4f6d1c863, type: 2}
   WordStartSound: {fileID: 11400000, guid: 70ba01a6037ef39489646933e7520bae, type: 2}
   WordTypeSound: {fileID: 11400000, guid: a10fb7521c5851949b9263965535c793, type: 2}
   minLineSoundPitch: 0.86

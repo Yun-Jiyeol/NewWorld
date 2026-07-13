@@ -45,6 +45,8 @@ public class Languages : MonoBehaviour
         Setting();
 
         GameManager.Instance.SaveAndLoadManager.PlayerSetting_SaveLanguage();
+
+        GameManager.Instance.UIManager.StartSceneUI.AddText("ChangeLanguage");
     }
 
     void Setting()
