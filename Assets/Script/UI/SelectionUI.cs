@@ -88,6 +88,7 @@ public class SelectionUI : MonoBehaviour
 
             case SelectionUIenum.Setting:
                 GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.SettingUI);
+                PopInSettingPanel();
                 break;
 
             default:
@@ -128,7 +129,7 @@ public class SelectionUI : MonoBehaviour
     public void Settingtext()
     {
         UIBtnsSelectedUIMaterial _slect = Findnowenum();
-        if (_slect == null) return;
+        if (_slect == null) return; 
 
         UI_BtnEffect _UIBE = _slect.Btn.GetComponent<UI_BtnEffect>();
         ExplainText.text = _UIBE._text.text;
