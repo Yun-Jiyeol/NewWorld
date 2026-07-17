@@ -62,6 +62,8 @@ public class TextTranslation : MonoBehaviour
 
     private void OnDisable()
     {
+        if (translationManager == null) return;
+
         translationManager.DelectText(this);
     }
 }
