@@ -20,6 +20,9 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     GameObject BlockImage = null;
     bool isEndCancel = true;
 
+    public GameObject MakeWorldIcon;
+    public GameObject DestroyWorldIcon;
+
     [Header("Move")]
     public Image BG;
     public RectTransform Desk;
@@ -109,15 +112,48 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.MakeNewWorldUI);
     }
 
+    public void ClickDestroyWorld()
+    {
+        GameManager.Instance.SaveAndLoadManager.DeleteSaveFolder(NowChooseWorldName);
+
+        NowChooseWorldName = null;
+        GameManager.Instance.NowWorldSaveFolder = null;
+
+        ResetTapes();
+    }
+
+    void ResetTapes()
+    {
+        foreach (WorldSaveFile WSF in WorldSaveFiles)
+        {
+            Destroy(WSF.gameObject); 
+        }
+
+        WorldSaveFiles.Clear();
+
+        SettingSaveWorlds();
+        CheckLoadBtn();
+    }
+
     void CheckLoadBtn()
     {
-        if(GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName || NowChooseWorldName == null)
+        if (NowChooseWorldName == null)
         {
             StartLoadBtn.SetActive(false);
+            MakeWorldIcon.SetActive(true);
+            DestroyWorldIcon.SetActive(false);
+        }
+        else if(GameManager.Instance.NowWorldSaveFolder == NowChooseWorldName)
+        {
+            StartLoadBtn.SetActive(false);
+            MakeWorldIcon.SetActive(false);
+            DestroyWorldIcon.SetActive(true);
         }
         else
         {
             StartLoadBtn.SetActive(true);
+            MakeWorldIcon.SetActive(false);
+            DestroyWorldIcon.SetActive(true);
         }
     }
 

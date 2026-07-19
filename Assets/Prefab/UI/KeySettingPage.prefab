@@ -177,6 +177,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &68384956647514376
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,6 +357,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &131124207594106912
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TD: {fileID: 11400000, guid: 57a9d6998ae406d4abe9afb455cde380, type: 2}
+  TD: {fileID: 11400000, guid: 2f924db7be896bf458dad5f195a9f480, type: 2}
   FontSave:
     Comfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     ComSize: 22
@@ -510,6 +516,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &138570786516198309
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,6 +810,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &170677053835247776
 GameObject:
   m_ObjectHideFlags: 0
@@ -2129,6 +2141,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &546183208115184717
 GameObject:
   m_ObjectHideFlags: 0
@@ -2522,6 +2537,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &612757795879551088
 GameObject:
   m_ObjectHideFlags: 0
@@ -2892,6 +2910,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &711851390481494048
 GameObject:
   m_ObjectHideFlags: 0
@@ -3069,6 +3090,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &741222298797993373
 GameObject:
   m_ObjectHideFlags: 0
@@ -3225,6 +3249,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &742611988843634119
 GameObject:
   m_ObjectHideFlags: 0
@@ -3786,6 +3813,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &915673531454718691
 GameObject:
   m_ObjectHideFlags: 0
@@ -3995,6 +4025,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 26
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1017769641965530943
 GameObject:
   m_ObjectHideFlags: 0
@@ -4172,6 +4205,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1038526527590004907
 GameObject:
   m_ObjectHideFlags: 0
@@ -4646,6 +4682,9 @@ MonoBehaviour:
     KorSize: 24
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 26
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1163438735356503014
 GameObject:
   m_ObjectHideFlags: 0
@@ -5740,6 +5779,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1388883074560086207
 GameObject:
   m_ObjectHideFlags: 0
@@ -5896,6 +5938,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1439395832312343071
 GameObject:
   m_ObjectHideFlags: 0
@@ -7029,6 +7074,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1885448673835684112
 GameObject:
   m_ObjectHideFlags: 0
@@ -8111,6 +8159,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2189711838650150095
 GameObject:
   m_ObjectHideFlags: 0
@@ -8288,6 +8339,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2355282921571143403
 GameObject:
   m_ObjectHideFlags: 0
@@ -8936,6 +8990,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2517913845315609444
 GameObject:
   m_ObjectHideFlags: 0
@@ -9319,6 +9376,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2815829651583210473
 GameObject:
   m_ObjectHideFlags: 0
@@ -9549,6 +9609,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3133322558327709498
 GameObject:
   m_ObjectHideFlags: 0
@@ -9942,6 +10005,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3157478702144970079
 GameObject:
   m_ObjectHideFlags: 0
@@ -10155,6 +10221,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3229250139056075858
 GameObject:
   m_ObjectHideFlags: 0
@@ -10413,6 +10482,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3316382052332342387
 GameObject:
   m_ObjectHideFlags: 0
@@ -10982,6 +11054,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3379642431862916914
 GameObject:
   m_ObjectHideFlags: 0
@@ -11159,6 +11234,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3427868865704049727
 GameObject:
   m_ObjectHideFlags: 0
@@ -11315,6 +11393,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 26
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3501389018275295068
 GameObject:
   m_ObjectHideFlags: 0
@@ -11492,6 +11573,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3532886013681129114
 GameObject:
   m_ObjectHideFlags: 0
@@ -11648,6 +11732,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3537333511538361963
 GameObject:
   m_ObjectHideFlags: 0
@@ -12020,6 +12107,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3550220034114644710
 GameObject:
   m_ObjectHideFlags: 0
@@ -12600,6 +12690,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 22
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3752696550497054606
 GameObject:
   m_ObjectHideFlags: 0
@@ -13166,6 +13259,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 22
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3871923280750344824
 GameObject:
   m_ObjectHideFlags: 0
@@ -13478,6 +13574,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3959978612607203738
 GameObject:
   m_ObjectHideFlags: 0
@@ -13634,6 +13733,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3974415462795480458
 GameObject:
   m_ObjectHideFlags: 0
@@ -14489,6 +14591,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4237219777178575222
 GameObject:
   m_ObjectHideFlags: 0
@@ -14666,6 +14771,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4268873517308480332
 GameObject:
   m_ObjectHideFlags: 0
@@ -15059,6 +15167,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4340004655063755396
 GameObject:
   m_ObjectHideFlags: 0
@@ -16235,6 +16346,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4966245150783247458
 GameObject:
   m_ObjectHideFlags: 0
@@ -16526,6 +16640,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 26
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5211764467001497224
 GameObject:
   m_ObjectHideFlags: 0
@@ -16972,6 +17089,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5379303374299008777
 GameObject:
   m_ObjectHideFlags: 0
@@ -17149,6 +17269,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5396705715513650736
 GameObject:
   m_ObjectHideFlags: 0
@@ -17428,6 +17551,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5464746885443458981
 GameObject:
   m_ObjectHideFlags: 0
@@ -17584,6 +17710,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5478887700289777332
 GameObject:
   m_ObjectHideFlags: 0
@@ -18111,6 +18240,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5677643396157251849
 GameObject:
   m_ObjectHideFlags: 0
@@ -18631,6 +18763,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5881961302248512515
 GameObject:
   m_ObjectHideFlags: 0
@@ -18787,6 +18922,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5938493371100247988
 GameObject:
   m_ObjectHideFlags: 0
@@ -19017,6 +19155,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5986750876897071945
 GameObject:
   m_ObjectHideFlags: 0
@@ -19463,6 +19604,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6133395578704972491
 GameObject:
   m_ObjectHideFlags: 0
@@ -20311,6 +20455,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6459420471216676607
 GameObject:
   m_ObjectHideFlags: 0
@@ -20676,6 +20823,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6692984590274685514
 GameObject:
   m_ObjectHideFlags: 0
@@ -21760,6 +21910,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7102769382305987055
 GameObject:
   m_ObjectHideFlags: 0
@@ -21916,6 +22069,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7142734202844622951
 GameObject:
   m_ObjectHideFlags: 0
@@ -22423,6 +22579,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7214735092361402790
 GameObject:
   m_ObjectHideFlags: 0
@@ -22735,6 +22894,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7290584806673985556
 GameObject:
   m_ObjectHideFlags: 0
@@ -22944,6 +23106,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 26
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7414229238661268520
 GameObject:
   m_ObjectHideFlags: 0
@@ -23100,6 +23265,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7479854065724144521
 GameObject:
   m_ObjectHideFlags: 0
@@ -23797,7 +23965,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8566923401243944462}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99770045
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -23841,7 +24009,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000038990856}
+  m_AnchoredPosition: {x: 0, y: 0.00032782674}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7925215726710215486
@@ -24263,6 +24431,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8049598700776613484
 GameObject:
   m_ObjectHideFlags: 0
@@ -24440,6 +24611,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8056968447152468761
 GameObject:
   m_ObjectHideFlags: 0
@@ -24596,6 +24770,9 @@ MonoBehaviour:
     KorSize: 22
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8083140258767693411
 GameObject:
   m_ObjectHideFlags: 0
@@ -24968,6 +25145,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8233210210733923520
 GameObject:
   m_ObjectHideFlags: 0
@@ -25453,6 +25633,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8279829636996927540
 GameObject:
   m_ObjectHideFlags: 0
@@ -25609,6 +25792,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8282210096294349173
 GameObject:
   m_ObjectHideFlags: 0
@@ -26308,6 +26494,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 22
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8579071903307079099
 GameObject:
   m_ObjectHideFlags: 0
@@ -26538,6 +26727,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8699271970813641499
 GameObject:
   m_ObjectHideFlags: 0
@@ -26715,6 +26907,9 @@ MonoBehaviour:
     KorSize: 18
     Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
     EngSize: 18
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8722365199464336263
 GameObject:
   m_ObjectHideFlags: 0
@@ -27087,6 +27282,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8751575174055020675
 GameObject:
   m_ObjectHideFlags: 0
@@ -27436,6 +27634,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 6d9900c396bd3d24ab1a0263cd638f28, type: 2}
     EngSize: 28
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8794664906124692219
 GameObject:
   m_ObjectHideFlags: 0

@@ -109,7 +109,7 @@ public class MakeNewWorld : NeedToDoOnit
             SettingName = "NewWorld";
         }
         string SaveName = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
-        SaveAndLoadManager.EnsureSaveFolder(SaveName);
+        GameManager.Instance.SaveAndLoadManager.CreateNewSaveWithDefaultWorld(SaveName);
 
         GameManager.Instance.UIManager.StartSceneUI.AddText("DoneTape");
 

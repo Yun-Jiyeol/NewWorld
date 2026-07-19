@@ -165,7 +165,8 @@ public class SaveAndLoadManager : MonoBehaviour
     public static string PlayerSettingFolder => System.IO.Path.Combine(RootPath, $"PlayerSetting");
     public static string SaveFolder => System.IO.Path.Combine(RootPath, $"Saves");
     public static string WorldSaveFolder => System.IO.Path.Combine(SaveFolder, $"{GameManager.Instance.NowWorldSaveFolder}");
-    public static string WorldPlayerSetting => System.IO.Path.Combine(WorldSaveFolder, $"WorldPlayerSetting");
+    public static string WorldPlayerSetting => System.IO.Path.Combine(WorldSaveFolder, $"WorldPlayerSetting"); 
+    public static string DefaultWorldTemplateFolder => System.IO.Path.Combine(Application.streamingAssetsPath, "DefaultWorld", "World_Default");
 
     Queue<ChunkCode> saveQueue = new Queue<ChunkCode>();
     HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
@@ -449,6 +450,27 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             Directory.Delete(folder, true);
         }
+    }
+
+    public void DeleteSaveFolder(string saveFolderName)
+    {
+        if (string.IsNullOrEmpty(saveFolderName))
+        {
+            Debug.LogWarning("[Save] 삭제할 세이브 폴더명이 비어 있습니다.");
+            return;
+        }
+
+        string folder = Path.Combine(SaveFolder, saveFolderName);
+
+        if (!Directory.Exists(folder))
+        {
+            Debug.LogWarning($"[Save] 삭제할 세이브 폴더가 없습니다: {folder}");
+            return;
+        }
+
+        Directory.Delete(folder, true);
+
+        Debug.Log($"[Save] 세이브 폴더 삭제 완료: {folder}");
     }
 
     void LoadWorldData(string folder)
@@ -1103,5 +1125,84 @@ public class SaveAndLoadManager : MonoBehaviour
         {
             _key.KeyboardDictionary[save.keyname] = save.keyboard;
         }
+    }
+    public void CreateNewSaveWithDefaultWorld(string saveFolderName)
+    {
+        EnsureSaveFolder(saveFolderName);
+
+        CopyDefaultWorldToSave(saveFolderName);
+    }
+
+    void CopyDefaultWorldToSave(string saveFolderName)
+    {
+        if (!Directory.Exists(DefaultWorldTemplateFolder))
+        {
+            Debug.LogWarning($"[Save] 기본 월드 폴더가 없습니다: {DefaultWorldTemplateFolder}");
+            return;
+        }
+
+        string targetSaveFolder = Path.Combine(SaveFolder, saveFolderName);
+
+        if (!Directory.Exists(targetSaveFolder))
+        {
+            Directory.CreateDirectory(targetSaveFolder);
+        }
+
+        string newWorldTime = System.DateTime.Now.ToString("yyyyMMddHHmmss");
+        string targetWorldFolder = Path.Combine(targetSaveFolder, "World_" + newWorldTime);
+
+        if (Directory.Exists(targetWorldFolder))
+        {
+            Directory.Delete(targetWorldFolder, true);
+        }
+
+        CopyDirectory(DefaultWorldTemplateFolder, targetWorldFolder);
+
+        RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime);
+    }
+
+    void CopyDirectory(string sourceDir, string targetDir)
+    {
+        Directory.CreateDirectory(targetDir);
+
+        foreach (string file in Directory.GetFiles(sourceDir))
+        {
+            string fileName = Path.GetFileName(file);
+            string targetFile = Path.Combine(targetDir, fileName);
+
+            File.Copy(file, targetFile, true);
+        }
+
+        foreach (string directory in Directory.GetDirectories(sourceDir))
+        {
+            string directoryName = Path.GetFileName(directory);
+            string targetSubDir = Path.Combine(targetDir, directoryName);
+
+            CopyDirectory(directory, targetSubDir);
+        }
+    }
+
+    void RewriteCopiedWorldInfo(string worldFolder, string newWorldTime)
+    {
+        string worldInfoPath = Path.Combine(worldFolder, "world.json");
+
+        if (!File.Exists(worldInfoPath))
+        {
+            Debug.LogWarning($"[Save] 복사된 기본 월드에 world.json이 없습니다: {worldInfoPath}");
+            return;
+        }
+
+        string json = File.ReadAllText(worldInfoPath);
+        WorldSaveData worldSaveData = JsonUtility.FromJson<WorldSaveData>(json);
+
+        worldSaveData.Time = newWorldTime;
+
+        if (string.IsNullOrEmpty(worldSaveData.Name))
+        {
+            worldSaveData.Name = "Default World";
+        }
+
+        json = JsonUtility.ToJson(worldSaveData, true);
+        File.WriteAllText(worldInfoPath, json);
     }
 }
