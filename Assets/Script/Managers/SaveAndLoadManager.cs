@@ -1126,18 +1126,31 @@ public class SaveAndLoadManager : MonoBehaviour
             _key.KeyboardDictionary[save.keyname] = save.keyboard;
         }
     }
-    public void CreateNewSaveWithDefaultWorld(string saveFolderName)
+    public void CreateNewSaveWithDefaultWorld(string saveFolderName, int defaultWorldIndex = 0)
     {
         EnsureSaveFolder(saveFolderName);
 
-        CopyDefaultWorldToSave(saveFolderName);
+        CopyDefaultWorldToSave(saveFolderName, defaultWorldIndex);
     }
 
-    void CopyDefaultWorldToSave(string saveFolderName)
+    public static string GetDefaultWorldTemplateFolder(int defaultWorldIndex)
     {
-        if (!Directory.Exists(DefaultWorldTemplateFolder))
+        defaultWorldIndex = Mathf.Clamp(defaultWorldIndex, 0, 9);
+
+        return Path.Combine(
+            Application.streamingAssetsPath,
+            "DefaultWorld",
+            $"World_Default_{defaultWorldIndex}"
+        );
+    }
+
+    void CopyDefaultWorldToSave(string saveFolderName, int defaultWorldIndex)
+    {
+        string defaultWorldFolder = GetDefaultWorldTemplateFolder(defaultWorldIndex);
+
+        if (!Directory.Exists(defaultWorldFolder))
         {
-            Debug.LogWarning($"[Save] 기본 월드 폴더가 없습니다: {DefaultWorldTemplateFolder}");
+            Debug.LogWarning($"[Save] 기본 월드 폴더가 없습니다: {defaultWorldFolder}");
             return;
         }
 
@@ -1156,9 +1169,9 @@ public class SaveAndLoadManager : MonoBehaviour
             Directory.Delete(targetWorldFolder, true);
         }
 
-        CopyDirectory(DefaultWorldTemplateFolder, targetWorldFolder);
+        CopyDirectory(defaultWorldFolder, targetWorldFolder);
 
-        RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime);
+        RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime, defaultWorldIndex);
     }
 
     void CopyDirectory(string sourceDir, string targetDir)
@@ -1182,7 +1195,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
     }
 
-    void RewriteCopiedWorldInfo(string worldFolder, string newWorldTime)
+    void RewriteCopiedWorldInfo(string worldFolder, string newWorldTime, int defaultWorldIndex)
     {
         string worldInfoPath = Path.Combine(worldFolder, "world.json");
 
@@ -1196,11 +1209,7 @@ public class SaveAndLoadManager : MonoBehaviour
         WorldSaveData worldSaveData = JsonUtility.FromJson<WorldSaveData>(json);
 
         worldSaveData.Time = newWorldTime;
-
-        if (string.IsNullOrEmpty(worldSaveData.Name))
-        {
-            worldSaveData.Name = "Default World";
-        }
+        worldSaveData.Name = $"World_Default_{defaultWorldIndex}";
 
         json = JsonUtility.ToJson(worldSaveData, true);
         File.WriteAllText(worldInfoPath, json);
