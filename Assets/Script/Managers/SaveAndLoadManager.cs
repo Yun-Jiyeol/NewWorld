@@ -1126,11 +1126,28 @@ public class SaveAndLoadManager : MonoBehaviour
             _key.KeyboardDictionary[save.keyname] = save.keyboard;
         }
     }
+
+    public bool AwaitForMaking = false;
+
     public void CreateNewSaveWithDefaultWorld(string saveFolderName, int defaultWorldIndex = 0)
     {
+        StartCoroutine(CreateNewSaveWithDefaultWorldCoroutine(saveFolderName, defaultWorldIndex));
+    }
+
+    IEnumerator CreateNewSaveWithDefaultWorldCoroutine(string saveFolderName, int defaultWorldIndex)
+    {
+        AwaitForMaking = false;
+
         EnsureSaveFolder(saveFolderName);
 
-        CopyDefaultWorldToSave(saveFolderName, defaultWorldIndex);
+        yield return StartCoroutine(CopyDefaultWorldToSaveCoroutine(saveFolderName, defaultWorldIndex));
+
+        while(!AwaitForMaking) 
+        {
+            yield return null;
+        }
+
+        GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
     }
 
     public static string GetDefaultWorldTemplateFolder(int defaultWorldIndex)
@@ -1144,14 +1161,14 @@ public class SaveAndLoadManager : MonoBehaviour
         );
     }
 
-    void CopyDefaultWorldToSave(string saveFolderName, int defaultWorldIndex)
+    IEnumerator CopyDefaultWorldToSaveCoroutine(string saveFolderName, int defaultWorldIndex)
     {
         string defaultWorldFolder = GetDefaultWorldTemplateFolder(defaultWorldIndex);
 
         if (!Directory.Exists(defaultWorldFolder))
         {
             Debug.LogWarning($"[Save] 기본 월드 폴더가 없습니다: {defaultWorldFolder}");
-            return;
+            yield break;
         }
 
         string targetSaveFolder = Path.Combine(SaveFolder, saveFolderName);
@@ -1159,6 +1176,7 @@ public class SaveAndLoadManager : MonoBehaviour
         if (!Directory.Exists(targetSaveFolder))
         {
             Directory.CreateDirectory(targetSaveFolder);
+            yield return null;
         }
 
         string newWorldTime = System.DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -1166,32 +1184,51 @@ public class SaveAndLoadManager : MonoBehaviour
 
         if (Directory.Exists(targetWorldFolder))
         {
-            Directory.Delete(targetWorldFolder, true);
+            yield return StartCoroutine(DeleteDirectoryCoroutine(targetWorldFolder));
         }
 
-        CopyDirectory(defaultWorldFolder, targetWorldFolder);
+        yield return StartCoroutine(CopyDirectoryCoroutine(defaultWorldFolder, targetWorldFolder));
 
         RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime, defaultWorldIndex);
+
+        yield return null;
     }
 
-    void CopyDirectory(string sourceDir, string targetDir)
+    IEnumerator CopyDirectoryCoroutine(string sourceDir, string targetDir)
     {
         Directory.CreateDirectory(targetDir);
 
-        foreach (string file in Directory.GetFiles(sourceDir))
+        string[] files = Directory.GetFiles(sourceDir);
+        float start = Time.realtimeSinceStartup;
+
+        foreach (string file in files)
         {
             string fileName = Path.GetFileName(file);
             string targetFile = Path.Combine(targetDir, fileName);
 
             File.Copy(file, targetFile, true);
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
         }
 
-        foreach (string directory in Directory.GetDirectories(sourceDir))
+        string[] directories = Directory.GetDirectories(sourceDir);
+
+        foreach (string directory in directories)
         {
             string directoryName = Path.GetFileName(directory);
             string targetSubDir = Path.Combine(targetDir, directoryName);
 
-            CopyDirectory(directory, targetSubDir);
+            yield return StartCoroutine(CopyDirectoryCoroutine(directory, targetSubDir));
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
         }
     }
 
@@ -1213,5 +1250,52 @@ public class SaveAndLoadManager : MonoBehaviour
 
         json = JsonUtility.ToJson(worldSaveData, true);
         File.WriteAllText(worldInfoPath, json);
+    }
+
+    IEnumerator DeleteDirectoryCoroutine(string targetDir)
+    {
+        if (!Directory.Exists(targetDir))
+            yield break;
+
+        string[] files = Directory.GetFiles(targetDir, "*", SearchOption.AllDirectories);
+
+        float start = Time.realtimeSinceStartup;
+
+        foreach (string file in files)
+        {
+            if (File.Exists(file))
+            {
+                File.Delete(file);
+            }
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        string[] directories = Directory.GetDirectories(targetDir, "*", SearchOption.AllDirectories);
+
+        for (int i = directories.Length - 1; i >= 0; i--)
+        {
+            string directory = directories[i];
+
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, false);
+            }
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        if (Directory.Exists(targetDir))
+        {
+            Directory.Delete(targetDir, false);
+        }
     }
 }

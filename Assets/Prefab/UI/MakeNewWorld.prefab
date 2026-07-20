@@ -1144,7 +1144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.8}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1587,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 0.09803922}
+  m_Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 0.14509805}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1760,6 +1760,9 @@ MonoBehaviour:
     KorSize: 45
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 56
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6240720784337577698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1992,6 +1995,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6836739833555126821
 GameObject:
   m_ObjectHideFlags: 0
@@ -2401,6 +2407,9 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 24
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8699817841878228722
 GameObject:
   m_ObjectHideFlags: 0
@@ -2720,3 +2729,5 @@ MonoBehaviour:
   SideSpawn: {fileID: 5539473293841606462}
   WhiteCover: {fileID: 154128527909432609}
   MainUI: {fileID: 7961727684182624326}
+  AdditionalScreen: {fileID: 3130604100348269922}
+  TapeMoveRect: {fileID: 1020374965138851118}

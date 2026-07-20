@@ -1,6 +1,7 @@
 using DG.Tweening;
 using OpenCover.Framework.Model;
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,9 @@ public class MakeNewWorld : NeedToDoOnit
     string time;
 
     public RectTransform MainUI;
+
+    public RectTransform AdditionalScreen;
+    public RectTransform TapeMoveRect;
 
     private void Awake()
     {
@@ -109,11 +113,9 @@ public class MakeNewWorld : NeedToDoOnit
             SettingName = "NewWorld";
         }
         string SaveName = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
-        GameManager.Instance.SaveAndLoadManager.CreateNewSaveWithDefaultWorld(SaveName, OutPutNum);
-
         GameManager.Instance.UIManager.StartSceneUI.AddText("DoneTape");
-
-        GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
+        MakeTapingAnimation();
+        GameManager.Instance.SaveAndLoadManager.CreateNewSaveWithDefaultWorld(SaveName, OutPutNum);
     }
 
     public void DeclineMakeWorld()
@@ -146,5 +148,32 @@ public class MakeNewWorld : NeedToDoOnit
         _SpawnTapeSave.WorldMakeDay.text = time.Substring(6, 2);
 
         _SpawnTapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[spritenum];
+    }
+
+    void MakeTapingAnimation()
+    {
+        StartCoroutine(MakingTape());
+    }
+
+    IEnumerator MakingTape()
+    {
+        GameManager.Instance.SaveAndLoadManager.AwaitForMaking = false;
+
+        yield return AdditionalScreen
+            .DOAnchorPosY(800f, 0.75f)
+        .WaitForCompletion();
+
+        Sequence tapeSeq = DOTween.Sequence();
+
+        tapeSeq.Append(
+            TapeMoveRect.DOAnchorPosY(-700f, 0.75f)
+        );
+        tapeSeq.Join(
+            TapeMoveRect.DOScale(new Vector3(0.88f, 0.8f, 1f), 0.75f)
+        );
+
+        yield return tapeSeq.WaitForCompletion();
+
+        GameManager.Instance.SaveAndLoadManager.AwaitForMaking = true;
     }
 }
