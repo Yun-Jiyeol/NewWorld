@@ -1179,19 +1179,52 @@ public class SaveAndLoadManager : MonoBehaviour
             yield return null;
         }
 
-        string newWorldTime = System.DateTime.Now.ToString("yyyyMMddHHmmss");
-        string targetWorldFolder = Path.Combine(targetSaveFolder, "World_" + newWorldTime);
+        string[] templateWorldFolders = Directory.GetDirectories(defaultWorldFolder);
 
-        if (Directory.Exists(targetWorldFolder))
+        // 하위 폴더 구조가 없고, 기존처럼 바로 world.json이 있는 경우
+        if (File.Exists(Path.Combine(defaultWorldFolder, "world.json")))
         {
-            yield return StartCoroutine(DeleteDirectoryCoroutine(targetWorldFolder));
+            string newWorldTime = System.DateTime.Now.ToString("yyyyMMddHHmmss");
+            string targetWorldFolder = Path.Combine(targetSaveFolder, "World_" + newWorldTime);
+
+            if (Directory.Exists(targetWorldFolder))
+            {
+                yield return StartCoroutine(DeleteDirectoryCoroutine(targetWorldFolder));
+            }
+
+            yield return StartCoroutine(CopyDirectoryCoroutine(defaultWorldFolder, targetWorldFolder));
+
+            RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime, defaultWorldIndex);
+
+            yield break;
         }
 
-        yield return StartCoroutine(CopyDirectoryCoroutine(defaultWorldFolder, targetWorldFolder));
+        // World_Default_6 안에 여러 월드 폴더가 있는 경우
+        int worldIndex = 0;
 
-        RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime, defaultWorldIndex);
+        foreach (string templateWorldFolder in templateWorldFolders)
+        {
+            string worldJsonPath = Path.Combine(templateWorldFolder, "world.json");
 
-        yield return null;
+            if (!File.Exists(worldJsonPath))
+                continue;
+
+            string newWorldTime = System.DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + worldIndex;
+            string targetWorldFolder = Path.Combine(targetSaveFolder, "World_" + newWorldTime);
+
+            if (Directory.Exists(targetWorldFolder))
+            {
+                yield return StartCoroutine(DeleteDirectoryCoroutine(targetWorldFolder));
+            }
+
+            yield return StartCoroutine(CopyDirectoryCoroutine(templateWorldFolder, targetWorldFolder));
+
+            RewriteCopiedWorldInfo(targetWorldFolder, newWorldTime, defaultWorldIndex);
+
+            worldIndex++;
+
+            yield return null;
+        }
     }
 
     IEnumerator CopyDirectoryCoroutine(string sourceDir, string targetDir)
@@ -1246,7 +1279,11 @@ public class SaveAndLoadManager : MonoBehaviour
         WorldSaveData worldSaveData = JsonUtility.FromJson<WorldSaveData>(json);
 
         worldSaveData.Time = newWorldTime;
-        worldSaveData.Name = $"World_Default_{defaultWorldIndex}";
+
+        if (string.IsNullOrEmpty(worldSaveData.Name))
+        {
+            worldSaveData.Name = $"World_Default_{defaultWorldIndex}";
+        }
 
         json = JsonUtility.ToJson(worldSaveData, true);
         File.WriteAllText(worldInfoPath, json);

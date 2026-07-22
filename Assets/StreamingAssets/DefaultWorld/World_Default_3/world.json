@@ -1,8 +1,8 @@
 {
-    "Name": "World",
-    "Time": "DefaultTemplate",
+    "Name": "World_Default_3",
+    "Time": "DefaultTemplate3",
     "x": 0.0,
-    "y": 0.0,
+    "y": -25.0,
     "z": 100.0,
     "xrot": 0.0,
     "yrot": 0.0,

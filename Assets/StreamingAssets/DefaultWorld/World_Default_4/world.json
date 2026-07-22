@@ -1,9 +1,9 @@
 {
-    "Name": "World",
-    "Time": "DefaultTemplate",
+    "Name": "World_Default_4",
+    "Time": "DefaultTemplate4",
     "x": 0.0,
-    "y": 0.0,
-    "z": 100.0,
+    "y": -5.0,
+    "z": 0.0,
     "xrot": 0.0,
     "yrot": 0.0,
     "zrot": 0.0,
