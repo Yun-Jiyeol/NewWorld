@@ -1,0 +1,15 @@
+{
+    "Name": "World_Star_16",
+    "Time": "DefaultTemplate8_16",
+    "x": 222.205,
+    "y": -122.744,
+    "z": -118.148,
+    "xrot": 0.0,
+    "yrot": 0.0,
+    "zrot": 0.0,
+    "wrot": 1.0,
+    "size": 1.0,
+    "isLightBlock": false,
+    "lightblock": null,
+    "blocks": null
+}

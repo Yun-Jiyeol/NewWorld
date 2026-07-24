@@ -41,7 +41,8 @@ public class MakeNewWorld : NeedToDoOnit
 
     private void Start()
     {
-        OutPutNum = UnityEngine.Random.Range(0, 10);
+        //OutPutNum = UnityEngine.Random.Range(0, 10);
+        OutPutNum = 8;
         time = DateTime.Now.ToString("yyyyMMddHHmmss");
 
         GameObject _go = Instantiate(GameManager.Instance.MaterialManager.Tapes[OutPutNum], TapeSpawnTran);
