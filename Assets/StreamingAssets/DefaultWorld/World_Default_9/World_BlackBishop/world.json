@@ -1,0 +1,15 @@
+{
+    "Name": "World_BlackBishop",
+    "Time": "DefaultTemplate9_09",
+    "x": -5.0,
+    "y": -20.0,
+    "z": 105.0,
+    "xrot": 0.0,
+    "yrot": 1.0,
+    "zrot": 0.0,
+    "wrot": 6.123233995736766e-17,
+    "size": 1.0,
+    "isLightBlock": false,
+    "lightblock": null,
+    "blocks": null
+}

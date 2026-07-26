@@ -1,0 +1,15 @@
+{
+    "Name": "World_WhiteQueen",
+    "Time": "DefaultTemplate9_02",
+    "x": -5.0,
+    "y": -20.0,
+    "z": 65.0,
+    "xrot": 0.0,
+    "yrot": 0.0,
+    "zrot": 0.0,
+    "wrot": 1.0,
+    "size": 1.0,
+    "isLightBlock": false,
+    "lightblock": null,
+    "blocks": null
+}
