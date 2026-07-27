@@ -159,6 +159,8 @@ public class MakeNewWorld : NeedToDoOnit
     {
         GameManager.Instance.SaveAndLoadManager.AwaitForMaking = false;
 
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.FindSound("MachineMoving"));
+
         yield return AdditionalScreen
             .DOAnchorPosY(800f, 0.75f)
         .WaitForCompletion();
@@ -171,6 +173,8 @@ public class MakeNewWorld : NeedToDoOnit
         tapeSeq.Join(
             TapeMoveRect.DOScale(new Vector3(0.88f, 0.8f, 1f), 0.75f)
         );
+
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.FindSound("BringSomeThing"));
 
         yield return tapeSeq.WaitForCompletion();
 
