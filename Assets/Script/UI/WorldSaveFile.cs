@@ -38,7 +38,7 @@ public class WorldSaveFile : MonoBehaviour
         } 
     }
 
-    public void TapeInOnit(string _name)
+    public int TapeInOnit(string _name)
     {
         Name = _name;
         string[] parts = Name.Split('_');
@@ -55,6 +55,8 @@ public class WorldSaveFile : MonoBehaviour
             + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
 
         tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
+
+        return int.Parse(parts[3]);
     }
 
     public void ClickWorld()

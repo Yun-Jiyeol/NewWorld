@@ -290,7 +290,7 @@ public class StartAdditionalUI : MonoBehaviour
         RectTransform _tapeRec = _NowSpawnedtape.GetComponent<RectTransform>();
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
-        _wsf.TapeInOnit(NowInTape);                                     //테이프 소환
+        int tapeNumver = _wsf.TapeInOnit(NowInTape);                                     //테이프 소환
         _wsf.Shadow.gameObject.SetActive(true);
         _wsf.Shadow.GetComponent<BtnClick>().enabled = false;
 
@@ -349,6 +349,7 @@ public class StartAdditionalUI : MonoBehaviour
             GameManager.Instance.SoundManager.PlayEffect(Insert2);
         }).OnComplete(() =>                 //커버 내리기
         {
+            GameManager.Instance.SoundManager.ChangeBGM(GameManager.Instance.SoundManager.TapeInSound[tapeNumver], 1f);
             CanEject = true;
         });
 
@@ -366,6 +367,8 @@ public class StartAdditionalUI : MonoBehaviour
 
         OverShow.DOKill();
         UpdownCover.DOKill();
+
+        GameManager.Instance.SoundManager.StopBGM();
 
         OverShow.DOColor(new Color(1, 1, 1, 1f), 0.5f);
         UpdownCover.DOAnchorPosY(-115f, 0.3f);

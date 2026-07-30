@@ -35284,6 +35284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e678b70028619e245b4dd1218012f76c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AwaitForMaking: 0
 --- !u!114 &1173635532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35330,6 +35331,18 @@ MonoBehaviour:
   BGMVolume: 1
   startEffectSourceCount: 10
   maxEffectSourceCount: 30
+  NoiceSound: {fileID: 11400000, guid: d7a23efb66e418047bb5ebe9d01cecdc, type: 2}
+  TapeInSound:
+  - {fileID: 11400000, guid: 3669610e4e7fd0a4b9f889b157b3b33e, type: 2}
+  - {fileID: 11400000, guid: cadb8b02db1ec2443a40a92aa3a3d101, type: 2}
+  - {fileID: 11400000, guid: 1a3cc4399255d4c48bb51d4042e1f44c, type: 2}
+  - {fileID: 11400000, guid: 2a39be581f2764a4a9da5413d5cbcf0f, type: 2}
+  - {fileID: 11400000, guid: 385b640a47b5c194e935f8d97f2801d4, type: 2}
+  - {fileID: 11400000, guid: 1c790d5b74aaf944081a36478c4312e7, type: 2}
+  - {fileID: 11400000, guid: 98a4f5914ebb6af43838374ded23ae83, type: 2}
+  - {fileID: 11400000, guid: 314d5beaa8d14444d8eb6f004219f7f2, type: 2}
+  - {fileID: 11400000, guid: 915f539f5e3c5644095261f03ad7151e, type: 2}
+  - {fileID: 11400000, guid: b0d04d91850c5d14eac9305812542e02, type: 2}
 --- !u!114 &1173635535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44844,6 +44857,7 @@ MonoBehaviour:
   NoSignalText: {fileID: 1536062887}
   NoSignalSide: {fileID: 340517071}
   FirstSpawnTrans: {fileID: 1762865741}
+  Sounds: []
   MainPos: {fileID: 1762865741}
   UpSide: {fileID: 231310690}
   NoiseImage: {fileID: 278913135}

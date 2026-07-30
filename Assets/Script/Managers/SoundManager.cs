@@ -17,13 +17,25 @@ public class SoundManager : MonoBehaviour
     private Transform bgmParent;
     private Transform loopParent;
 
-    private AudioSource bgmSource;
+    private AudioSource bgmSourceA;
+    private AudioSource bgmSourceB;
+
+    private AudioSource currentBGMSource;
+    private AudioSource nextBGMSource;
+
+    private Coroutine bgmFadeCoroutine;
+    private bool isBGMFading = false;
+
+    private readonly Dictionary<AudioSource, float> bgmSourceSoundDataVolumes = new Dictionary<AudioSource, float>();
 
     private readonly List<AudioSource> effectSources = new List<AudioSource>();
     private readonly Dictionary<AudioSource, Coroutine> effectReturnRoutines = new Dictionary<AudioSource, Coroutine>();
     private readonly HashSet<AudioSource> ignoreVolumeControlSources = new HashSet<AudioSource>();
 
-    private readonly Dictionary<string, AudioSource> loopSoundSources = new Dictionary<string, AudioSource>(); 
+    private readonly Dictionary<string, AudioSource> loopSoundSources = new Dictionary<string, AudioSource>();
+
+    public SoundData NoiceSound;
+    public List<SoundData> TapeInSound;
 
     private void Awake()
     {
@@ -61,13 +73,30 @@ public class SoundManager : MonoBehaviour
             CreateEffectSource();
         }
 
-        GameObject bgmObj = new GameObject("BGMSource");
+        bgmSourceA = CreateBGMSource("BGMSource_A");
+        bgmSourceB = CreateBGMSource("BGMSource_B");
+
+        currentBGMSource = bgmSourceA;
+        nextBGMSource = bgmSourceB;
+
+        bgmSourceSoundDataVolumes[bgmSourceA] = 1f;
+        bgmSourceSoundDataVolumes[bgmSourceB] = 1f;
+    }
+
+    private AudioSource CreateBGMSource(string sourceName)
+    {
+        GameObject bgmObj = new GameObject(sourceName);
         bgmObj.transform.SetParent(bgmParent);
         bgmObj.transform.localPosition = Vector3.zero;
 
-        bgmSource = bgmObj.AddComponent<AudioSource>();
-        bgmSource.playOnAwake = false;
-        bgmSource.loop = true;
+        AudioSource source = bgmObj.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = true;
+        source.clip = null;
+        source.pitch = 1f;
+        source.volume = 0f;
+
+        return source;
     }
 
     private AudioSource CreateEffectSource()
@@ -444,44 +473,253 @@ public class SoundManager : MonoBehaviour
     }
 
     // ==============================
-    // BGM Sound
+    // BGM Sound - SoundData 방식
+    // ==============================
+
+    public void PlayBGM(SoundData soundData)
+    {
+        PlayBGMImmediate(soundData);
+    }
+
+    public void PlayBGMImmediate(SoundData soundData)
+    {
+        if (soundData == null) return;
+        if (!soundData.IsValid()) return;
+        if (currentBGMSource == null) return;
+
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+            bgmFadeCoroutine = null;
+        }
+
+        isBGMFading = false;
+
+        if (nextBGMSource != null)
+        {
+            nextBGMSource.Stop();
+            nextBGMSource.clip = null;
+            nextBGMSource.volume = 0f;
+            nextBGMSource.pitch = 1f;
+        }
+
+        if (currentBGMSource.clip == soundData.Clip && currentBGMSource.isPlaying)
+        {
+            currentBGMSource.volume = GetFinalBGMVolume(soundData.Volume);
+            currentBGMSource.pitch = GetFinalBGMPitch(soundData);
+            bgmSourceSoundDataVolumes[currentBGMSource] = Mathf.Clamp01(soundData.Volume);
+            return;
+        }
+
+        currentBGMSource.Stop();
+        currentBGMSource.clip = soundData.Clip;
+        currentBGMSource.volume = GetFinalBGMVolume(soundData.Volume);
+        currentBGMSource.pitch = GetFinalBGMPitch(soundData);
+        currentBGMSource.loop = true;
+
+        bgmSourceSoundDataVolumes[currentBGMSource] = Mathf.Clamp01(soundData.Volume);
+
+        currentBGMSource.Play();
+    }
+
+    public void ChangeBGM(SoundData soundData)
+    {
+        ChangeBGM(soundData, 1f);
+    }
+
+    public void ChangeBGM(SoundData soundData, float fadeTime)
+    {
+        if (soundData == null) return;
+        if (!soundData.IsValid()) return;
+        if (currentBGMSource == null) return;
+        if (nextBGMSource == null) return;
+
+        if (currentBGMSource.clip == soundData.Clip && currentBGMSource.isPlaying)
+            return;
+
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+            bgmFadeCoroutine = null;
+        }
+
+        bgmFadeCoroutine = StartCoroutine(ChangeBGMCoroutine(soundData, fadeTime));
+    }
+
+    private IEnumerator ChangeBGMCoroutine(SoundData soundData, float fadeTime)
+    {
+        isBGMFading = true;
+
+        AudioSource oldSource = currentBGMSource;
+        AudioSource newSource = nextBGMSource;
+
+        float oldStartVolume = oldSource != null ? oldSource.volume : 0f;
+        float newSoundDataVolume = Mathf.Clamp01(soundData.Volume);
+
+        if (newSource != null)
+        {
+            newSource.Stop();
+            newSource.clip = soundData.Clip;
+            newSource.volume = 0f;
+            newSource.pitch = GetFinalBGMPitch(soundData);
+            newSource.loop = true;
+
+            bgmSourceSoundDataVolumes[newSource] = newSoundDataVolume;
+
+            newSource.Play();
+        }
+
+        if (fadeTime <= 0f)
+        {
+            if (oldSource != null)
+            {
+                oldSource.Stop();
+                oldSource.clip = null;
+                oldSource.volume = 0f;
+                oldSource.pitch = 1f;
+            }
+
+            if (newSource != null)
+            {
+                newSource.volume = GetFinalBGMVolume(newSoundDataVolume);
+            }
+
+            currentBGMSource = newSource;
+            nextBGMSource = oldSource;
+
+            isBGMFading = false;
+            bgmFadeCoroutine = null;
+            yield break;
+        }
+
+        float time = 0f;
+
+        while (time < fadeTime)
+        {
+            time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / fadeTime);
+
+            float newTargetVolume = GetFinalBGMVolume(newSoundDataVolume);
+
+            if (oldSource != null)
+            {
+                oldSource.volume = Mathf.Lerp(oldStartVolume, 0f, t);
+            }
+
+            if (newSource != null)
+            {
+                newSource.volume = Mathf.Lerp(0f, newTargetVolume, t);
+            }
+
+            yield return null;
+        }
+
+        if (oldSource != null)
+        {
+            oldSource.Stop();
+            oldSource.clip = null;
+            oldSource.volume = 0f;
+            oldSource.pitch = 1f;
+        }
+
+        if (newSource != null)
+        {
+            newSource.volume = GetFinalBGMVolume(newSoundDataVolume);
+        }
+
+        currentBGMSource = newSource;
+        nextBGMSource = oldSource;
+
+        isBGMFading = false;
+        bgmFadeCoroutine = null;
+    }
+
+    // ==============================
+    // BGM Sound - AudioClip 방식 유지용
     // ==============================
 
     public void PlayBGM(AudioClip clip)
     {
         if (clip == null) return;
-        if (bgmSource == null) return;
+        if (currentBGMSource == null) return;
 
-        if (bgmSource.clip == clip && bgmSource.isPlaying)
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+            bgmFadeCoroutine = null;
+        }
+
+        isBGMFading = false;
+
+        if (nextBGMSource != null)
+        {
+            nextBGMSource.Stop();
+            nextBGMSource.clip = null;
+            nextBGMSource.volume = 0f;
+            nextBGMSource.pitch = 1f;
+        }
+
+        if (currentBGMSource.clip == clip && currentBGMSource.isPlaying)
             return;
 
-        bgmSource.clip = clip;
-        bgmSource.volume = GetFinalBGMVolume();
-        bgmSource.pitch = 1f;
-        bgmSource.loop = true;
-        bgmSource.Play();
+        currentBGMSource.clip = clip;
+        currentBGMSource.volume = GetFinalBGMVolume();
+        currentBGMSource.pitch = 1f;
+        currentBGMSource.loop = true;
+
+        bgmSourceSoundDataVolumes[currentBGMSource] = 1f;
+
+        currentBGMSource.Play();
     }
 
     public void StopBGM()
     {
-        if (bgmSource == null) return;
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+            bgmFadeCoroutine = null;
+        }
 
-        bgmSource.Stop();
-        bgmSource.clip = null;
+        isBGMFading = false;
+
+        StopBGMSource(bgmSourceA);
+        StopBGMSource(bgmSourceB);
+    }
+
+    private void StopBGMSource(AudioSource source)
+    {
+        if (source == null) return;
+
+        source.Stop();
+        source.clip = null;
+        source.volume = 0f;
+        source.pitch = 1f;
+        source.loop = true;
+
+        bgmSourceSoundDataVolumes[source] = 1f;
     }
 
     public void PauseBGM()
     {
-        if (bgmSource == null) return;
-
-        bgmSource.Pause();
+        if (bgmSourceA != null) bgmSourceA.Pause();
+        if (bgmSourceB != null) bgmSourceB.Pause();
     }
 
     public void ResumeBGM()
     {
-        if (bgmSource == null) return;
+        if (bgmSourceA != null) bgmSourceA.UnPause();
+        if (bgmSourceB != null) bgmSourceB.UnPause();
+    }
 
-        bgmSource.UnPause();
+    private float GetFinalBGMPitch(SoundData soundData)
+    {
+        if (soundData == null) return 1f;
+
+        float pitch =
+            soundData.GetPitch() *
+            soundData.GetSpeed();
+
+        return Mathf.Max(0.01f, pitch);
     }
 
     // ==============================
@@ -516,13 +754,44 @@ public class SoundManager : MonoBehaviour
         return Mathf.Clamp01(MainSoundVolume * BGMVolume);
     }
 
+    private float GetFinalBGMVolume(float soundDataVolume)
+    {
+        return Mathf.Clamp01(MainSoundVolume * BGMVolume * Mathf.Clamp01(soundDataVolume));
+    }
+
     private void ApplyVolumes()
     {
-        if (bgmSource != null)
+        ApplyBGMVolumes();
+        ApplyEffectVolumes();
+        ApplyLoopVolumes();
+    }
+
+    private void ApplyBGMVolumes()
+    {
+        if (isBGMFading)
+            return;
+
+        ApplyBGMSourceVolume(bgmSourceA);
+        ApplyBGMSourceVolume(bgmSourceB);
+    }
+
+    private void ApplyBGMSourceVolume(AudioSource source)
+    {
+        if (source == null) return;
+        if (!source.isPlaying) return;
+
+        float soundDataVolume = 1f;
+
+        if (bgmSourceSoundDataVolumes.TryGetValue(source, out float savedVolume))
         {
-            bgmSource.volume = GetFinalBGMVolume();
+            soundDataVolume = savedVolume;
         }
 
+        source.volume = GetFinalBGMVolume(soundDataVolume);
+    }
+
+    private void ApplyEffectVolumes()
+    {
         for (int i = 0; i < effectSources.Count; i++)
         {
             AudioSource source = effectSources[i];
@@ -538,7 +807,10 @@ public class SoundManager : MonoBehaviour
                 source.volume = Mathf.Min(source.volume, GetFinalEffectVolume());
             }
         }
+    }
 
+    private void ApplyLoopVolumes()
+    {
         foreach (KeyValuePair<string, AudioSource> pair in loopSoundSources)
         {
             AudioSource source = pair.Value;
