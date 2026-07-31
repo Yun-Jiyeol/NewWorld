@@ -15,6 +15,8 @@ public class IconClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     float hoverHeight = 120f;
     float currentHeight;
 
+    public SoundData OnMouseSound;
+
     void Awake()
     {
         currentHeight = normalHeight;
@@ -36,6 +38,11 @@ public class IconClick : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             .SetEase(Ease.OutBack);
 
         Animate(hoverHeight);
+
+        if(OnMouseSound != null)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(OnMouseSound);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)

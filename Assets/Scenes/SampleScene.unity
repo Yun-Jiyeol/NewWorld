@@ -270,7 +270,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1324,6 +1324,7 @@ MonoBehaviour:
   StartAdditionalUI: {fileID: 1488728543}
   WorldUIIcons: {fileID: 0}
   _Wha: {fileID: 1262755776}
+  isReady: 0
 --- !u!114 &36487914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8944,6 +8945,7 @@ MonoBehaviour:
   Parent: {fileID: 1381418966}
   icon: {fileID: 1022460562}
   _btnuienum: 3
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &325202999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10681,6 +10683,7 @@ MonoBehaviour:
   Parent: {fileID: 1288886751}
   icon: {fileID: 658400522}
   _btnuienum: 1
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!1 &412305062
 GameObject:
   m_ObjectHideFlags: 0
@@ -11861,6 +11864,7 @@ MonoBehaviour:
   Parent: {fileID: 849120275}
   icon: {fileID: 2072762318}
   _btnuienum: 5
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &434142206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13527,6 +13531,7 @@ MonoBehaviour:
   Parent: {fileID: 663717693}
   icon: {fileID: 183080267}
   _btnuienum: 6
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &483265505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16955,6 +16960,7 @@ MonoBehaviour:
   Parent: {fileID: 1183565373}
   icon: {fileID: 1274091186}
   _btnuienum: 11
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &600043645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17125,6 +17131,7 @@ MonoBehaviour:
   Parent: {fileID: 840027019}
   icon: {fileID: 1747719482}
   _btnuienum: 2
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &610952473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18685,7 +18692,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &659794355
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22718,6 +22725,7 @@ MonoBehaviour:
   Parent: {fileID: 1397575972}
   icon: {fileID: 177789933}
   _btnuienum: 8
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &768499334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32153,6 +32161,7 @@ MonoBehaviour:
   Parent: {fileID: 436639835}
   icon: {fileID: 722430195}
   _btnuienum: 10
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &1071669073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36918,10 +36927,10 @@ RectTransform:
   m_Father: {fileID: 883396150}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -110}
-  m_SizeDelta: {x: 265.99976, y: 110}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 110}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1245311013
 GameObject:
@@ -38182,7 +38191,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -38447,10 +38456,10 @@ RectTransform:
   m_Father: {fileID: 883396150}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132.99988, y: -380}
-  m_SizeDelta: {x: 265.99976, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1288151767
 GameObject:
@@ -39199,7 +39208,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -44259,10 +44268,10 @@ RectTransform:
   m_Father: {fileID: 883396150}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -220}
-  m_SizeDelta: {x: 265.99976, y: 110}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 110}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1476947646
 GameObject:
@@ -44857,7 +44866,6 @@ MonoBehaviour:
   NoSignalText: {fileID: 1536062887}
   NoSignalSide: {fileID: 340517071}
   FirstSpawnTrans: {fileID: 1762865741}
-  Sounds: []
   MainPos: {fileID: 1762865741}
   UpSide: {fileID: 231310690}
   NoiseImage: {fileID: 278913135}
@@ -49794,6 +49802,8 @@ MonoBehaviour:
   AdditionalUI: []
   ExplainText: {fileID: 1857074458}
   ExplainImage: {fileID: 1831902852}
+  PopUpUI: {fileID: 11400000, guid: 1eea683d69139b84195c3dc601bbaec7, type: 2}
+  PopInUI: {fileID: 11400000, guid: 30f0c64c3ec87534697fe40df49c3a72, type: 2}
   scaleratio: 1
 --- !u!1 &1666071216
 GameObject:
@@ -53011,6 +53021,7 @@ MonoBehaviour:
   Parent: {fileID: 328434065}
   icon: {fileID: 2137723834}
   _btnuienum: 7
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &1776975359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56052,10 +56063,10 @@ RectTransform:
   m_Father: {fileID: 883396150}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 265.99976, y: 110}
+  m_SizeDelta: {x: 0, y: 110}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1865964170
 GameObject:
@@ -58530,6 +58541,7 @@ MonoBehaviour:
   Parent: {fileID: 1869930350}
   icon: {fileID: 1853454404}
   _btnuienum: 4
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &1927673632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63979,6 +63991,7 @@ MonoBehaviour:
   Parent: {fileID: 1359955925}
   icon: {fileID: 1676806248}
   _btnuienum: 9
+  OnMouseSound: {fileID: 11400000, guid: 1257c2bc59bf2784aa22549f38ff1652, type: 2}
 --- !u!114 &2109540039
 MonoBehaviour:
   m_ObjectHideFlags: 0

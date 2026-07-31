@@ -49,6 +49,10 @@ public class SelectionUI : MonoBehaviour
     public TextMeshProUGUI ExplainText;
     public Image ExplainImage;
 
+    bool isPopUp = false;
+    public SoundData PopUpUI;
+    public SoundData PopInUI;
+
     public void Onit()
     {
         thistransform = gameObject.GetComponent<RectTransform>();
@@ -101,8 +105,14 @@ public class SelectionUI : MonoBehaviour
     {
         UIBtnsSelectedUIMaterial _slect = Findnowenum();
 
-        thistransform.DOKill();
-        thistransform.DOAnchorPosX(-145f-size, 0.5f);
+        if (!isPopUp)
+        {
+            thistransform.DOKill();
+            thistransform.DOAnchorPosX(-145f - size, 0.5f);
+            GameManager.Instance.SoundManager.PlayEffect(PopUpUI);
+        }
+        isPopUp = true;
+
         DestroyAllAdditionalUi();
 
         OffAllUI();
@@ -140,8 +150,14 @@ public class SelectionUI : MonoBehaviour
     {
         nowUIenum = SelectionUIenum.None;
 
-        thistransform.DOKill();
-        thistransform.DOAnchorPosX(-145f, 0.25f);
+        if (isPopUp)
+        {
+            thistransform.DOKill();
+            thistransform.DOAnchorPosX(-145f, 0.25f);
+            GameManager.Instance.SoundManager.PlayEffect(PopInUI);
+        }
+        isPopUp = false;
+
         DestroyAllAdditionalUi();
 
         for (int i = 0; i < uIBtnsSelectedUIMaterials.Count; i++)

@@ -233,6 +233,7 @@ public class StartAdditionalUI : MonoBehaviour
         GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
 
         UpSide.DOScale(new Vector2(2f, 2f), 2f);
+        GameManager.Instance.SoundManager.PlayEffect(SoundChoose.FindSound("MoveSound"));
         MainPos.DOAnchorPos(new Vector2(0, -1080), 0.5f).OnComplete(() =>
         {
             OutSideImage.DOColor(new Color(1, 1, 1, 0), 1.5f);

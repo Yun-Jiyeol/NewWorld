@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WaterFalling
   m_EditorClassIdentifier: 
   Clip: {fileID: 8300000, guid: 1645bbd084dab3e4aa094c0ad50594b6, type: 3}
-  Volume: 0.15
+  Volume: 0.05
   Pitch: 1
   Speed: 1.5
   UseRandomPitch: 0

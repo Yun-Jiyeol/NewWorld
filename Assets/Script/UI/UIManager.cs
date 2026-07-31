@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
     public WorldUIIcons WorldUIIcons;
     public RectTransform _Wha;
 
+    public bool isReady = false;
+
     private void Awake()
     {
         WorldUIIcons = gameObject.GetComponent<WorldUIIcons>();
@@ -41,6 +43,8 @@ public class UIManager : MonoBehaviour
 
     public void Onit()
     {
+        isReady = false;
+
         RectTransform _Com = Compass.GetComponent<RectTransform>();
         RectTransform _Sel = SelectionUI.gameObject.GetComponent<RectTransform>();
 
@@ -50,7 +54,10 @@ public class UIManager : MonoBehaviour
 
         _Com.DOScale(Vector2.one, 1f).OnComplete(() =>
         {
-            _Sel.DOAnchorPos(new Vector2(-145f, 0), 0.5f);
+            _Sel.DOAnchorPos(new Vector2(-145f, 0), 0.5f).OnComplete(() =>
+            {
+                isReady = true;
+            });
             _Wha.DOAnchorPos(Vector2.zero, 2f);
         });
     }

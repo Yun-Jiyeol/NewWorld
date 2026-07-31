@@ -64,13 +64,16 @@ public class InputManager : MonoBehaviour
                     nowMovingThing = CoinType.None;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
+                    if (GameManager.Instance.UIManager.isReady)
                     {
-                        GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
-                        GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
-                        Cursor.lockState = CursorLockMode.Locked;
-                        GameManager.Instance.MainCamera.stopCamera = false;
-                        GameManager.Instance.MainCamera.SavePos();
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
+                        {
+                            GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
+                            GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
+                            Cursor.lockState = CursorLockMode.Locked;
+                            GameManager.Instance.MainCamera.stopCamera = false;
+                            GameManager.Instance.MainCamera.SavePos();
+                        }
                     }
 
                     if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -115,14 +118,19 @@ public class InputManager : MonoBehaviour
                         nowMovingThing = CoinType.World;
                         ChooseWorld();
                     }
-                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
+
+
+                    if (GameManager.Instance.UIManager.isReady)
                     {
-                        GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
-                        GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
-                        GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
-                        Cursor.lockState = CursorLockMode.Confined;
-                        GameManager.Instance.MainCamera.stopCamera = true;
-                        GameManager.Instance.MainCamera.SavePos();
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
+                        {
+                            GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
+                            GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
+                            GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
+                            Cursor.lockState = CursorLockMode.Confined;
+                            GameManager.Instance.MainCamera.stopCamera = true;
+                            GameManager.Instance.MainCamera.SavePos();
+                        }
                     }
 
                     if (!isSomethingHit) return;
