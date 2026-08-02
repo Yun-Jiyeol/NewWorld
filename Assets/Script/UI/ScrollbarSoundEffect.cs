@@ -55,6 +55,63 @@ public class ScrollbarSoundEffect : MonoBehaviour, IPointerDownHandler, IPointer
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        StartScrollbarSound();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        EndScrollbarSound();
+    }
+
+    private void OnScrollbarValueChanged(float value)
+    {
+        if (onlyPlayMoveSoundWhileDragging && !isDragging)
+            return;
+
+        PlayMoveSoundByCurrentValueWithStep();
+    }
+    private void PlayMoveSoundByCurrentValueWithStep()
+    {
+        if (targetScrollbar == null) return;
+
+        float currentValue = targetScrollbar.value;
+        float difference = Mathf.Abs(currentValue - lastMoveSoundValue);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundValue = currentValue;
+
+        float pitch = GetPitchByCurrentScrollbarValue();
+
+        PlayMoveSound(pitch);
+    }
+
+    public void PlayMoveSoundByCurrentValue()
+    {
+        if (targetScrollbar == null) return;
+
+        float currentValue = targetScrollbar.value;
+
+        lastMoveSoundValue = currentValue;
+
+        float pitch = GetPitchByCurrentScrollbarValue();
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByCurrentScrollbarValue()
+    {
+        if (targetScrollbar == null)
+            return 1f;
+
+        float currentValue = Mathf.Clamp01(targetScrollbar.value);
+
+        return Mathf.Lerp(minMovePitch, maxMovePitch, currentValue);
+    }
+
+    public void StartScrollbarSound()
+    {
         if (targetScrollbar == null) return;
 
         isDragging = true;
@@ -66,7 +123,7 @@ public class ScrollbarSoundEffect : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public void EndScrollbarSound()
     {
         if (targetScrollbar == null) return;
 
@@ -78,30 +135,6 @@ public class ScrollbarSoundEffect : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
-    private void OnScrollbarValueChanged(float value)
-    {
-        if (targetScrollbar == null) return;
-
-        if (onlyPlayMoveSoundWhileDragging && !isDragging)
-            return;
-
-        float difference = Mathf.Abs(value - lastMoveSoundValue);
-
-        if (difference < moveSoundStep)
-            return;
-
-        lastMoveSoundValue = value;
-
-        float pitch = GetPitchByScrollbarValue(value);
-
-        PlayMoveSound(pitch);
-    }
-
-    private float GetPitchByScrollbarValue(float value)
-    {
-        // Scrollbar value는 기본적으로 0 ~ 1
-        return Mathf.Lerp(minMovePitch, maxMovePitch, Mathf.Clamp01(value));
-    }
 
     private void PlaySound(SoundData soundData)
     {
