@@ -12,6 +12,9 @@ public class WorldSettingUI : BasicUI
     public TextMeshProUGUI BeforeName;
     string SaveBN;
 
+    public SoundData OnEndName;
+    public SoundData OnClickOkay;
+
     public override void OnSetting()
     {
         if (GameManager.Instance.InputManager.TargetGameObject == null) return;
@@ -30,6 +33,7 @@ public class WorldSettingUI : BasicUI
         Instantiate(GameManager.Instance.UIManager.SavedImage, GameManager.Instance.UIManager.SelectionUI.transform);
 
         GameManager.Instance.SaveAndLoadManager.ChangeName(TargetObject._name, Inputname);
+        GameManager.Instance.SoundManager.PlayEffect(OnEndName);
 
         TargetObject._name = Inputname;
         SaveBN = TargetObject._name;
@@ -48,6 +52,7 @@ public class WorldSettingUI : BasicUI
     public void OnClickEnd()
     {
         GameManager.Instance.SaveSomeNowWorld();
+        GameManager.Instance.SoundManager.PlayEffect(OnClickOkay);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
 }

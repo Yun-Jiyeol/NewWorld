@@ -83,7 +83,7 @@ public class InputManager : MonoBehaviour
 
                         RaycastHit hit;
 
-                        if (Physics.Raycast(ray, out hit, 1000f, 1<<6))
+                        if (Physics.Raycast(ray, out hit, 1000f, 1 << 6))
                         {
                             // 맞은 물체
                             GameObject hitObject = hit.transform.gameObject;
@@ -102,21 +102,24 @@ public class InputManager : MonoBehaviour
                 }
                 else
                 {
-                    CheckRaycast(true, 1<<6);
+                    CheckRaycast(true, 1 << 6);
                     PlayerMove();
 
                     nowMovingThing = CoinType.Player;
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(nowMovingThing);
 
-                    if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SpawnWorld]))
-                    {
-                        GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
+                    if (GameManager.Instance.UIManager.isReady) 
+                    { 
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SpawnWorld]))
+                        {
+                            GameObject newworld = GameManager.Instance.WorldManager.MakeNewWorld(3, 3, 3);
 
-                        TargetGameObject = newworld;
-                        TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
-                        GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
-                        nowMovingThing = CoinType.World;
-                        ChooseWorld();
+                            TargetGameObject = newworld;
+                            TargetGameObject.GetComponent<ChunkCode>().ChooseThisWorld();
+                            GameManager.Instance.ChangeFlow(GameFlow.MakeOneWorld);
+                            nowMovingThing = CoinType.World;
+                            ChooseWorld();
+                        }
                     }
 
 
