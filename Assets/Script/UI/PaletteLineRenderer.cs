@@ -22,6 +22,19 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
 
     ParetteUI paretteui;
 
+    [Header("Sound")]
+    [SerializeField] private SoundData clickSound;
+    [SerializeField] private SoundData moveSound;
+    [SerializeField] private SoundData releaseSound;
+
+    [Header("Move Sound Setting")]
+    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundVolume = 1f;
+    [SerializeField] private float minMovePitch = 0.75f;
+    [SerializeField] private float maxMovePitch = 1.35f;
+
+    private float lastMoveSoundX = 0f;
+
     private void Awake()
     {
         parentRect = transform as RectTransform;
@@ -37,6 +50,8 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
         childToMove.anchoredPosition = new Vector2(value, -25f);
         targetMaterial.color = GetColorFromPalette(new Vector2(value, 0));
         paretteui = _paretteui;
+
+        lastMoveSoundX = value;
     }
 
     void DrawPaletteLine()
@@ -60,10 +75,7 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
 
         for (int x = 0; x < width; x++)
         {
-            // 0 ~ 1 위치
             float t = x / (float)(width - 1);
-
-            // 전체 색 범위에서 위치 계산
             float scaled = t * (colorCount - 1);
 
             int indexA = Mathf.FloorToInt(scaled);
@@ -119,21 +131,30 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         if (!isOnImage) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            isPressed = true;
+            lastMoveSoundX = childToMove.anchoredPosition.x;
+            PlaySound(clickSound);
+        }
+
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-             parentRect,
-             Input.mousePosition,         
-             null,                        
-             out localPoint
+                parentRect,
+                Input.mousePosition,
+                null,
+                out localPoint
             );
 
             if (localPoint.x > Max)
             {
                 localPoint.x = Max;
             }
+
             if (localPoint.x < Min)
             {
                 localPoint.x = Min;
@@ -143,8 +164,15 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
 
             targetMaterial.color = GetColorFromPalette(new Vector2(localPoint.x, 0));
             paretteui._finalChooseColor.DrawPaletteLine();
+
+            PlayMoveSoundByX(localPoint.x);
         }
-        else if (Input.GetMouseButtonUp(0)) isPressed = false;
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isPressed = false;
+            PlaySound(releaseSound);
+        }
     }
 
     Color GetColorFromPalette(Vector2 localPoint)
@@ -159,5 +187,43 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
         int texY = text.height / 2;
 
         return text.GetPixel(texX, texY);
+    }
+
+    private void PlayMoveSoundByX(float currentX)
+    {
+        float difference = Mathf.Abs(currentX - lastMoveSoundX);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundX = currentX;
+
+        float pitch = GetPitchByX(currentX);
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByX(float currentX)
+    {
+        float t = Mathf.InverseLerp(Min, Max, currentX);
+        return Mathf.Lerp(minMovePitch, maxMovePitch, t);
+    }
+
+    private void PlaySound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(soundData);
+    }
+
+    private void PlayMoveSound(float pitch)
+    {
+        if (moveSound == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            moveSound,
+            moveSoundVolume,
+            pitch
+        );
     }
 }

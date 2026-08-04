@@ -20,6 +20,19 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
     float Max = 122.5f;
     float Min = -122.5f;
 
+    [Header("Sound")]
+    [SerializeField] private SoundData clickSound;
+    [SerializeField] private SoundData moveSound;
+    [SerializeField] private SoundData releaseSound;
+
+    [Header("Move Sound Setting")]
+    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundVolume = 1f;
+    [SerializeField] private float minMovePitch = 0.75f;
+    [SerializeField] private float maxMovePitch = 1.35f;
+
+    private float lastMoveSoundX = 0f;
+
     private void Awake()
     {
         parentRect = transform as RectTransform;
@@ -29,6 +42,8 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         float value = Mathf.Lerp(-Min, Max, GameManager.Instance.BuildManager.alfar);
         childToMove.anchoredPosition = new Vector2(value, -25f);
+
+        lastMoveSoundX = value;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -41,10 +56,11 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if(!isOnImage) return;
+        if (!isOnImage) return;
 
         StartCoroutine(MouseOutCoroutine());
     }
+
     IEnumerator MouseOutCoroutine()
     {
         while (isPressed)
@@ -55,32 +71,89 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
         isOnImage = false;
         GameManager.Instance.InputManager.isTouchingUI = false;
     }
+
     private void Update()
     {
         if (!isOnImage) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            isPressed = true;
+            lastMoveSoundX = childToMove.anchoredPosition.x;
+            PlaySound(clickSound);
+        }
+
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-             parentRect,
-             Input.mousePosition,
-             null,
-             out localPoint
+                parentRect,
+                Input.mousePosition,
+                null,
+                out localPoint
             );
 
-            if(localPoint.x > Max)
+            if (localPoint.x > Max)
             {
                 localPoint.x = Max;
-            }if (localPoint.x < Min)
+            }
+
+            if (localPoint.x < Min)
             {
                 localPoint.x = Min;
             }
+
             childToMove.anchoredPosition = new Vector2(localPoint.x, -25f);
 
             GameManager.Instance.BuildManager.alfar = (localPoint.x + 150f) / 300f;
+
+            PlayMoveSoundByX(localPoint.x);
         }
-        else if (Input.GetMouseButtonUp(0)) isPressed = false;
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isPressed = false;
+            PlaySound(releaseSound);
+        }
+    }
+
+    private void PlayMoveSoundByX(float currentX)
+    {
+        float difference = Mathf.Abs(currentX - lastMoveSoundX);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundX = currentX;
+
+        float pitch = GetPitchByX(currentX);
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByX(float currentX)
+    {
+        float t = Mathf.InverseLerp(Min, Max, currentX);
+        return Mathf.Lerp(minMovePitch, maxMovePitch, t);
+    }
+
+    private void PlaySound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(soundData);
+    }
+
+    private void PlayMoveSound(float pitch)
+    {
+        if (moveSound == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            moveSound,
+            moveSoundVolume,
+            pitch
+        );
     }
 }

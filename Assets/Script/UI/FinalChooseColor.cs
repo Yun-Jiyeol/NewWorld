@@ -20,6 +20,19 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     bool isPressed = false;
 
+    [Header("Sound")]
+    [SerializeField] private SoundData clickSound;
+    [SerializeField] private SoundData moveSound;
+    [SerializeField] private SoundData releaseSound;
+
+    [Header("Move Sound Setting")]
+    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundVolume = 1f;
+    [SerializeField] private float minMovePitch = 0.75f;
+    [SerializeField] private float maxMovePitch = 1.35f;
+
+    private Vector2 lastMoveSoundPosition = Vector2.zero;
+
     private void Awake()
     {
         parentRect = transform as RectTransform;
@@ -32,14 +45,17 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
         float svalue = Mathf.Lerp(Min, Max, s);
         float vvalue = Mathf.Lerp(Min, Max, v);
 
-        childToMove.anchoredPosition = new Vector2(svalue,vvalue);
+        childToMove.anchoredPosition = new Vector2(svalue, vvalue);
 
         DrawPaletteLine();
+
+        // 사운드 기준 위치 저장
+        lastMoveSoundPosition = childToMove.anchoredPosition;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(GameManager.Instance.InputManager.isTouchingUI) return;
+        if (GameManager.Instance.InputManager.isTouchingUI) return;
 
         isOnImage = true;
         GameManager.Instance.InputManager.isTouchingUI = true;
@@ -54,7 +70,7 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     IEnumerator MouseOutCoroutine()
     {
-        while (isPressed) 
+        while (isPressed)
         {
             yield return new WaitForSeconds(0.05f);
         }
@@ -116,17 +132,24 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (!isOnImage) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            isPressed = true;
+            lastMoveSoundPosition = childToMove.anchoredPosition;
+            PlaySound(clickSound);
+        }
+
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-             parentRect,
-             Input.mousePosition,
-             null,
-             out localPoint
+                parentRect,
+                Input.mousePosition,
+                null,
+                out localPoint
             );
-
 
             if (localPoint.x > Max)
             {
@@ -148,8 +171,15 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
             childToMove.anchoredPosition = localPoint;
 
             GameManager.Instance.BuildManager.MainColor.color = GetColorFromPalette(childToMove.anchoredPosition);
+
+            PlayMoveSoundByPosition(localPoint);
         }
-        else if(Input.GetMouseButtonUp(0)) isPressed = false;
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isPressed = false;
+            PlaySound(releaseSound);
+        }
     }
 
     Color GetColorFromPalette(Vector2 localPoint)
@@ -169,5 +199,47 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
         int texY = Mathf.RoundToInt(v * (tex.height - 1));
 
         return tex.GetPixel(texX, texY);
+    }
+
+    private void PlayMoveSoundByPosition(Vector2 currentPosition)
+    {
+        float difference = Vector2.Distance(currentPosition, lastMoveSoundPosition);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundPosition = currentPosition;
+
+        float pitch = GetPitchByPosition(currentPosition);
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByPosition(Vector2 currentPosition)
+    {
+        float xT = Mathf.InverseLerp(Min, Max, currentPosition.x);
+        float yT = Mathf.InverseLerp(Min, Max, currentPosition.y);
+
+        float t = (xT + yT) * 0.5f;
+
+        return Mathf.Lerp(minMovePitch, maxMovePitch, t);
+    }
+
+    private void PlaySound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(soundData);
+    }
+
+    private void PlayMoveSound(float pitch)
+    {
+        if (moveSound == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            moveSound,
+            moveSoundVolume,
+            pitch
+        );
     }
 }

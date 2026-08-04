@@ -8,6 +8,7 @@ public class SaveColor : MonoBehaviour, IPointerClickHandler
     Color savecolor = Color.white;
     public Image image;
     public TextMeshProUGUI textMeshPro;
+    public SoundData ChangeColorSound;
 
     public void Setting(int num)
     {
@@ -24,6 +25,7 @@ public class SaveColor : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        GameManager.Instance.SoundManager.PlayEffect(ChangeColorSound);
         GameManager.Instance.BuildManager.SetColor(savecolor);
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PreColor : MonoBehaviour, IPointerClickHandler
 {
     Color savecolor;
+    public SoundData ChangeColorSound;
 
     public void OnSetting(int _num)
     {
@@ -20,6 +21,7 @@ public class PreColor : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        GameManager.Instance.SoundManager.PlayEffect(ChangeColorSound);
         GameManager.Instance.BuildManager.SetColor(savecolor);
     }
 }
