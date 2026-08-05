@@ -10,6 +10,10 @@ public class PutWorldUI : BasicUI
     public TextMeshProUGUI BeforeName;
     string SaveBN;
 
+    public SoundData OnEndName;
+    public SoundData OnClickOkay;
+    public SoundData OnClickDestroy;
+
     public override void OnSetting()
     {
         if (GameManager.Instance.InputManager.TargetGameObject == null) return;
@@ -28,6 +32,7 @@ public class PutWorldUI : BasicUI
         Instantiate(GameManager.Instance.UIManager.SavedImage, GameManager.Instance.UIManager.SelectionUI.transform);
 
         GameManager.Instance.SaveAndLoadManager.ChangeName(TargetObject._name, Inputname);
+        GameManager.Instance.SoundManager.PlayEffect(OnEndName);
 
         TargetObject._name = Inputname;
         SaveBN = TargetObject._name;
@@ -38,11 +43,13 @@ public class PutWorldUI : BasicUI
 
     public void PutWorld()
     {
+        GameManager.Instance.SoundManager.PlayEffect(OnClickOkay);
         GameManager.Instance.InputManager.PutThisWorldInSpace();
     }
 
     public void DestroyWorld()
     {
+        GameManager.Instance.SoundManager.PlayEffect(OnClickDestroy);
         TargetObject.DestroyWorld();
     }
 }
