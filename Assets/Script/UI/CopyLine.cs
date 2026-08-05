@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -23,6 +22,19 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     LightUI lightUI = null;
     MainLightUI MainLightUI = null;
 
+    [Header("Sound")]
+    [SerializeField] private SoundData clickSound;
+    [SerializeField] private SoundData moveSound;
+    [SerializeField] private SoundData releaseSound;
+
+    [Header("Move Sound Setting")]
+    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundVolume = 1f;
+    [SerializeField] private float minMovePitch = 0.75f;
+    [SerializeField] private float maxMovePitch = 1.35f;
+
+    private float lastMoveSoundX = 0f;
+
     private void Awake()
     {
         parentRect = transform as RectTransform;
@@ -30,28 +42,40 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void Setting(LightUI _lightui)
     {
+        lightUI = _lightui;
+        MainLightUI = null;
+
         DrawPaletteLine();
 
         Color.RGBToHSV(_lightui._color, out float h, out float s, out float v);
         float value = Mathf.Lerp(Min, Max, h);
 
         childToMove.anchoredPosition = new Vector2(value, -25f);
-        _lightui.ChangeLineChoose(GetColorFromPalette(new Vector2(value, 0)));
-        childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
-        lightUI = _lightui;
+
+        Color lineColor = GetColorFromPalette(new Vector2(value, 0));
+        _lightui.ChangeLineChoose(lineColor);
+        childToMove.gameObject.GetComponent<Image>().color = lineColor;
+
+        lastMoveSoundX = value;
     }
 
     public void Setting(MainLightUI _mainLightUI)
     {
+        MainLightUI = _mainLightUI;
+        lightUI = null;
+
         DrawPaletteLine();
 
         Color.RGBToHSV(_mainLightUI._color, out float h, out float s, out float v);
         float value = Mathf.Lerp(Min, Max, h);
 
         childToMove.anchoredPosition = new Vector2(value, -25f);
-        _mainLightUI.ChangeInlineColor(GetColorFromPalette(new Vector2(value, 0)));
-        childToMove.gameObject.GetComponent<Image>().color = GetColorFromPalette(new Vector2(value, 0));
-        MainLightUI = _mainLightUI;
+
+        Color lineColor = GetColorFromPalette(new Vector2(value, 0));
+        _mainLightUI.ChangeInlineColor(lineColor);
+        childToMove.gameObject.GetComponent<Image>().color = lineColor;
+
+        lastMoveSoundX = value;
     }
 
     void DrawPaletteLine()
@@ -75,10 +99,8 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         for (int x = 0; x < width; x++)
         {
-            // 0 ~ 1 위치
             float t = x / (float)(width - 1);
 
-            // 전체 색 범위에서 위치 계산
             float scaled = t * (colorCount - 1);
 
             int indexA = Mathf.FloorToInt(scaled);
@@ -134,21 +156,30 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (!isOnImage) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            isPressed = true;
+            lastMoveSoundX = childToMove.anchoredPosition.x;
+            PlaySound(clickSound);
+        }
+
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-             parentRect,
-             Input.mousePosition,
-             null,
-             out localPoint
+                parentRect,
+                Input.mousePosition,
+                null,
+                out localPoint
             );
 
             if (localPoint.x > Max)
             {
                 localPoint.x = Max;
             }
+
             if (localPoint.x < Min)
             {
                 localPoint.x = Min;
@@ -156,19 +187,34 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             childToMove.anchoredPosition = new Vector2(localPoint.x, -25f);
 
-            if(lightUI != null)
-            {
-                lightUI.ChangeLineChoose(GetColorFromPalette(new Vector2(localPoint.x, 0)));
-                childToMove.gameObject.GetComponent<Image>().color = lightUI.inLineChoose;
-                lightUI.CopyChoose.DrawPaletteLine();
-            }else if(MainLightUI != null)
-            {
-                MainLightUI.ChangeInlineColor(GetColorFromPalette(new Vector2(localPoint.x, 0)));
-                childToMove.gameObject.GetComponent<Image>().color = MainLightUI.inLineChoose;
-                MainLightUI.CopyChoose.DrawPaletteLine();
-            }
+            ApplyLineColor(localPoint.x);
+
+            PlayMoveSoundByX(localPoint.x);
         }
-        else if (Input.GetMouseButtonUp(0)) isPressed = false;
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isPressed = false;
+            PlaySound(releaseSound);
+        }
+    }
+
+    private void ApplyLineColor(float x)
+    {
+        Color lineColor = GetColorFromPalette(new Vector2(x, 0));
+
+        if (lightUI != null)
+        {
+            lightUI.ChangeLineChoose(lineColor);
+            childToMove.gameObject.GetComponent<Image>().color = lightUI.inLineChoose;
+            lightUI.CopyChoose.DrawPaletteLine();
+        }
+        else if (MainLightUI != null)
+        {
+            MainLightUI.ChangeInlineColor(lineColor);
+            childToMove.gameObject.GetComponent<Image>().color = MainLightUI.inLineChoose;
+            MainLightUI.CopyChoose.DrawPaletteLine();
+        }
     }
 
     Color GetColorFromPalette(Vector2 localPoint)
@@ -183,5 +229,43 @@ public class CopyLine : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         int texY = text.height / 2;
 
         return text.GetPixel(texX, texY);
+    }
+
+    private void PlayMoveSoundByX(float currentX)
+    {
+        float difference = Mathf.Abs(currentX - lastMoveSoundX);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundX = currentX;
+
+        float pitch = GetPitchByX(currentX);
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByX(float currentX)
+    {
+        float t = Mathf.InverseLerp(Min, Max, currentX);
+        return Mathf.Lerp(minMovePitch, maxMovePitch, t);
+    }
+
+    private void PlaySound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(soundData);
+    }
+
+    private void PlayMoveSound(float pitch)
+    {
+        if (moveSound == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            moveSound,
+            moveSoundVolume,
+            pitch
+        );
     }
 }

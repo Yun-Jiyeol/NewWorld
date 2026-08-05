@@ -2,7 +2,6 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -23,6 +22,19 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     LightUI lightui = null;
     MainLightUI MainLightUI = null;
 
+    [Header("Sound")]
+    [SerializeField] private SoundData clickSound;
+    [SerializeField] private SoundData moveSound;
+    [SerializeField] private SoundData releaseSound;
+
+    [Header("Move Sound Setting")]
+    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundVolume = 1f;
+    [SerializeField] private float minMovePitch = 0.75f;
+    [SerializeField] private float maxMovePitch = 1.35f;
+
+    private Vector2 lastMoveSoundPosition = Vector2.zero;
+
     private void Awake()
     {
         parentRect = transform as RectTransform;
@@ -31,6 +43,7 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void Setting(LightUI _lightUI)
     {
         lightui = _lightUI;
+        MainLightUI = null;
 
         Color.RGBToHSV(lightui._color, out float h, out float s, out float v);
 
@@ -38,6 +51,7 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         float vvalue = Mathf.Lerp(Min, Max, v);
 
         childToMove.anchoredPosition = new Vector2(svalue, vvalue);
+        lastMoveSoundPosition = childToMove.anchoredPosition;
 
         DrawPaletteLine();
     }
@@ -45,6 +59,7 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void Setting(MainLightUI _mainLightUI)
     {
         MainLightUI = _mainLightUI;
+        lightui = null;
 
         Color.RGBToHSV(MainLightUI._color, out float h, out float s, out float v);
 
@@ -52,6 +67,7 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         float vvalue = Mathf.Lerp(Min, Max, v);
 
         childToMove.anchoredPosition = new Vector2(svalue, vvalue);
+        lastMoveSoundPosition = childToMove.anchoredPosition;
 
         DrawPaletteLine();
     }
@@ -86,14 +102,15 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void DrawPaletteLine()
     {
         Color baseColor = new Color();
-        if(lightui != null)
+
+        if (lightui != null)
         {
-            baseColor = lightui.inLineChoose; // 선택된 기준 색
-        }else if(MainLightUI != null)
-        {
-            baseColor = MainLightUI.inLineChoose; // 선택된 기준 색
+            baseColor = lightui.inLineChoose;
         }
-            
+        else if (MainLightUI != null)
+        {
+            baseColor = MainLightUI.inLineChoose;
+        }
 
         Image targetImage = GetComponent<Image>();
         RectTransform rt = targetImage.rectTransform;
@@ -110,17 +127,14 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         for (int x = 0; x < width; x++)
         {
-            float xT = x / (float)(width - 1); // 0~1 (좌→우)
+            float xT = x / (float)(width - 1);
 
-            // 흰색 → 선택 색
             Color horizontalColor = Color.Lerp(Color.white, baseColor, xT);
 
             for (int y = 0; y < height; y++)
             {
-                // 위가 0, 아래가 1이 되도록 뒤집기
                 float yT = 1f - (y / (float)(height - 1));
 
-                // 위: 그대로 / 아래: 검정 섞기
                 Color finalColor = Color.Lerp(horizontalColor, Color.black, yT);
 
                 tex.SetPixel(x, y, finalColor);
@@ -137,48 +151,47 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         targetImage.sprite = sprite;
 
-        if (lightui != null)
-        {
-            lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-            childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = lightui._color;
-            lightui.ChangeColor();
-        }
-        else if (MainLightUI != null)
-        {
-            MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
-            childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = MainLightUI._color;
-            MainLightUI.ChangeColor();
-        }
+        ApplyCurrentColor();
     }
 
     private void Update()
     {
         if (!isOnImage) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            isPressed = true;
+            lastMoveSoundPosition = childToMove.anchoredPosition;
+            PlaySound(clickSound);
+        }
+
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+
             Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-             parentRect,
-             Input.mousePosition,
-             null,
-             out localPoint
+                parentRect,
+                Input.mousePosition,
+                null,
+                out localPoint
             );
-
 
             if (localPoint.x > Max)
             {
                 localPoint.x = Max;
             }
+
             if (localPoint.x < Min)
             {
                 localPoint.x = Min;
             }
+
             if (localPoint.y > Max)
             {
                 localPoint.y = Max;
             }
+
             if (localPoint.y < Min)
             {
                 localPoint.y = Min;
@@ -186,20 +199,46 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             childToMove.anchoredPosition = localPoint;
 
-            if (lightui != null)
-            {
-                lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
-                childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = lightui._color;
-                lightui.ChangeColor();
-            }
-            else if (MainLightUI != null)
-            {
-                MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
-                childToMove.transform.GetComponentsInChildren<Image>().First(img => img.gameObject != childToMove.gameObject).color = MainLightUI._color;
-                MainLightUI.ChangeColor();
-            }
+            ApplyCurrentColor();
+
+            PlayMoveSoundByPosition(localPoint);
         }
-        else if (Input.GetMouseButtonUp(0)) isPressed = false;
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isPressed = false;
+            PlaySound(releaseSound);
+        }
+    }
+
+    private void ApplyCurrentColor()
+    {
+        if (lightui != null)
+        {
+            lightui._color = GetColorFromPalette(childToMove.anchoredPosition);
+
+            Image handleImage = childToMove
+                .transform
+                .GetComponentsInChildren<Image>()
+                .First(img => img.gameObject != childToMove.gameObject);
+
+            handleImage.color = lightui._color;
+
+            lightui.ChangeColor();
+        }
+        else if (MainLightUI != null)
+        {
+            MainLightUI._color = GetColorFromPalette(childToMove.anchoredPosition);
+
+            Image handleImage = childToMove
+                .transform
+                .GetComponentsInChildren<Image>()
+                .First(img => img.gameObject != childToMove.gameObject);
+
+            handleImage.color = MainLightUI._color;
+
+            MainLightUI.ChangeColor();
+        }
     }
 
     Color GetColorFromPalette(Vector2 localPoint)
@@ -207,11 +246,9 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         Rect rect = parentRect.rect;
         Texture2D tex = GetComponent<Image>().sprite.texture;
 
-        // X : 좌 → 우
         float u = Mathf.InverseLerp(rect.xMin, rect.xMax, localPoint.x);
         u = Mathf.Clamp01(u);
 
-        // Y : 위 → 아래 (검정이 아래니까 반전)
         float v = Mathf.InverseLerp(rect.yMin, rect.yMax, localPoint.y);
         v = Mathf.Clamp01(v);
 
@@ -219,5 +256,47 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         int texY = Mathf.RoundToInt(v * (tex.height - 1));
 
         return tex.GetPixel(texX, texY);
+    }
+
+    private void PlayMoveSoundByPosition(Vector2 currentPosition)
+    {
+        float difference = Vector2.Distance(currentPosition, lastMoveSoundPosition);
+
+        if (difference < moveSoundStep)
+            return;
+
+        lastMoveSoundPosition = currentPosition;
+
+        float pitch = GetPitchByPosition(currentPosition);
+
+        PlayMoveSound(pitch);
+    }
+
+    private float GetPitchByPosition(Vector2 currentPosition)
+    {
+        float xT = Mathf.InverseLerp(Min, Max, currentPosition.x);
+        float yT = Mathf.InverseLerp(Min, Max, currentPosition.y);
+
+        float t = (xT + yT) * 0.5f;
+
+        return Mathf.Lerp(minMovePitch, maxMovePitch, t);
+    }
+
+    private void PlaySound(SoundData soundData)
+    {
+        if (soundData == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(soundData);
+    }
+
+    private void PlayMoveSound(float pitch)
+    {
+        if (moveSound == null) return;
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            moveSound,
+            moveSoundVolume,
+            pitch
+        );
     }
 }

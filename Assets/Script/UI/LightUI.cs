@@ -27,6 +27,7 @@ public class LightUI : BasicUI
     public TextMeshProUGUI showSettingRange;
     public TMP_InputField showSettingRangeInput;
 
+    public GameObject SettingAngleExplainText;
     public GameObject SettingAngleGo;
     public TextMeshProUGUI showSettingAngle;
     public TMP_InputField showSettingAngleInput;
@@ -52,6 +53,12 @@ public class LightUI : BasicUI
     bool isLightMove = true;
 
     KeyManager _keyManager;
+
+    [Header("Sound")]
+    public SoundData ChangeTypeSound;
+    public SoundData ChangeValueSound;
+    public SoundData SettingValueSound;
+    public SoundData ResetSound;
 
     public override void OnSetting() 
     {
@@ -153,6 +160,8 @@ public class LightUI : BasicUI
         }
 
         target.intensity = SettingLight;
+        GameManager.Instance.SoundManager.PlayEffect(ChangeValueSound, 0.1f);
+
         ShowSettingLight();
     }
 
@@ -176,6 +185,8 @@ public class LightUI : BasicUI
         }
 
         target.intensity = SettingLight;
+        GameManager.Instance.SoundManager.PlayEffect(SettingValueSound);
+
         ShowSettingLight();
     }
 
@@ -208,6 +219,8 @@ public class LightUI : BasicUI
         }
 
         target.range = SettingRange * 10f;
+        GameManager.Instance.SoundManager.PlayEffect(ChangeValueSound, 0.1f);
+
         ShowSettingLightRange();
     }
 
@@ -231,6 +244,8 @@ public class LightUI : BasicUI
         }
 
         target.range = SettingRange * 10f;
+        GameManager.Instance.SoundManager.PlayEffect(SettingValueSound);
+
         ShowSettingLightRange();
     }
 
@@ -263,6 +278,8 @@ public class LightUI : BasicUI
         }
 
         target.spotAngle = SettingAngle;
+        GameManager.Instance.SoundManager.PlayEffect(ChangeValueSound, 0.1f);
+
         ShowSettingLightAngle();
     }
 
@@ -286,6 +303,8 @@ public class LightUI : BasicUI
         }
 
         target.spotAngle = SettingAngle;
+        GameManager.Instance.SoundManager.PlayEffect(SettingValueSound);
+
         ShowSettingLightAngle();
     }
 
@@ -324,6 +343,7 @@ public class LightUI : BasicUI
         if(targettype == _type) return;
         targettype = _type;
         target.type = _type;
+        GameManager.Instance.SoundManager.PlayEffect(ChangeTypeSound);
         SettingType();
     }
 
@@ -334,6 +354,7 @@ public class LightUI : BasicUI
             case (LightType.Spot):
                 Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
                 Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
+                SettingAngleExplainText.SetActive(true);
                 SettingAngleGo.SetActive(true);
                 MakeSpere();
                 SettingColor();
@@ -342,6 +363,7 @@ public class LightUI : BasicUI
             case (LightType.Point):
                 Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
                 Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
+                SettingAngleExplainText.SetActive(false);
                 SettingAngleGo.SetActive(false);
                 MakeSpere();
                 SettingColor();
@@ -357,6 +379,7 @@ public class LightUI : BasicUI
 
     public void ResetPosition()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ResetSound);
         GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().SetLightPosition();
     }
 

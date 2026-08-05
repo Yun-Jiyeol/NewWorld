@@ -25718,6 +25718,7 @@ MonoBehaviour:
   showSettingLightInput: {fileID: 204135252}
   showSettingRange: {fileID: 1858786385}
   showSettingRangeInput: {fileID: 972967777}
+  SettingAngleExplainText: {fileID: 1034104400}
   SettingAngleGo: {fileID: 323774788}
   showSettingAngle: {fileID: 2118853175}
   showSettingAngleInput: {fileID: 762117901}
@@ -25727,6 +25728,10 @@ MonoBehaviour:
   _color: {r: 0, g: 0, b: 0, a: 0}
   inLineChoose: {r: 0, g: 0, b: 0, a: 0}
   BGColor: {fileID: 546907960}
+  ChangeTypeSound: {fileID: 11400000, guid: dd352281a3e94c84a900d04067407e4b, type: 2}
+  ChangeValueSound: {fileID: 11400000, guid: 6f9f32e894d379e4697f902cb290fa4e, type: 2}
+  SettingValueSound: {fileID: 11400000, guid: de67eefa709213e4890db2c1407d5ac9, type: 2}
+  ResetSound: {fileID: 11400000, guid: 9d6ec19fa376bfc4db6a138d88bb852c, type: 2}
 --- !u!1 &866534209
 GameObject:
   m_ObjectHideFlags: 0
@@ -35067,6 +35072,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childToMove: {fileID: 1818659215}
+  clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSound: {fileID: 11400000, guid: 6f9f32e894d379e4697f902cb290fa4e, type: 2}
+  releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSoundStep: 8
+  moveSoundVolume: 1
+  minMovePitch: 0.75
+  maxMovePitch: 1.35
 --- !u!1 &1168546683
 GameObject:
   m_ObjectHideFlags: 0
@@ -51891,6 +51903,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childToMove: {fileID: 1339526670}
+  clickSound: {fileID: 0}
+  moveSound: {fileID: 0}
+  releaseSound: {fileID: 0}
+  moveSoundStep: 8
+  moveSoundVolume: 1
+  minMovePitch: 0.75
+  maxMovePitch: 1.35
 --- !u!224 &1732500387
 RectTransform:
   m_ObjectHideFlags: 0
@@ -59641,6 +59660,13 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  clickSound: {fileID: 0}
+  moveSound: {fileID: 0}
+  releaseSound: {fileID: 0}
+  moveSoundStep: 8
+  moveSoundVolume: 1
+  minMovePitch: 0.75
+  maxMovePitch: 1.35
 --- !u!224 &1961210577
 RectTransform:
   m_ObjectHideFlags: 0
@@ -64763,6 +64789,13 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
+  clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
+  releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSoundStep: 8
+  moveSoundVolume: 1
+  minMovePitch: 0.75
+  maxMovePitch: 1.35
 --- !u!1 &2122515228
 GameObject:
   m_ObjectHideFlags: 0
