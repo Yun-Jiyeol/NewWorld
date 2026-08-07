@@ -14,6 +14,10 @@ public class PlayerPosUI : BasicUI
     WorldExUI LastLook;
     public GameObject SelectBtn;
 
+    [Header("Sound")]
+    public SoundData OnLookWorldSound;
+    public SoundData ResetPosSound;
+
     public override void OnSetting()
     {
         Clearworldexui();
@@ -65,6 +69,8 @@ public class PlayerPosUI : BasicUI
         float duration = 0.5f;
         float time = 0f;
 
+        GameManager.Instance.SoundManager.PlayEffect(ResetPosSound, 0.3f, 2.2f);
+
         while (time < duration)
         {
             time += Time.deltaTime;
@@ -97,6 +103,7 @@ public class PlayerPosUI : BasicUI
             }
 
             _give.LooAtThis();
+            GameManager.Instance.SoundManager.PlayEffect(OnLookWorldSound);
             SelectBtn.SetActive(true);
         }
     }

@@ -15616,6 +15616,8 @@ MonoBehaviour:
   WorldExUI: {fileID: 9006135991072050863, guid: 9ae5be1a717fb124287eeee319add95f, type: 3}
   WorldsCheckUI: {fileID: 1048056646}
   SelectBtn: {fileID: 1094554745}
+  OnLookWorldSound: {fileID: 11400000, guid: a6d2d6e29f9eab9448103c5140083bc4, type: 2}
+  ResetPosSound: {fileID: 11400000, guid: f3f0d6afad38ddb40b2a8f1cd58e3239, type: 2}
 --- !u!1 &553889961
 GameObject:
   m_ObjectHideFlags: 0
