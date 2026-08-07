@@ -6009,7 +6009,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 9f4c7de0de3a68c4294d03358f9d7748, type: 2}
   moveSound: {fileID: 11400000, guid: 5c3a9b27b2695c044849e653b63c3816, type: 2}
   releaseSound: {fileID: 11400000, guid: 7f04674092f952146832b005e2b9c47a, type: 2}
-  moveSoundStep: 8
+  moveSoundStep: 40
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -8328,6 +8328,8 @@ MonoBehaviour:
   _color: {r: 0, g: 0, b: 0, a: 0}
   inLineChoose: {r: 0, g: 0, b: 0, a: 0}
   background: {fileID: 358492680}
+  ChangValueSound: {fileID: 11400000, guid: 6f9f32e894d379e4697f902cb290fa4e, type: 2}
+  ResetSound: {fileID: 11400000, guid: dd352281a3e94c84a900d04067407e4b, type: 2}
 --- !u!1 &312834387
 GameObject:
   m_ObjectHideFlags: 0
@@ -8892,9 +8894,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -760}
   m_SizeDelta: {x: 265, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &325202996
@@ -14338,9 +14340,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -445}
   m_SizeDelta: {x: 265, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &511599100
@@ -16748,9 +16750,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -372.5}
   m_SizeDelta: {x: 265, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &597411149
@@ -21125,9 +21127,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: 0}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &732179956
@@ -25671,7 +25673,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &862579694
 RectTransform:
   m_ObjectHideFlags: 0
@@ -29974,9 +29976,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -167.5}
   m_SizeDelta: {x: 265, y: 265}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1002344772
@@ -30183,9 +30185,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -655}
   m_SizeDelta: {x: 265, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1008321590
@@ -31213,9 +31215,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -725}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1034279218
@@ -32415,7 +32417,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
   moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
   releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
-  moveSoundStep: 0.05
+  moveSoundStep: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
   moveSoundVolume: 1
@@ -35075,7 +35077,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
   moveSound: {fileID: 11400000, guid: 6f9f32e894d379e4697f902cb290fa4e, type: 2}
   releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
-  moveSoundStep: 8
+  moveSoundStep: 40
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -36872,9 +36874,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -620}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1224085064
@@ -41344,9 +41346,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -550}
   m_SizeDelta: {x: 265, y: 70}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1375509571
@@ -42128,9 +42130,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -410}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1397575972
@@ -48426,9 +48428,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -515}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1604868894
@@ -50527,7 +50529,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
   moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
   releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
-  moveSoundStep: 0.05
+  moveSoundStep: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
   moveSoundVolume: 1
@@ -51903,10 +51905,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childToMove: {fileID: 1339526670}
-  clickSound: {fileID: 0}
-  moveSound: {fileID: 0}
-  releaseSound: {fileID: 0}
-  moveSoundStep: 8
+  clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSound: {fileID: 11400000, guid: 6f9f32e894d379e4697f902cb290fa4e, type: 2}
+  releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSoundStep: 40
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -54011,9 +54013,9 @@ RectTransform:
   m_Father: {fileID: 2052448860}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 132.99988, y: -300}
   m_SizeDelta: {x: 265.99976, y: 35}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1805349145
@@ -54781,7 +54783,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 9f4c7de0de3a68c4294d03358f9d7748, type: 2}
   moveSound: {fileID: 11400000, guid: 5c3a9b27b2695c044849e653b63c3816, type: 2}
   releaseSound: {fileID: 11400000, guid: 7f04674092f952146832b005e2b9c47a, type: 2}
-  moveSoundStep: 8
+  moveSoundStep: 16
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -58562,7 +58564,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 9f4c7de0de3a68c4294d03358f9d7748, type: 2}
   moveSound: {fileID: 11400000, guid: 5c3a9b27b2695c044849e653b63c3816, type: 2}
   releaseSound: {fileID: 11400000, guid: 7f04674092f952146832b005e2b9c47a, type: 2}
-  moveSoundStep: 8
+  moveSoundStep: 16
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -59660,10 +59662,10 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
-  clickSound: {fileID: 0}
-  moveSound: {fileID: 0}
-  releaseSound: {fileID: 0}
-  moveSoundStep: 8
+  clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
+  releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
+  moveSoundStep: 24
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
@@ -63203,7 +63205,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
   moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
   releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
-  moveSoundStep: 0.05
+  moveSoundStep: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35
   moveSoundVolume: 1
@@ -64792,7 +64794,7 @@ MonoBehaviour:
   clickSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
   moveSound: {fileID: 11400000, guid: 664b1317b1756ac40a8795c26e842c71, type: 2}
   releaseSound: {fileID: 11400000, guid: 6cc57eaa5497d8c4f8e252c611cae75a, type: 2}
-  moveSoundStep: 8
+  moveSoundStep: 16
   moveSoundVolume: 1
   minMovePitch: 0.75
   maxMovePitch: 1.35

@@ -28,7 +28,7 @@ public class CopyChoose : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [SerializeField] private SoundData releaseSound;
 
     [Header("Move Sound Setting")]
-    [SerializeField] private float moveSoundStep = 8f;
+    [SerializeField] private float moveSoundStep = 16f;
     [SerializeField] private float moveSoundVolume = 1f;
     [SerializeField] private float minMovePitch = 0.75f;
     [SerializeField] private float maxMovePitch = 1.35f;

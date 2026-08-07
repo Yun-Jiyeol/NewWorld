@@ -17,7 +17,10 @@ public class MainLightUI : BasicUI
 
     GameObject blockImage= null;
 
-    public Image background; 
+    public Image background;
+
+    public SoundData ChangValueSound;
+    public SoundData ResetSound;
 
     public override void OnSetting()
     {
@@ -48,12 +51,36 @@ public class MainLightUI : BasicUI
     {
         float RollingSpeed = 3f;
 
+        float soundInterval = 0.15f;
+        float soundTimer = 0f;
+
         Transform light = ML.transform;
-        Quaternion delta =  Quaternion.Euler(changVectorrot.x/ RollingSpeed, changVectorrot.y/ RollingSpeed, 0f);
+        Quaternion delta = Quaternion.Euler(
+            changVectorrot.x / RollingSpeed,
+            changVectorrot.y / RollingSpeed,
+            0f
+        );
+
+        if (ChangValueSound != null)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(ChangValueSound);
+        }
 
         while (Input.GetMouseButton(0))
         {
             light.rotation *= delta;
+
+            soundTimer += Time.deltaTime;
+
+            if (soundTimer >= soundInterval)
+            {
+                soundTimer = 0f;
+
+                if (ChangValueSound != null)
+                {
+                    GameManager.Instance.SoundManager.PlayEffect(ChangValueSound);
+                }
+            }
 
             yield return null;
         }
@@ -86,6 +113,8 @@ public class MainLightUI : BasicUI
 
         float duration = 1f;
         float time = 0f;
+
+        GameManager.Instance.SoundManager.PlayEffect(ResetSound);
 
         while (time < duration)
         {
