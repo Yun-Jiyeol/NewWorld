@@ -13,6 +13,13 @@ public class MoveOneWorldUI : BasicUI
 
     bool isWorldMove = true;
 
+    [Header("SoundData")]
+    public SoundData ClickReposSound;
+    public SoundData ClickOkaySound;
+    public SoundData ClickRebuildSound;
+    public SoundData ClickCopySound;
+    public SoundData ClickDestroySound;
+
     private void Awake()
     {
         keyManager = GameManager.Instance.KeyManager;
@@ -22,15 +29,20 @@ public class MoveOneWorldUI : BasicUI
     public override void OnSetting()
     {
         if (inputManager.TargetGameObject == null) return;
-        if (target == null || target != inputManager.TargetGameObject) 
+        if (target == null || target != inputManager.TargetGameObject)
         {
             target = inputManager.TargetGameObject;
-            SaveVector3 = target.transform.position;
-            SaveRotation = target.transform.rotation;
-            SaveScale = target.transform.localScale.x;
+            SavePos();
         }
 
         StartCoroutine(updateCoroutine());
+    }
+
+    void SavePos()
+    {
+        SaveVector3 = target.transform.position;
+        SaveRotation = target.transform.rotation;
+        SaveScale = target.transform.localScale.x;
     }
 
     IEnumerator updateCoroutine()
@@ -72,6 +84,8 @@ public class MoveOneWorldUI : BasicUI
 
     public void ChangeBlockInWorld()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickRebuildSound);
+
         target.GetComponent<ChunkCode>().ChooseThisWorld();
         GameManager.Instance.InputManager.ChooseWorld();
         GameManager.Instance.ChangeFlow(GameFlow.WatchOneWorld);
@@ -81,17 +95,23 @@ public class MoveOneWorldUI : BasicUI
 
     public void MoveOneOriginalPosition()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickReposSound);
+
         target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f,true, SaveScale,true, SaveVector3,true, SaveRotation);
         GameManager.Instance.SaveSomeNowWorld();
     }
 
     public void SetPosition()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickOkaySound);
+        SavePos();
         GameManager.Instance.SaveSomeNowWorld();
     }
 
     public void DestroyWorld()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickDestroySound);
+
         GameManager.Instance.WorldManager.DestroyWorld(target);
         GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
         target = null;
@@ -99,6 +119,8 @@ public class MoveOneWorldUI : BasicUI
 
     public void CopyWorld()
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickCopySound);
+
         target.GetComponent<ChunkCode>().StartChangeEveryThingSmooth(0.5f, true, SaveScale, true, SaveVector3, true, SaveRotation);
         GameManager.Instance.SaveSomeNowWorld();
 
@@ -124,5 +146,10 @@ public class MoveOneWorldUI : BasicUI
         GameManager.Instance.UIManager.SelectionUI.AdditionalUI.Add(blockImage);
 
         newChunk.StartBuildRoutine();
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 }

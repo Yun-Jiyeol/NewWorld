@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UIBtnTouch
   m_EditorClassIdentifier: 
   Clip: {fileID: 8300000, guid: ef0d6139845da0f44b6525ce25f27e39, type: 3}
-  Volume: 0.3
+  Volume: 0.2
   Pitch: 1.2
   Speed: 1
   UseRandomPitch: 0
