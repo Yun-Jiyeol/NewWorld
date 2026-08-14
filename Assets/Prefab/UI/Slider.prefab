@@ -771,6 +771,7 @@ MonoBehaviour:
   inputfield: {fileID: 4041712776153072272}
   slider: {fileID: 4041712776678207837}
   WhatSlide: {fileID: 6284368883109439242}
+  CameraSettingSound: {fileID: 11400000, guid: de67eefa709213e4890db2c1407d5ac9, type: 2}
 --- !u!1 &4041712776678207839
 GameObject:
   m_ObjectHideFlags: 0

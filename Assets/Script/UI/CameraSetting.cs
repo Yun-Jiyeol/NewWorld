@@ -46,6 +46,10 @@ public class CameraSetting : BasicUI
     public ScrollbarHelper FieldOfVeiw_Scroll;
     float FieldOfView_Value;
 
+    [Header("SoundData")]
+    public SoundData FovChangeSound;
+    public SoundData ClickCameraSettingBtnSound;
+
     public override void OnSetting()
     {
         if(GameManager.Instance == null) return;
@@ -94,6 +98,8 @@ public class CameraSetting : BasicUI
 
         FieldOfVeiw_Input.text = FieldOfView_Value.ToString("F0");
         FieldOfVeiw_Scroll.ChangedValue(FieldOfView_Value);
+
+        GameManager.Instance.SoundManager.PlayEffect(FovChangeSound);
     }
 
     void MakeNewSetting()
@@ -139,7 +145,7 @@ public class CameraSetting : BasicUI
 
         for (int i = 0; i < CameraNowSetting.Count; i++)
         {
-            CheckSetting(i);
+            CheckSetting(i,false);
         }
     }
 
@@ -151,7 +157,15 @@ public class CameraSetting : BasicUI
         CheckSetting(type);
     }
 
-    private void CheckSetting(int type)
+    public void ClickThisBtn(int type, bool sound)
+    {
+        CameraEffect clickedtype = (CameraEffect)type;
+        CameraNowSetting[clickedtype].isOn = !CameraNowSetting[clickedtype].isOn;
+
+        CheckSetting(type, sound);
+    }
+
+    private void CheckSetting(int type, bool sound = true)
     {
         CameraEffect clickedtype = (CameraEffect)type;
 
@@ -186,6 +200,11 @@ public class CameraSetting : BasicUI
                 Destroy(SlidersSave[clickedtype]);
                 SlidersSave[clickedtype] = null;    
             }
+        }
+
+        if (sound)
+        {
+            GameManager.Instance.SoundManager.PlayEffect(ClickCameraSettingBtnSound);
         }
     }
 

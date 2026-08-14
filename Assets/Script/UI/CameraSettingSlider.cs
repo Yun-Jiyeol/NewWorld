@@ -24,6 +24,9 @@ public class CameraSettingSlider : MonoBehaviour
 
     bool isinit = false;
 
+    [Header("SoundData")]
+    public SoundData CameraSettingSound;
+
     public void Init(CameraEffect type, CameraSetting cam, string _name)
     {
         thistype = type;
@@ -54,6 +57,8 @@ public class CameraSettingSlider : MonoBehaviour
 
         float value = slider.value;
         NowValue = value;
+
+        GameManager.Instance.SoundManager.PlayEffect(CameraSettingSound, 0.3f);
 
         SettingInputField();
         SettingCameraEffect();
@@ -89,6 +94,8 @@ public class CameraSettingSlider : MonoBehaviour
             inputfield.text = "";
         }
 
+        GameManager.Instance.SoundManager.PlayEffect(CameraSettingSound, 0.3f);
+
         SettingSlider();
         SettingCameraEffect();
     }
@@ -114,6 +121,8 @@ public class CameraSettingSlider : MonoBehaviour
 
         NowValue = Mathf.Min(Max, NowValue);
         NowValue = Mathf.Max(Min, NowValue);
+
+        GameManager.Instance.SoundManager.PlayEffect(CameraSettingSound, 0.3f);
 
         SettingSlider();
         SettingInputField();

@@ -18,6 +18,9 @@ public class HelpingInMake : BasicUI
     public bool isLight = true;
     public bool isFilter = true;
 
+    [Header("SoundData")]
+    public SoundData ClickCameraSettingBtnSound;
+
     public override void OnSetting()
     {
         if (GameManager.Instance == null) return;
@@ -32,6 +35,8 @@ public class HelpingInMake : BasicUI
 
     public void OnClick(int type)
     {
+        GameManager.Instance.SoundManager.PlayEffect(ClickCameraSettingBtnSound);
+
         switch (type)
         {
             case 0:
