@@ -41,6 +41,10 @@ public class InputManager : MonoBehaviour
     public bool isLock = false;
     public CoinType nowMovingThing = CoinType.Player;
 
+    [Header("SoundData")]
+    public SoundData DestroySound;
+    public SoundData MultyDestroySound;
+
     private void Awake()
     {
         _cam = Camera.main.transform;
@@ -490,6 +494,7 @@ public class InputManager : MonoBehaviour
         if (BeforeDestroyBlockPos == null) return;
         if(AfterDestroyBlockPos == null)
         {
+            GameManager.Instance.SoundManager.PlayEffect(DestroySound);
             TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(BeforeDestroyBlockPos.Value);
         }
         else
@@ -518,6 +523,7 @@ public class InputManager : MonoBehaviour
                 }
             }
 
+            GameManager.Instance.SoundManager.PlayEffect(MultyDestroySound);
             TargetGameObject.GetComponent<ChunkCode>().DestroyBlockData(saveddestroypos);
         }
     }
