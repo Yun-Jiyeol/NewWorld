@@ -15,7 +15,6 @@ public class CursorMover : MonoBehaviour
     cursorstate nowstate = cursorstate.Off;
     cursorstate beforestate = cursorstate.Off;
 
-    Vector2 screenCenter;
     RectTransform thisTransform;
 
     Coroutine followCoroutine;
@@ -25,6 +24,11 @@ public class CursorMover : MonoBehaviour
     public Sprite OutGame;
     Image thisImage;
 
+    [Header("Alpha")]
+    [SerializeField] private float visibleAlpha = 200f / 255f;
+    [SerializeField] private float hiddenAlpha = 0f;
+    [SerializeField] private float fadeTime = 0.2f;
+
     private void Start()
     {
         GameManager.Instance.CursorMover = this;
@@ -32,7 +36,7 @@ public class CursorMover : MonoBehaviour
         thisTransform = GetComponent<RectTransform>();
         thisImage = GetComponent<Image>();
 
-        screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        SetImageAlpha(hiddenAlpha);
 
         ChangeCursorState(cursorstate.Follow);
     }
@@ -46,13 +50,14 @@ public class CursorMover : MonoBehaviour
     {
         if (nowPos == _Anchorpos) return;
 
-        if(nowstate != cursorstate.OnSomething)
+        if (nowstate != cursorstate.OnSomething)
         {
             beforestate = nowstate;
             nowstate = cursorstate.OnSomething;
         }
 
         thisTransform.DOKill();
+
         if (followCoroutine != null)
         {
             StopCoroutine(followCoroutine);
@@ -71,7 +76,7 @@ public class CursorMover : MonoBehaviour
         beforestate = nowstate;
         nowstate = _state;
 
-        if(followCoroutine != null)
+        if (followCoroutine != null)
         {
             StopCoroutine(followCoroutine);
             followCoroutine = null;
@@ -83,37 +88,43 @@ public class CursorMover : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 SetOff();
                 break;
+
             case cursorstate.Follow:
                 Cursor.lockState = CursorLockMode.Confined;
                 SetFollow();
+                break;
+
+            case cursorstate.OnSomething:
                 break;
         }
     }
 
     void SetOff()
     {
-        Vector2 mousePos = Input.mousePosition;
+        nowPos = Vector3.zero;
 
-        // 중심 → 마우스 방향 반대
-        Vector2 dir = (mousePos - screenCenter).normalized;
-
-        // 반대 방향으로 멀리 이동
-        Vector2 targetPos = mousePos + dir * 1500f;
-
-        thisTransform.DOMove(targetPos, 0.5f);
+        if (thisImage != null)
+        {
+            thisImage.DOKill();
+            thisImage.DOFade(hiddenAlpha, fadeTime);
+        }
     }
 
     void SetFollow()
     {
+        nowPos = Vector3.zero;
+
+        if (thisImage != null)
+        {
+            thisImage.DOKill();
+            thisImage.DOFade(visibleAlpha, fadeTime);
+        }
+
         followCoroutine = StartCoroutine(MoveFollower());
     }
 
     IEnumerator MoveFollower()
     {
-        thisTransform.DOMove(Input.mousePosition, 0.3f);
-
-        yield return new WaitForSeconds(0.3f);
-
         while (true)
         {
             thisTransform.position = Input.mousePosition;
@@ -124,15 +135,24 @@ public class CursorMover : MonoBehaviour
     void SetOnSomething(Vector3 _Anchorpos)
     {
         nowPos = _Anchorpos;
+
+        if (thisImage != null)
+        {
+            thisImage.DOKill();
+            thisImage.DOFade(visibleAlpha, fadeTime);
+        }
+
         thisTransform.DOAnchorPos(_Anchorpos, 0.3f);
     }
 
     public void MouseSpriteSetting(bool isInGame)
     {
+        if (thisImage == null) return;
+
         if (isInGame)
         {
             thisImage.sprite = InGame;
-            thisTransform.pivot = new Vector2(0,1);
+            thisTransform.pivot = new Vector2(0, 1);
             thisTransform.sizeDelta = new Vector2(50, 50);
         }
         else
@@ -141,5 +161,30 @@ public class CursorMover : MonoBehaviour
             thisTransform.pivot = new Vector2(0.35f, 1);
             thisTransform.sizeDelta = new Vector2(35, 50);
         }
+
+        SetImageAlphaByState();
+    }
+
+    private void SetImageAlphaByState()
+    {
+        if (thisImage == null) return;
+
+        if (nowstate == cursorstate.Off)
+        {
+            SetImageAlpha(hiddenAlpha);
+        }
+        else
+        {
+            SetImageAlpha(visibleAlpha);
+        }
+    }
+
+    private void SetImageAlpha(float alpha)
+    {
+        if (thisImage == null) return;
+
+        Color color = thisImage.color;
+        color.a = alpha;
+        thisImage.color = color;
     }
 }

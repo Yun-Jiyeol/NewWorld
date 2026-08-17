@@ -35307,6 +35307,7 @@ MonoBehaviour:
   nowMovingThing: 1
   DestroySound: {fileID: 11400000, guid: 2a9263f8964a0074c8a16bb1503f2d1d, type: 2}
   MultyDestroySound: {fileID: 11400000, guid: 9378370d6dba32a41be04ca029673af2, type: 2}
+  BuildSound: {fileID: 11400000, guid: e0270f29fec9b274a89837476fed93b6, type: 2}
 --- !u!114 &1173635529
 MonoBehaviour:
   m_ObjectHideFlags: 0

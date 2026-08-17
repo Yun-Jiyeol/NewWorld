@@ -44,6 +44,7 @@ public class InputManager : MonoBehaviour
     [Header("SoundData")]
     public SoundData DestroySound;
     public SoundData MultyDestroySound;
+    public SoundData BuildSound;
 
     private void Awake()
     {
@@ -902,6 +903,8 @@ public class InputManager : MonoBehaviour
         Color SpawnedColor = GameManager.Instance.BuildManager.MainColor.color;
         float alfar = GameManager.Instance.BuildManager.alfar;
         SpawnedColor.a = alfar;
+
+        GameManager.Instance.SoundManager.PlayEffect(BuildSound);
 
         GameManager.Instance.BuildManager.RequestBuild
             (new WorldAndBlock 
