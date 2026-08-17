@@ -9,8 +9,8 @@ public class Compass : MonoBehaviour
     public GameObject UpDownCompass;
     public GameObject RightLeftCompass;
 
-    public TextMeshProUGUI UpDownCompassNumber;
-    public TextMeshProUGUI RightLeftCompassNumber;
+    public TextMeshProUGUI POSText;
+    public TextMeshProUGUI DIRText;
 
     public RectTransform[] UpDownCompassSlider;
     float[] saveUpDownposition;
@@ -67,6 +67,7 @@ public class Compass : MonoBehaviour
 
         ChangePositionx(UpDownCompassSlider);
         ChangePositiony(RightLeftCompassSlider);
+        SettingPosText();
     }
 
     void ChangePositionx(RectTransform[] _sliders)
@@ -81,9 +82,7 @@ public class Compass : MonoBehaviour
             slider.anchoredPosition += new Vector2(0,anglex);
         }
 
-        int textx = Mathf.RoundToInt(180 - currentAnglex);
-        UpDownCompassNumber.text = textx.ToString();
-
+        SettingDirText();
         beforeAnglex = currentAnglex;
 
         CheckPositionsx(_sliders);
@@ -124,9 +123,7 @@ public class Compass : MonoBehaviour
             slider.anchoredPosition += new Vector2(angley, 0);
         }
 
-        int texty = Mathf.RoundToInt(currentAngley);
-        RightLeftCompassNumber.text = texty.ToString();
-
+        SettingDirText();
         beforeAngley = currentAngley;
 
         CheckPositionsy(_sliders);
@@ -153,5 +150,23 @@ public class Compass : MonoBehaviour
                 }
             }
         }
+    }
+
+    void SettingDirText()
+    {
+        int textx = Mathf.RoundToInt(180 - currentAnglex);
+        int texty = Mathf.RoundToInt(currentAngley);
+
+        DIRText.text = textx.ToString() + "/" + texty.ToString();
+    }
+
+    void SettingPosText()
+    {
+        Vector3 pos = MC.transform.position;
+        int x = Mathf.RoundToInt(pos.x);
+        int y = Mathf.RoundToInt(pos.y);
+        int z = Mathf.RoundToInt(pos.z);
+
+        POSText.text = x.ToString() + "/" + y.ToString() + "/" + z.ToString();
     }
 }
