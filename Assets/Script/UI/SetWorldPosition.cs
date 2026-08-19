@@ -12,6 +12,7 @@ public class SetWorldPosition : BasicUI
     public override void OnSetting()
     {
         if (GameManager.Instance == null) return;
+        if (GameManager.Instance.InputManager.TargetGameObject == null) return;
         TargetObject = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>();
     }
 

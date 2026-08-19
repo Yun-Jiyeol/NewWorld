@@ -35,6 +35,8 @@ public class LightUI : BasicUI
     public ChangeLightTypeButton Spot;
     public ChangeLightTypeButton Point;
 
+    public RectTransform OnChangeRect;
+
     float SettingLight;
     float SettingRange;
     float SettingAngle;
@@ -352,6 +354,7 @@ public class LightUI : BasicUI
         switch (targettype)
         {
             case (LightType.Spot):
+                OnChangeRect.sizeDelta = new Vector2(OnChangeRect.sizeDelta.x, 930);
                 Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
                 Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
                 SettingAngleExplainText.SetActive(true);
@@ -361,6 +364,7 @@ public class LightUI : BasicUI
                 break;
 
             case (LightType.Point):
+                OnChangeRect.sizeDelta = new Vector2(OnChangeRect.sizeDelta.x, 825);
                 Spot.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(47f, 47f), 0.3f);
                 Point.gameObject.GetComponent<RectTransform>().DOSizeDelta(new Vector2(185f, 47f), 0.3f);
                 SettingAngleExplainText.SetActive(false);

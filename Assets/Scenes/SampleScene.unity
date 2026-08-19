@@ -14471,8 +14471,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -17.5}
-  m_SizeDelta: {x: 0, y: -35}
+  m_AnchoredPosition: {x: 0, y: 35.000023}
+  m_SizeDelta: {x: 0, y: -139.99995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &477914744
 CanvasRenderer:
@@ -27672,6 +27672,7 @@ MonoBehaviour:
   showSettingAngleInput: {fileID: 762117901}
   Spot: {fileID: 873714961}
   Point: {fileID: 920824858}
+  OnChangeRect: {fileID: 2052448860}
   target: {fileID: 0}
   _color: {r: 0, g: 0, b: 0, a: 0}
   inLineChoose: {r: 0, g: 0, b: 0, a: 0}
@@ -40092,8 +40093,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 7.5}
-  m_SizeDelta: {x: 0, y: -14.999999}
+  m_AnchoredPosition: {x: 0, y: 14.999975}
+  m_SizeDelta: {x: 0, y: -30.00005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1271953629
 CanvasRenderer:
@@ -65529,7 +65530,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 975}
+  m_SizeDelta: {x: 0, y: 930}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2052448861
 MonoBehaviour:
