@@ -44,7 +44,8 @@ public class InputManager : MonoBehaviour
     [Header("SoundData")]
     public SoundData DestroySound;
     public SoundData MultyDestroySound;
-    public SoundData BuildSound;
+    public SoundData BuildSound; 
+    public SoundData OnClickSetBtn; 
 
     private void Awake()
     {
@@ -349,15 +350,7 @@ public class InputManager : MonoBehaviour
                 }
                 if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.BuildCube]))
                 {
-                    GameManager.Instance.ChangeFlow(GameFlow.None);
-
-                    TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
-
-                    TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();
-
-                    UnChooseWorld();
-
-                    ChangeToWatchAllWorld();
+                    PutWorldInSpace();
                 }
                 break;
 
@@ -394,6 +387,21 @@ public class InputManager : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    public void PutWorldInSpace()
+    {
+        GameManager.Instance.ChangeFlow(GameFlow.None);
+
+        GameManager.Instance.SoundManager.PlayEffect(OnClickSetBtn);
+
+        TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
+
+        TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();
+
+        UnChooseWorld();
+
+        ChangeToWatchAllWorld();
     }
 
     void ChangeTypeOfMove()

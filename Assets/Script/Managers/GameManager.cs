@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
                 CursorMover?.ChangeCursorState(cursorstate.Off);
                 MainCamera.stopCamera = false;
                 UIManager.Compass.SetActive(true);
-                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.CameraSetting });
+                UIManager.SelectionUI.ChooseToOnUIBtn(new List<SelectionUIenum> { SelectionUIenum.Setting, SelectionUIenum.CameraSetting, SelectionUIenum.SetWorldPosition});
 
                 AddInTimeSave(SaveNowWorld);
                 break;
