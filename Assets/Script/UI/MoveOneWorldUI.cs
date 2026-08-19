@@ -106,6 +106,7 @@ public class MoveOneWorldUI : BasicUI
         GameManager.Instance.SoundManager.PlayEffect(ClickOkaySound);
         SavePos();
         GameManager.Instance.SaveSomeNowWorld();
+        GameManager.Instance.ChangeFlow(GameFlow.WatchAllWorld);
     }
 
     public void DestroyWorld()
