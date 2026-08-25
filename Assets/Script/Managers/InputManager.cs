@@ -203,6 +203,7 @@ public class InputManager : MonoBehaviour
                         return;
                     }
                 }
+
                 if (isLock) return;
 
                 if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.DestroyBlockKey]))
@@ -458,6 +459,8 @@ public class InputManager : MonoBehaviour
 
         BeforeDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
         AfterDestroyBlockPos = null;
+
+        SetBuildColorFromDestroySelectedBlock(BeforeDestroyBlockPos.Value);
     }
 
     void SettingDestroyRangeAfter()
@@ -481,6 +484,8 @@ public class InputManager : MonoBehaviour
             AfterDestroyBlockPos = null;
             return;
         }
+
+        SetBuildColorFromDestroySelectedBlock(AfterDestroyBlockPos.Value);
 
         Vector3 A = BeforeDestroyBlockPos.Value;
         Vector3 B = AfterDestroyBlockPos.Value;
@@ -952,5 +957,80 @@ public class InputManager : MonoBehaviour
         GameManager.Instance.MainCamera.GetComponent<Camera>().cullingMask |= (1 << 7);
         GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
         Invoke("ChangeToPutWorldInSpace", 0.7f); 
+    }
+
+    private void SetBuildColorFromDestroySelectedBlock(Vector3 blockPos)
+    {
+        if (TargetGameObject == null) return;
+
+        ChunkCode chunk = TargetGameObject.GetComponent<ChunkCode>();
+        if (chunk == null) return;
+
+        if (!chunk.ishaveblock(blockPos)) return;
+
+        Color selectedColor = chunk.CheckColor(blockPos);
+
+        GameManager.Instance.BuildManager.SetColorFromSelectedBlock(selectedColor);
+    }
+
+    public void ChangeSelectedDestroyBlocksColor(Color color)
+    {
+        if (TargetGameObject == null) return;
+        if (BeforeDestroyBlockPos == null) return;
+
+        ChunkCode chunk = TargetGameObject.GetComponent<ChunkCode>();
+        if (chunk == null) return;
+
+        if (AfterDestroyBlockPos == null)
+        {
+            chunk.ChangeBlockColorAsync(BeforeDestroyBlockPos.Value, color);
+        }
+        else
+        {
+            chunk.ChangeBlockColorRangeAsync(
+                BeforeDestroyBlockPos.Value,
+                AfterDestroyBlockPos.Value,
+                color
+            );
+        }
+    }
+
+    private List<Vector3> GetSelectedDestroyBlockPositions()
+    {
+        List<Vector3> positions = new List<Vector3>();
+
+        if (BeforeDestroyBlockPos == null)
+            return positions;
+
+        if (AfterDestroyBlockPos == null)
+        {
+            positions.Add(BeforeDestroyBlockPos.Value);
+            return positions;
+        }
+
+        Vector3 A = BeforeDestroyBlockPos.Value;
+        Vector3 B = AfterDestroyBlockPos.Value;
+
+        int minX = Mathf.Min(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+        int maxX = Mathf.Max(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+
+        int minY = Mathf.Min(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+        int maxY = Mathf.Max(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+
+        int minZ = Mathf.Min(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+        int maxZ = Mathf.Max(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    positions.Add(new Vector3(x, y, z));
+                }
+            }
+        }
+
+        return positions;
     }
 }

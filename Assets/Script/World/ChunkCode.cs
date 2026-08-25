@@ -14,6 +14,28 @@ public class BlockInChunkData
 
 public class ChunkCode : MonoBehaviour
 {
+    struct BlockColorChangeRequest
+    {
+        public Vector3Int gridPos;
+        public Color color;
+
+        public BlockColorChangeRequest(Vector3Int _gridPos, Color _color)
+        {
+            gridPos = _gridPos;
+            color = _color;
+        }
+    }
+
+    [Header("Color Change")]
+    [SerializeField] private float colorChangeFrameTime = 3f;
+
+    Queue<BlockColorChangeRequest> colorChangeQueue = new Queue<BlockColorChangeRequest>();
+    HashSet<Vector3Int> colorChangeBuildMeshSet = new HashSet<Vector3Int>();
+    HashSet<Vector3Int> colorChangeUpdateBlockMeshSet = new HashSet<Vector3Int>();
+
+    bool isColorChangeRunning = false;
+    bool isColorChangeRangeEnqueueRunning = false;
+
     public string _name = "NewWorld";
     public string Savedtime;
 
@@ -870,6 +892,306 @@ public class ChunkCode : MonoBehaviour
         Vector3Int LocalPos = GetLocalPos(gridPos);
 
         return BlocksinChunk[ChunkPos][LocalPos]._color;
+    }
+
+    public bool ChangeBlockColor(Vector3 pos, Color color)
+    {
+        if (BlocksinChunk == null) return false;
+        if (Chunks == null) return false;
+
+        Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+        Vector3Int chunkPos = GetChunkCoord(gridPos);
+        Vector3Int localPos = GetLocalPos(gridPos);
+
+        if (!BlocksinChunk.TryGetValue(chunkPos, out var chunkBlocks))
+            return false;
+
+        if (!chunkBlocks.TryGetValue(localPos, out BlockInChunkData block))
+            return false;
+
+        bool beforeAlphaBlock = block._color.a < 1f;
+        bool afterAlphaBlock = color.a < 1f;
+
+        block._color = color;
+
+        if (afterAlphaBlock)
+        {
+            MakeAlphaBlockObjectIfNeed(gridPos, block);
+
+            if (block._go != null)
+            {
+                block._go.GetComponent<Renderer>().material.color = color;
+            }
+        }
+        else
+        {
+            if (block._go != null)
+            {
+                Destroy(block._go);
+                block._go = null;
+            }
+        }
+
+        RebuildAfterBlockColorChange(gridPos);
+
+        return true;
+    }
+
+    public void ChangeBlockColor(List<Vector3> positions, Color color)
+    {
+        if (positions == null) return;
+
+        for (int i = 0; i < positions.Count; i++)
+        {
+            ChangeBlockColor(positions[i], color);
+        }
+    }
+
+    private void MakeAlphaBlockObjectIfNeed(Vector3Int gridPos, BlockInChunkData block)
+    {
+        if (block == null) return;
+        if (block._go != null) return;
+
+        GameObject alphaBlock = Instantiate(GameManager.Instance.BuildManager.ChooseBlock, transform);
+        alphaBlock.transform.localPosition = gridPos;
+        alphaBlock.transform.localRotation = Quaternion.identity;
+        alphaBlock.transform.localScale = Vector3.one;
+
+        alphaBlock.GetComponent<Renderer>().material.color = block._color;
+        alphaBlock.tag = "Block";
+        alphaBlock.layer = gameObject.layer;
+
+        block._go = alphaBlock;
+    }
+
+    private void RebuildAfterBlockColorChange(Vector3Int gridPos)
+    {
+        BuildMesh(gridPos);
+        trytoBuildMesh(gridPos);
+
+        foreach (Vector3Int dir in directions)
+        {
+            BuildMesh(gridPos + dir);
+            UpdateBlockMesh(gridPos + dir);
+        }
+
+        UpdateBlockMesh(gridPos);
+
+        if (BlocksinChunk.ContainsKey(GetChunkCoord(gridPos)))
+        {
+            if (BlocksinChunk[GetChunkCoord(gridPos)].TryGetValue(GetLocalPos(gridPos), out BlockInChunkData data))
+            {
+                if (data._go != null)
+                {
+                    UpdateSelfVisibility(gridPos);
+                }
+            }
+        }
+
+        UpdateAroundVisibility(gridPos);
+    }
+
+    public void ChangeBlockColorAsync(Vector3 pos, Color color)
+    {
+        Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+
+        colorChangeQueue.Enqueue(new BlockColorChangeRequest(gridPos, color));
+
+        StartColorChangeWorkerIfNeed();
+    }
+
+    public void ChangeBlockColorRangeAsync(Vector3 posA, Vector3 posB, Color color)
+    {
+        StartCoroutine(EnqueueColorChangeRangeCoroutine(posA, posB, color));
+    }
+
+    IEnumerator EnqueueColorChangeRangeCoroutine(Vector3 posA, Vector3 posB, Color color)
+    {
+        isColorChangeRangeEnqueueRunning = true;
+
+        Vector3 A = posA;
+        Vector3 B = posB;
+
+        int minX = Mathf.Min(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+        int maxX = Mathf.Max(Mathf.RoundToInt(A.x), Mathf.RoundToInt(B.x));
+
+        int minY = Mathf.Min(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+        int maxY = Mathf.Max(Mathf.RoundToInt(A.y), Mathf.RoundToInt(B.y));
+
+        int minZ = Mathf.Min(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+        int maxZ = Mathf.Max(Mathf.RoundToInt(A.z), Mathf.RoundToInt(B.z));
+
+        float start = Time.realtimeSinceStartup;
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    Vector3Int gridPos = new Vector3Int(x, y, z);
+
+                    colorChangeQueue.Enqueue(new BlockColorChangeRequest(gridPos, color));
+
+                    if ((Time.realtimeSinceStartup - start) * 1000f > colorChangeFrameTime)
+                    {
+                        StartColorChangeWorkerIfNeed();
+
+                        yield return null;
+                        start = Time.realtimeSinceStartup;
+                    }
+                }
+            }
+        }
+
+        StartColorChangeWorkerIfNeed();
+
+        isColorChangeRangeEnqueueRunning = false;
+    }
+
+    void StartColorChangeWorkerIfNeed()
+    {
+        if (isColorChangeRunning) return;
+
+        StartCoroutine(ColorChangeWorker());
+    }
+
+    IEnumerator ColorChangeWorker()
+    {
+        isColorChangeRunning = true;
+
+        while (true)
+        {
+            float start = Time.realtimeSinceStartup;
+
+            while (colorChangeQueue.Count > 0)
+            {
+                BlockColorChangeRequest request = colorChangeQueue.Dequeue();
+
+                ChangeBlockColorDataOnly(request.gridPos, request.color);
+
+                if ((Time.realtimeSinceStartup - start) * 1000f > colorChangeFrameTime)
+                {
+                    yield return null;
+                    start = Time.realtimeSinceStartup;
+                }
+            }
+
+            yield return StartCoroutine(RebuildColorChangedMeshes());
+
+            if (colorChangeQueue.Count <= 0 && !isColorChangeRangeEnqueueRunning)
+                break;
+        }
+
+        GameManager.Instance.UIManager.ParetteUI.DestroyAllAdditionalUi();
+
+        isColorChangeRunning = false;
+    }
+
+    void ChangeBlockColorDataOnly(Vector3Int gridPos, Color color)
+    {
+        if (BlocksinChunk == null) return;
+        if (Chunks == null) return;
+
+        Vector3Int chunkPos = GetChunkCoord(gridPos);
+        Vector3Int localPos = GetLocalPos(gridPos);
+
+        if (!BlocksinChunk.TryGetValue(chunkPos, out var chunkBlocks))
+            return;
+
+        if (!chunkBlocks.TryGetValue(localPos, out BlockInChunkData block))
+            return;
+
+        bool beforeTransparent = block._color.a < 1f;
+        bool afterTransparent = color.a < 1f;
+
+        block._color = color;
+
+        if (afterTransparent)
+        {
+            MakeAlphaBlockObjectIfNeed(gridPos, block);
+
+            if (block._go != null)
+            {
+                block._go.GetComponent<Renderer>().material.color = color;
+            }
+        }
+        else
+        {
+            if (block._go != null)
+            {
+                Destroy(block._go);
+                block._go = null;
+            }
+        }
+
+        AddColorChangeRebuildTarget(gridPos);
+    }
+
+    void AddColorChangeRebuildTarget(Vector3Int gridPos)
+    {
+        Vector3Int chunkPos = GetChunkCoord(gridPos);
+
+        colorChangeBuildMeshSet.Add(chunkPos);
+        colorChangeUpdateBlockMeshSet.Add(gridPos);
+
+        foreach (Vector3Int dir in directions)
+        {
+            Vector3Int nearPos = gridPos + dir;
+
+            colorChangeBuildMeshSet.Add(GetChunkCoord(nearPos));
+            colorChangeUpdateBlockMeshSet.Add(nearPos);
+        }
+    }
+
+    IEnumerator RebuildColorChangedMeshes()
+    {
+        float start = Time.realtimeSinceStartup;
+
+        foreach (Vector3Int chunkPos in colorChangeBuildMeshSet)
+        {
+            BuildMesh(chunkPos * ChunkSize);
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > colorChangeFrameTime)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        colorChangeBuildMeshSet.Clear();
+
+        start = Time.realtimeSinceStartup;
+
+        foreach (Vector3Int blockPos in colorChangeUpdateBlockMeshSet)
+        {
+            UpdateBlockMesh(blockPos);
+            UpdateSelfVisibilityIfAlphaObject(blockPos);
+            UpdateAroundVisibility(blockPos);
+
+            if ((Time.realtimeSinceStartup - start) * 1000f > colorChangeFrameTime)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        colorChangeUpdateBlockMeshSet.Clear();
+    }
+
+    void UpdateSelfVisibilityIfAlphaObject(Vector3Int pos)
+    {
+        if (!BlocksinChunk.ContainsKey(GetChunkCoord(pos)))
+            return;
+
+        if (!BlocksinChunk[GetChunkCoord(pos)].TryGetValue(GetLocalPos(pos), out BlockInChunkData data))
+            return;
+
+        if (data._go == null)
+            return;
+
+        bool covered = IsFullyCovered(pos);
+        data._go.SetActive(!covered);
     }
 
     public void DestroyWorld()

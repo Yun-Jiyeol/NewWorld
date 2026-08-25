@@ -40,7 +40,7 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void Setting()
     {
-        float value = Mathf.Lerp(-Min, Max, GameManager.Instance.BuildManager.alfar);
+        float value = Mathf.Lerp(Min, Max, GameManager.Instance.BuildManager.alfar);
         childToMove.anchoredPosition = new Vector2(value, -25f);
 
         lastMoveSoundX = value;
@@ -107,7 +107,7 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             childToMove.anchoredPosition = new Vector2(localPoint.x, -25f);
 
-            GameManager.Instance.BuildManager.alfar = (localPoint.x + 150f) / 300f;
+            GameManager.Instance.BuildManager.alfar = Mathf.InverseLerp(Min, Max, localPoint.x);
 
             PlayMoveSoundByX(localPoint.x);
         }

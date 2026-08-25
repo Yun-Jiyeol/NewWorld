@@ -100,12 +100,45 @@ public class BuildManager : MonoBehaviour
 
     public void SetColor(Color _color)
     {
-        alfar = _color.a;
-        _color.a = 1;
+        alfar = Mathf.Clamp01(_color.a);
+
+        _color.a = 1f;
         MainColor.color = _color;
 
-        if (paretteUI == null) paretteUI = FindColor();
+        RefreshColorUIIfOpen();
+    }
+
+    public Color GetCurrentBuildColor()
+    {
+        Color color = MainColor.color;
+        color.a = alfar;
+        return color;
+    }
+
+    public void SetColorFromSelectedBlock(Color color)
+    {
+        SetColor(color);
+    }
+
+    public void RefreshColorUIIfOpen()
+    {
+        if (paretteUI == null)
+            paretteUI = FindColor();
+
+        if (paretteUI == null)
+            return;
+
+        if (!paretteUI.gameObject.activeInHierarchy)
+            return;
+
         paretteUI.OnSetting();
+    }
+
+    public void ApplyCurrentColorToSelectedDestroyBlocks()
+    {
+        Color color = GetCurrentBuildColor();
+
+        GameManager.Instance.InputManager.ChangeSelectedDestroyBlocksColor(color);
     }
 
     public void CheckSave()

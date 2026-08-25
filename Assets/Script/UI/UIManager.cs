@@ -36,6 +36,9 @@ public class UIManager : MonoBehaviour
 
     public bool isReady = false;
 
+    [Header("UICode")]
+    public ParetteUI ParetteUI;
+
     private void Awake()
     {
         WorldUIIcons = gameObject.GetComponent<WorldUIIcons>();

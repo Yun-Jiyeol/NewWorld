@@ -26,4 +26,29 @@ public class ParetteUI : BasicUI
         _preColorUI.Setting();
         _saveUI.Setting();
     }
+
+    public void ApplyCurrentColorToSelectedDestroyBlocks()
+    {
+        SpawnBlockImage();
+        GameManager.Instance.BuildManager.ApplyCurrentColorToSelectedDestroyBlocks();
+    }
+
+    GameObject BlockImage;
+
+    void SpawnBlockImage()
+    {
+        if (BlockImage == null)
+        {
+            BlockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+        }
+    }
+
+    public void DestroyAllAdditionalUi()
+    {
+        if (BlockImage != null)
+        {
+            Destroy(BlockImage);
+            BlockImage= null;
+        }
+    }
 }
