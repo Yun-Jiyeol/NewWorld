@@ -109,6 +109,8 @@ public class PaletteAlfaLine : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
             GameManager.Instance.BuildManager.alfar = Mathf.InverseLerp(Min, Max, localPoint.x);
 
+            GameManager.Instance.BuildManager.OnPaletteColorChanged();
+
             PlayMoveSoundByX(localPoint.x);
         }
 

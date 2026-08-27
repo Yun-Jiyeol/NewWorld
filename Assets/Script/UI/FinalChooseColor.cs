@@ -172,6 +172,8 @@ public class FinalChooseColor : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
             GameManager.Instance.BuildManager.MainColor.color = GetColorFromPalette(childToMove.anchoredPosition);
 
+            GameManager.Instance.BuildManager.OnPaletteColorChanged();
+
             PlayMoveSoundByPosition(localPoint);
         }
 

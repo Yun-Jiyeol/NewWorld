@@ -7608,6 +7608,7 @@ MonoBehaviour:
   _finalChooseColor: {fileID: 229494630}
   _preColorUI: {fileID: 422062675}
   _saveUI: {fileID: 1978726577}
+  SpawnBlockImageTrans: {fileID: 13536265}
 --- !u!1 &269465929
 GameObject:
   m_ObjectHideFlags: 0

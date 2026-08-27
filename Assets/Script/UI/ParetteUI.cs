@@ -9,6 +9,8 @@ public class ParetteUI : BasicUI
     public PreColorUI _preColorUI;
     public SaveUI _saveUI;
 
+    public Transform SpawnBlockImageTrans;
+
     public override void OnSetting()
     {
         StartCoroutine(OnSettingCoroutine());
@@ -39,7 +41,7 @@ public class ParetteUI : BasicUI
     {
         if (BlockImage == null)
         {
-            BlockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, gameObject.transform);
+            BlockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, SpawnBlockImageTrans);
         }
     }
 

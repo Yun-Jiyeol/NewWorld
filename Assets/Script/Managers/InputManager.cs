@@ -253,9 +253,11 @@ public class InputManager : MonoBehaviour
 
                     if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.ChooseBtn]))
                     {
-                        ResetDestroyRange();
+                        GameManager.Instance.BuildManager.SetColor(
+                            TargetGameObject.GetComponent<ChunkCode>().CheckColor(ReadyToBuildBlock.transform.localPosition)
+                        );
 
-                        GameManager.Instance.BuildManager.SetColor(TargetGameObject.GetComponent<ChunkCode>().CheckColor(ReadyToBuildBlock.transform.localPosition));
+                        ShowDestroyRangeViewOnly();
                     }
                 }
                 else
@@ -440,6 +442,27 @@ public class InputManager : MonoBehaviour
         AfterDestroyBlockPos = null;
     }
 
+    void HideDestroyRangeViewOnly()
+    {
+        if (ReadyToDestroyBlock != null)
+        {
+            ReadyToDestroyBlock.SetActive(false);
+        }
+
+        GameManager.Instance.UIManager.ParetteUI.DestroyAllAdditionalUi();
+    }
+
+    public void ShowDestroyRangeViewOnly()
+    {
+        if (ReadyToDestroyBlock == null) return;
+        if (BeforeDestroyBlockPos == null) return;
+
+        if (!ReadyToDestroyBlock.activeSelf)
+        {
+            ReadyToDestroyBlock.SetActive(true);
+        }
+    }
+
     void SettingDestroyRange()
     {
         if (ReadyToDestroyBlock == null)
@@ -461,6 +484,8 @@ public class InputManager : MonoBehaviour
         AfterDestroyBlockPos = null;
 
         SetBuildColorFromDestroySelectedBlock(BeforeDestroyBlockPos.Value);
+
+        ShowDestroyRangeViewOnly();
     }
 
     void SettingDestroyRangeAfter()
@@ -501,6 +526,8 @@ public class InputManager : MonoBehaviour
         ReadyToDestroyBlock.transform.localPosition = center;
         ReadyToDestroyBlock.transform.localScale = size;
         ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
+
+        ShowDestroyRangeViewOnly();
     }
 
     void TryToDestroy()
@@ -983,14 +1010,25 @@ public class InputManager : MonoBehaviour
 
         if (AfterDestroyBlockPos == null)
         {
-            chunk.ChangeBlockColorAsync(BeforeDestroyBlockPos.Value, color);
+            chunk.ChangeBlockColorAsync(
+                BeforeDestroyBlockPos.Value,
+                color,
+                () =>
+                {
+                    HideDestroyRangeViewOnly();
+                }
+            );
         }
         else
         {
             chunk.ChangeBlockColorRangeAsync(
                 BeforeDestroyBlockPos.Value,
                 AfterDestroyBlockPos.Value,
-                color
+                color,
+                () =>
+                {
+                    HideDestroyRangeViewOnly();
+                }
             );
         }
     }

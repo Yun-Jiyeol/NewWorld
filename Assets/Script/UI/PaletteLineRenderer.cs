@@ -165,6 +165,8 @@ public class PaletteLineRenderer : MonoBehaviour, IPointerEnterHandler, IPointer
             targetMaterial.color = GetColorFromPalette(new Vector2(localPoint.x, 0));
             paretteui._finalChooseColor.DrawPaletteLine();
 
+            GameManager.Instance.BuildManager.OnPaletteColorChanged();
+
             PlayMoveSoundByX(localPoint.x);
         }
 

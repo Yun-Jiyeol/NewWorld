@@ -56,6 +56,8 @@ public class ChunkCode : MonoBehaviour
 
     public Queue<BlockInChunkData> MakeWorldQueue = new();
 
+    List<System.Action> colorChangeCompleteActions = new List<System.Action>();
+
     Vector3Int[] directions = new Vector3Int[]
 {
     new Vector3Int(0,0,1),  // Front
@@ -1083,9 +1085,23 @@ public class ChunkCode : MonoBehaviour
                 break;
         }
 
-        GameManager.Instance.UIManager.ParetteUI.DestroyAllAdditionalUi();
-
         isColorChangeRunning = false;
+
+        InvokeColorChangeCompleteActions();
+    }
+
+    void InvokeColorChangeCompleteActions()
+    {
+        if (colorChangeCompleteActions.Count <= 0)
+            return;
+
+        List<System.Action> actions = new List<System.Action>(colorChangeCompleteActions);
+        colorChangeCompleteActions.Clear();
+
+        for (int i = 0; i < actions.Count; i++)
+        {
+            actions[i]?.Invoke();
+        }
     }
 
     void ChangeBlockColorDataOnly(Vector3Int gridPos, Color color)
@@ -1192,6 +1208,26 @@ public class ChunkCode : MonoBehaviour
 
         bool covered = IsFullyCovered(pos);
         data._go.SetActive(!covered);
+    }
+
+    public void ChangeBlockColorAsync(Vector3 pos, Color color, System.Action onComplete = null)
+    {
+        if (onComplete != null)
+            colorChangeCompleteActions.Add(onComplete);
+
+        Vector3Int gridPos = Vector3Int.RoundToInt(pos);
+
+        colorChangeQueue.Enqueue(new BlockColorChangeRequest(gridPos, color));
+
+        StartColorChangeWorkerIfNeed();
+    }
+
+    public void ChangeBlockColorRangeAsync(Vector3 posA, Vector3 posB, Color color, System.Action onComplete = null)
+    {
+        if (onComplete != null)
+            colorChangeCompleteActions.Add(onComplete);
+
+        StartCoroutine(EnqueueColorChangeRangeCoroutine(posA, posB, color));
     }
 
     public void DestroyWorld()

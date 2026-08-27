@@ -146,6 +146,11 @@ public class BuildManager : MonoBehaviour
         if (SaveColors.Count == 0) for (int i = 0; i < savecolornum; i++) SaveColors.Add(new Color(255, 255, 255));
     }
 
+    public void OnPaletteColorChanged()
+    {
+        GameManager.Instance.InputManager.ShowDestroyRangeViewOnly();
+    }
+
     public void AddSaveColor(int _num)
     {
         CheckSave();
