@@ -1,11 +1,15 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.GraphicsBuffer;
+
+public enum RotationLockAxis
+{
+    None,
+    X,
+    Y,
+    Z
+}
 
 public class InputManager : MonoBehaviour
 {
@@ -28,11 +32,22 @@ public class InputManager : MonoBehaviour
 
     Coroutine BuildCoroutine;
     Coroutine DestroyCoroutine;
-
     public float rotateSpeed = 5f;
     private bool isRotating = false;
     private bool isRotated = false;
     bool showpreviewblock = true;
+
+    [Header("Rotation Lock")]
+    [SerializeField] private GameObject rotationGuideCircle;
+    [SerializeField] private float lockedRotateSpeed = 5f;
+    [SerializeField] private float zCircleRotateMultiplier = 1f;
+    [SerializeField] private float zCircleDeadZoneRadius = 40f;
+    [SerializeField] private bool reverseZRotation = false;
+
+    private RotationLockAxis rotationLockAxis = RotationLockAxis.None;
+
+    private Vector2 beforeZMouseDir;
+    private bool hasBeforeZMouseDir = false;
 
     public float scaleSpeed = 0.05f;
 
@@ -44,8 +59,9 @@ public class InputManager : MonoBehaviour
     [Header("SoundData")]
     public SoundData DestroySound;
     public SoundData MultyDestroySound;
-    public SoundData BuildSound; 
-    public SoundData OnClickSetBtn; 
+    public SoundData BuildSound;
+    public SoundData OnClickSetBtn;
+    public SoundData ColorSelectSound;
 
     private void Awake()
     {
@@ -258,6 +274,8 @@ public class InputManager : MonoBehaviour
                         );
 
                         ShowDestroyRangeViewOnly();
+
+                        GameManager.Instance.SoundManager.PlayEffect(ColorSelectSound);
                     }
                 }
                 else
@@ -704,48 +722,289 @@ public class InputManager : MonoBehaviour
     {
         isRotating = false;
 
+        if (_target == null)
+        {
+            rotationLockAxis = RotationLockAxis.None;
+            HideRotationGuideCircle();
+            return;
+        }
+
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.WorldTurnTrigger]))
         {
+            rotationLockAxis = RotationLockAxis.None;
+            HideRotationGuideCircle();
             TurnObjectDirect(_target);
             return;
+        }
+
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PWBaseMoveKey]))
+        {
+            isRotated = false;
+            rotationLockAxis = RotationLockAxis.None;
+            HideRotationGuideCircle();
         }
 
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PWBaseMoveKey]))
         {
             isRotating = true;
-            isRotated = false;
+        }
+        else
+        {
+            rotationLockAxis = RotationLockAxis.None;
+            hasBeforeZMouseDir = false;
+            HideRotationGuideCircle();
+            return;
         }
 
-        if (isRotating && _target != null)
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+
+        if (Mathf.Abs(mouseX) >= 0.2f ||
+            Mathf.Abs(mouseY) >= 0.2f)
         {
-            float mouseX = Input.GetAxis("Mouse X");
-            float mouseY = Input.GetAxis("Mouse Y");
+            isRotated = true;
+        }
 
-            Transform cam = Camera.main.transform;
+        UpdateRotationLockAxis();
 
-            if (Mathf.Abs(mouseX) >= 0.2f ||
-                Mathf.Abs(mouseY) >= 0.2f)
+        if (rotationLockAxis != RotationLockAxis.None)
+        {
+            ShowRotationGuideCircle(_target);
+            TurnObjectLocked(_target, mouseX, mouseY);
+        }
+        else
+        {
+            hasBeforeZMouseDir = false;
+            HideRotationGuideCircle();
+            TurnObjectFree(_target, mouseX, mouseY);
+        }
+    }
+
+    void UpdateRotationLockAxis()
+    {
+        bool xKey = _keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustX]);
+        bool yKey = _keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustY]);
+        bool zKey = _keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustZ]);
+
+        bool xDown = _keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustX]);
+        bool yDown = _keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustY]);
+        bool zDown = _keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.TurnnJustZ]);
+
+        if (!xKey && !yKey && !zKey)
+        {
+            rotationLockAxis = RotationLockAxis.None;
+            hasBeforeZMouseDir = false;
+            return;
+        }
+
+        if (rotationLockAxis == RotationLockAxis.None)
+        {
+            if (xDown || xKey)
             {
-                isRotated = true;
+                rotationLockAxis = RotationLockAxis.X;
+            }
+            else if (yDown || yKey)
+            {
+                rotationLockAxis = RotationLockAxis.Y;
+            }
+            else if (zDown || zKey)
+            {
+                rotationLockAxis = RotationLockAxis.Z;
             }
 
-            // 마우스 방향 기반 회전축
-            Vector3 rotationAxis =
-                (cam.up * -mouseX) +
-                (cam.right * mouseY);
-
-            // 회전량
-            float rotationAmount =
-                new Vector2(mouseX, mouseY).magnitude
-                * rotateSpeed;
-
-            // 하나의 축으로 회전
-            _target.transform.Rotate(
-                rotationAxis,
-                rotationAmount,
-                Space.World
-            );
+            return;
         }
+
+        switch (rotationLockAxis)
+        {
+            case RotationLockAxis.X:
+                if (!xKey)
+                {
+                    rotationLockAxis = RotationLockAxis.None;
+                }
+                break;
+
+            case RotationLockAxis.Y:
+                if (!yKey)
+                {
+                    rotationLockAxis = RotationLockAxis.None;
+                }
+                break;
+
+            case RotationLockAxis.Z:
+                if (!zKey)
+                {
+                    rotationLockAxis = RotationLockAxis.None;
+                    hasBeforeZMouseDir = false;
+                }
+                break;
+        }
+    }
+
+    void TurnObjectFree(GameObject _target, float mouseX, float mouseY)
+    {
+        Transform cam = Camera.main.transform;
+
+        Vector3 rotationAxis =
+            (cam.up * -mouseX) +
+            (cam.right * mouseY);
+
+        float rotationAmount =
+            new Vector2(mouseX, mouseY).magnitude
+            * rotateSpeed;
+
+        _target.transform.Rotate(
+            rotationAxis,
+            rotationAmount,
+            Space.World
+        );
+    }
+
+    void TurnObjectLocked(GameObject _target, float mouseX, float mouseY)
+    {
+        Transform cam = Camera.main.transform;
+
+        switch (rotationLockAxis)
+        {
+            case RotationLockAxis.X:
+                TurnObjectLockedX(_target, cam, mouseX, mouseY);
+                break;
+
+            case RotationLockAxis.Y:
+                TurnObjectLockedY(_target, cam, mouseX, mouseY);
+                break;
+
+            case RotationLockAxis.Z:
+                TurnObjectLockedZByCircleMouse(_target, cam);
+                break;
+        }
+    }
+
+    void TurnObjectLockedX(GameObject _target, Transform cam, float mouseX, float mouseY)
+    {
+        Vector3 rotationAxis = cam.up;
+        float rotationAmount = -mouseX * lockedRotateSpeed;
+
+        _target.transform.Rotate(
+            rotationAxis,
+            rotationAmount,
+            Space.World
+        );
+    }
+
+    void TurnObjectLockedY(GameObject _target, Transform cam, float mouseX, float mouseY)
+    {
+        Vector3 rotationAxis = cam.right;
+        float rotationAmount = mouseY * lockedRotateSpeed;
+
+        _target.transform.Rotate(
+            rotationAxis,
+            rotationAmount,
+            Space.World
+        );
+    }
+
+    void TurnObjectLockedZByCircleMouse(GameObject _target, Transform cam)
+    {
+        Vector2 pivotScreenPos = GetTargetScreenCenter(_target);
+        Vector2 currentMousePos = Input.mousePosition;
+
+        Vector2 currentDir = currentMousePos - pivotScreenPos;
+
+        if (currentDir.magnitude < zCircleDeadZoneRadius)
+        {
+            hasBeforeZMouseDir = false;
+            return;
+        }
+
+        currentDir.Normalize();
+
+        if (!hasBeforeZMouseDir)
+        {
+            beforeZMouseDir = currentDir;
+            hasBeforeZMouseDir = true;
+            return;
+        }
+
+        float signedAngle = Vector2.SignedAngle(beforeZMouseDir, currentDir);
+
+        beforeZMouseDir = currentDir;
+
+        if (Mathf.Abs(signedAngle) <= 0.001f)
+            return;
+
+        if (reverseZRotation)
+        {
+            signedAngle *= -1f;
+        }
+
+        _target.transform.Rotate(
+            cam.forward,
+            signedAngle * zCircleRotateMultiplier,
+            Space.World
+        );
+    }
+
+    Vector2 GetTargetScreenCenter(GameObject target)
+    {
+        Camera cam = Camera.main;
+
+        if (cam == null || target == null)
+        {
+            return new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        }
+
+        Vector3 screenPos = cam.WorldToScreenPoint(target.transform.position);
+
+        if (screenPos.z < 0f)
+        {
+            return new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        }
+
+        return new Vector2(screenPos.x, screenPos.y);
+    }
+
+    void ShowRotationGuideCircle(GameObject target)
+    {
+        if (rotationGuideCircle == null) return;
+        if (target == null) return;
+
+        if (!rotationGuideCircle.activeSelf)
+        {
+            rotationGuideCircle.SetActive(true);
+        }
+
+        rotationGuideCircle.transform.position = target.transform.position;
+        rotationGuideCircle.transform.rotation = GetRotationGuideCircleRotation();
+    }
+
+    void HideRotationGuideCircle()
+    {
+        if (rotationGuideCircle == null) return;
+
+        if (rotationGuideCircle.activeSelf)
+        {
+            rotationGuideCircle.SetActive(false);
+        }
+    }
+
+    Quaternion GetRotationGuideCircleRotation()
+    {
+        Transform cam = Camera.main.transform;
+
+        switch (rotationLockAxis)
+        {
+            case RotationLockAxis.X:
+                return Quaternion.LookRotation(cam.right, cam.up);
+
+            case RotationLockAxis.Y:
+                return Quaternion.LookRotation(cam.up, cam.forward);
+
+            case RotationLockAxis.Z:
+                return Quaternion.LookRotation(cam.forward, cam.up);
+        }
+
+        return Quaternion.identity;
     }
 
     private float rotateTimer = 0f;

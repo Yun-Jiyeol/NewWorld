@@ -30,6 +30,9 @@ public class BuildManager : MonoBehaviour
     public float maxFrameTime = 3f;
     Queue<WorldAndBlock> buildQueue = new();
 
+    [Header("SoundData")]
+    public SoundData ColorSelectSound;
+
     private void Awake()
     {
         StartCoroutine(BuildRoutine());
@@ -106,6 +109,8 @@ public class BuildManager : MonoBehaviour
         MainColor.color = _color;
 
         RefreshColorUIIfOpen();
+
+        GameManager.Instance.SoundManager.PlayEffect(ColorSelectSound);
     }
 
     public Color GetCurrentBuildColor()
@@ -161,6 +166,8 @@ public class BuildManager : MonoBehaviour
         SaveColors[_num] = _color;
 
         saveUI.ChangeColor(_num);
+
+        GameManager.Instance.SoundManager.PlayEffect(ColorSelectSound);
     }
 
     public void AddSaveColor(Color color, int _num)

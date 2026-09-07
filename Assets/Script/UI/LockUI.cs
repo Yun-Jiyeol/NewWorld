@@ -31,7 +31,7 @@ public class LockUI : MonoBehaviour
         _doKill();
         OnthisUI();
 
-        UpLock.DOAnchorPos(new Vector2(0, 20f), 0.5f);
+        UpLock.DOAnchorPos(new Vector2(0, 10f), 0.5f);
         UpLockImage.DOColor(Color.white,0.5f).SetDelay(0.2f);
         DownLockImage.DOColor(Color.white, 0.5f).SetDelay(0.2f);
 
@@ -46,7 +46,7 @@ public class LockUI : MonoBehaviour
     {
         _doKill();
 
-        UpLock.DOAnchorPos(new Vector2(0, 30f), 0.5f);
+        UpLock.DOAnchorPos(new Vector2(0, 20f), 0.5f);
 
         timerstart();
     }
@@ -68,7 +68,7 @@ public class LockUI : MonoBehaviour
 
     void OnthisUI()
     {
-        thisRec.DOAnchorPosY(-487.5f, 0.5f);
+        thisRec.DOAnchorPosY(-500f, 0.5f);
     }
 
     void _doKill()

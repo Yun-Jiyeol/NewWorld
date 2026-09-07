@@ -63,6 +63,9 @@ public enum KeyNameSaves
     TurnYMinus,
     TurnZPlus,
     TurnZMinus,
+    TurnnJustX,
+    TurnnJustY,
+    TurnnJustZ,
 
     // 카메라 회전
     CameraTurn
@@ -96,6 +99,9 @@ public class KeyManager : MonoBehaviour
         { KeyNameSaves.TurnYMinus, new Keyboards() { key = KeyCode.Quote } },
         { KeyNameSaves.TurnZPlus, new Keyboards() { key = KeyCode.Period } },
         { KeyNameSaves.TurnZMinus, new Keyboards() { key = KeyCode.Slash } },
+        { KeyNameSaves.TurnnJustX, new Keyboards() { key = KeyCode.X } },
+        { KeyNameSaves.TurnnJustY, new Keyboards() { key = KeyCode.Y } },
+        { KeyNameSaves.TurnnJustZ, new Keyboards() { key = KeyCode.Z } },
 
         // OnSelect
         { KeyNameSaves.SelectBtn, new Keyboards() { key = KeyCode.Mouse0 } },

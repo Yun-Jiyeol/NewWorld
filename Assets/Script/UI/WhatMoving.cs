@@ -28,8 +28,8 @@ public class WhatMoving : MonoBehaviour
     public List<CoinSave> CoinSaves;
     Dictionary<CoinType, CoinSave> CoinDict;
 
-    Vector2 PlayerVec = new Vector2(-36f, 0);
-    Vector2 WorldVec = new Vector2(36f, 0);
+    Vector2 PlayerVec = new Vector2(-25f, 0);
+    Vector2 WorldVec = new Vector2(25f, 0);
 
     List<Tween> moveTween = new List<Tween>();
     List<Tween> colorTween = new List<Tween>();

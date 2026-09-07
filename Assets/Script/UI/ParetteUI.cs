@@ -53,4 +53,9 @@ public class ParetteUI : BasicUI
             BlockImage= null;
         }
     }
+
+    private void OnDisable()
+    {
+        DestroyAllAdditionalUi();
+    }
 }
