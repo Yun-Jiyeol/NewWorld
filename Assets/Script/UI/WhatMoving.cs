@@ -66,7 +66,7 @@ public class WhatMoving : MonoBehaviour
 
     public void ChangeMoveType(CoinType _nowcoin)
     {
-        if(NowShowCoinType == _nowcoin) return;
+        if (NowShowCoinType == _nowcoin) return;
         NowShowCoinType = _nowcoin;
 
         switch (_nowcoin)
@@ -159,5 +159,47 @@ public class WhatMoving : MonoBehaviour
         }
 
         moveTween.Clear();
+    }
+
+    [Header("Turning UI")]
+    public GameObject Turnning;
+    public Image Sphere;
+    public Image XRing;
+    public Image YRing;
+    public Image ZRing;
+
+    Color NoneSeen = new Color(1, 1, 1, 0);
+
+    public void OnAndOffTurnning(bool active)
+    {
+        if(Turnning.activeSelf == active) return;
+
+        if (active)
+        {
+            Turnning.SetActive(true);
+            DoKillAll();
+
+            Sphere.color = NoneSeen;
+            XRing.color = NoneSeen;
+            YRing.color = NoneSeen;
+            ZRing.color = NoneSeen;
+
+            Sphere.DOColor(Color.white, 0.5f);
+        }
+        else
+        {
+            Sphere.DOColor(NoneSeen, 0.5f).OnComplete(() =>
+            {
+                Turnning.SetActive(false);
+            });
+        }
+    }
+
+    void DoKillAll()
+    {
+        Sphere.DOKill();
+        XRing.DOKill();
+        YRing.DOKill();
+        ZRing.DOKill();
     }
 }
