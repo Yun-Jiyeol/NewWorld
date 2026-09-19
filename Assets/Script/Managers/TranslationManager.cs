@@ -8,7 +8,9 @@ public enum LanguageEnum
 {
     Com,
     Kor,
-    Eng
+    Eng,
+    Chs,
+    Cht
 }
 
 [Serializable]
@@ -16,7 +18,9 @@ public class SaveString
 {
     public string Com;
     public string Kor;
-    public string Eng;
+    public string Eng; 
+    public string Chs;
+    public string Cht;
 }
 
 [System.Serializable]
@@ -30,11 +34,17 @@ public class StringFont
 
     public TMP_FontAsset Engfont;
     public float EngSize;
+
+    public TMP_FontAsset Chsfont;
+    public float ChsSize;
+
+    public TMP_FontAsset Chtfont;
+    public float ChtSize;
 }
 
 public class TranslationManager : MonoBehaviour
 {
-    LanguageEnum NowLanguage = LanguageEnum.Kor;
+    LanguageEnum NowLanguage = LanguageEnum.Com;
     public List<TextTranslation> _AllText;
 
     public void AddText(TextTranslation _text)

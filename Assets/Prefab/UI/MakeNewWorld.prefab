@@ -1760,6 +1760,10 @@ MonoBehaviour:
     KorSize: 45
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 56
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 45
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 45
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -1995,6 +1999,10 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 24
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 32
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -2407,6 +2415,10 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: 85afe58a6c63956489bbbce1a583195d, type: 2}
     EngSize: 24
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 32
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []

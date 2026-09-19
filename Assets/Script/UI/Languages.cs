@@ -9,6 +9,8 @@ public class Languages : MonoBehaviour
     public UI_BtnEffect Com;
     public UI_BtnEffect Eng;
     public UI_BtnEffect Kor;
+    public UI_BtnEffect Chs;
+    public UI_BtnEffect Cht;
 
     LanguageEnum nowLanguage;
 
@@ -32,6 +34,16 @@ public class Languages : MonoBehaviour
     public void ClickKORLanguage()
     {
         ClickLanguage(LanguageEnum.Kor);
+    }
+
+    public void ClickCHSLanguage()
+    {
+        ClickLanguage(LanguageEnum.Chs);
+    }
+
+    public void ClickCHTLanguage()
+    {
+        ClickLanguage(LanguageEnum.Cht);
     }
 
     void ClickLanguage(LanguageEnum _Lan)
@@ -64,6 +76,12 @@ public class Languages : MonoBehaviour
             case LanguageEnum.Kor:
                 Kor.HoldEnter();
                 break;
+            case LanguageEnum.Chs:
+                Chs.HoldEnter();
+                break;
+            case LanguageEnum.Cht:
+                Cht.HoldEnter();
+                break;
         }
     }
 
@@ -72,5 +90,7 @@ public class Languages : MonoBehaviour
         Com.UnHoldChange();
         Eng.UnHoldChange();
         Kor.UnHoldChange();
+        Chs.UnHoldChange();
+        Cht.UnHoldChange();
     }
 }

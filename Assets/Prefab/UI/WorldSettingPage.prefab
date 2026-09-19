@@ -217,13 +217,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 6471056476527986153}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &1768753071660344831
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,13 +356,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 3801505901437339219}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &2537894297135179289
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,6 +454,7 @@ GameObject:
   - component: {fileID: 6149639182344678021}
   - component: {fileID: 5094697338129129021}
   - component: {fileID: 2247126025387510292}
+  - component: {fileID: 2047846909797450735}
   m_Layer: 5
   m_Name: ExplainText
   m_TagString: Untagged
@@ -570,6 +579,33 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2047846909797450735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2602588855095779590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: a6b77e8dfea94d9489ef0fd663a368e8, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    ComSize: 42
+    Korfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    KorSize: 42
+    Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    EngSize: 42
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 42
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 42
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3378709659805450893
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,13 +937,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: -1097157885, guid: 5c6005b48126a56428aaa4ff340d134e, type: 3}
   _text: {fileID: 0}
   _text2: {fileID: 0}
   _image: {fileID: 2676301585290070512}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &4971268988581825419
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,7 +1022,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00021747978}
+  m_AnchoredPosition: {x: 0, y: 0.00049723726}
   m_SizeDelta: {x: 0, y: 450}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &5709303465906282134
@@ -1205,13 +1245,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: 0}
   _text: {fileID: 1186245613792923164}
   _text2: {fileID: 0}
   _image: {fileID: 0}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &7680644453379334392
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,13 +1347,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: 0}
   _text: {fileID: 1362012808448261282}
   _text2: {fileID: 0}
   _image: {fileID: 0}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &7921918935891492003
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,6 +1521,7 @@ GameObject:
   - component: {fileID: 7827500656267545041}
   - component: {fileID: 5182142704823217180}
   - component: {fileID: 1362012808448261282}
+  - component: {fileID: 5913253240276692748}
   m_Layer: 5
   m_Name: ExplainText
   m_TagString: Untagged
@@ -1597,6 +1646,33 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5913253240276692748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8550578275236840496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: af16ffbb35d181649b4e0cffac1ab046, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    ComSize: 42
+    Korfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    KorSize: 42
+    Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    EngSize: 42
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 42
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 42
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8625212741339749096
 GameObject:
   m_ObjectHideFlags: 0
@@ -1688,13 +1764,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SaveColor: {r: 0.33333334, g: 0.31764707, b: 0.27450982, a: 1}
+  _ChangingColor: {r: 0, g: 0, b: 0, a: 1}
   EnterSprite: {fileID: -1262785079, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ExitSprite: {fileID: -974707422, guid: bb1dc2dc3c602644085b4225e4821e32, type: 3}
   ClickSprite: {fileID: 0}
   _text: {fileID: 2247126025387510292}
   _text2: {fileID: 0}
   _image: {fileID: 0}
+  _image2: {fileID: 0}
   CanChage: 1
+  mouseOnSound: 0
+  clickSound: 0
 --- !u!1 &8683187331741131529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,6 +1933,7 @@ GameObject:
   - component: {fileID: 5532861869238460961}
   - component: {fileID: 7623201962364962673}
   - component: {fileID: 1186245613792923164}
+  - component: {fileID: 4898600276010238209}
   m_Layer: 5
   m_Name: ExplainText
   m_TagString: Untagged
@@ -1977,3 +2058,30 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4898600276010238209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9172351430677466988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5396b523f46a20d43b6610cf2bc0d5ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TD: {fileID: 11400000, guid: 038d461b7903a90408eb967dacc0e191, type: 2}
+  FontSave:
+    Comfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    ComSize: 42
+    Korfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    KorSize: 42
+    Engfont: {fileID: 11400000, guid: a0fb3be6b3a5734488ff125a4a8f750d, type: 2}
+    EngSize: 42
+    Chsfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChsSize: 42
+    Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
+    ChtSize: 42
+  AdditionalEffect:
+    m_PersistentCalls:
+      m_Calls: []

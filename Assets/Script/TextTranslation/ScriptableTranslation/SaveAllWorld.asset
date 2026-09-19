@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
+  m_Name: SaveAllWorld
+  m_EditorClassIdentifier: 
+  Strings:
+    Com: 0x5341
+    Kor: "\uBAA8\uB4E0 World \uC800\uC7A5"
+    Eng: Save All Worlds
+    Chs: "\u4FDD\u5B58\u6240\u6709\u4E16\u754C"
+    Cht: "\u5132\u5B58\u6240\u6709\u4E16\u754C"
