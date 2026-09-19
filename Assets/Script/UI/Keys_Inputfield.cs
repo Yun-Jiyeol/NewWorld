@@ -22,6 +22,8 @@ public class Keys_Inputfield : NeedToDoOnit, IPointerDownHandler
 
         thisInput.readOnly = true;
         thisInput.caretWidth = 0;
+
+        thisInput.selectionColor = new Color(0f, 0f, 0f, 0f);
     }
 
     private void Start()
