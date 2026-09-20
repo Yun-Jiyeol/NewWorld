@@ -9439,10 +9439,10 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: b3e409a10b510e74ebc86dfd29c2142c, type: 2}
     EngSize: 26
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 32
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -10283,10 +10283,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -12264,10 +12264,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -18558,10 +18558,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -20341,10 +20341,10 @@ MonoBehaviour:
     KorSize: 32
     Engfont: {fileID: 11400000, guid: b3e409a10b510e74ebc86dfd29c2142c, type: 2}
     EngSize: 26
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 32
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -23000,10 +23000,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -26491,10 +26491,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -29573,10 +29573,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -41080,10 +41080,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -43449,10 +43449,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -55015,10 +55015,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -55406,10 +55406,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -56133,10 +56133,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -64161,10 +64161,10 @@ MonoBehaviour:
     KorSize: 20
     Engfont: {fileID: 11400000, guid: b759feab0f933cb4b87562061680926d, type: 2}
     EngSize: 15
-    Chsfont: {fileID: 0}
-    ChsSize: 0
-    Chtfont: {fileID: 0}
-    ChtSize: 0
+    Chsfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChsSize: 20
+    Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
+    ChtSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
