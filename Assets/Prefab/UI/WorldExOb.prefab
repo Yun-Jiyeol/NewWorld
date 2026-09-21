@@ -675,6 +675,9 @@ MonoBehaviour:
   xpos: {fileID: 9006135991295646976}
   ypos: {fileID: 2680017475457477804}
   zpos: {fileID: 822412713047012189}
+  XPositionText: {fileID: 11400000, guid: c26b296cfe23b4445b7b0da2456c4846, type: 2}
+  YPositionText: {fileID: 11400000, guid: 297c17f427d4c5449a4d174dc3c234b0, type: 2}
+  ZPositionText: {fileID: 11400000, guid: d68581862573b2a429f37bf117b1355f, type: 2}
   OnSelect: {fileID: 1856695112342657592}
   OnMouse: {fileID: 2906762623179909523}
   OnError: {fileID: 8609266306470601954}

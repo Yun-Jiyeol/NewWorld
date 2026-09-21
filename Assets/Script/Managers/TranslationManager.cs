@@ -46,6 +46,7 @@ public class TranslationManager : MonoBehaviour
 {
     LanguageEnum NowLanguage = LanguageEnum.Com;
     public List<TextTranslation> _AllText;
+    public event Action<LanguageEnum> OnLanguageChanged;
 
     public void AddText(TextTranslation _text)
     {
@@ -66,11 +67,20 @@ public class TranslationManager : MonoBehaviour
     {
         NowLanguage = _LE;
 
-        if (_AllText.Count == 0) return;
-        foreach(TextTranslation _tt in _AllText)
+        // 기존 TextTranslation 갱신
+        if (_AllText != null)
         {
-            _tt.Setting(NowLanguage);
+            foreach (TextTranslation _tt in _AllText)
+            {
+                if (_tt != null)
+                {
+                    _tt.Setting(NowLanguage);
+                }
+            }
         }
+
+        // TextTranslation이 아닌 다른 UI들에게도 알림
+        OnLanguageChanged?.Invoke(NowLanguage);
     }
 
     public LanguageEnum GetLanguage()
