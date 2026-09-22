@@ -69,6 +69,12 @@ public class TextTranslation : MonoBehaviour
                 _text.font = FontSave.Chtfont;
                 _text.fontSize = FontSave.ChtSize;
                 break;
+
+            case LanguageEnum.Jpn:
+                _text.text = TD.Strings.Jpn;
+                _text.font = FontSave.Jpnfont;
+                _text.fontSize = FontSave.JpnSize;
+                break;
         }
     }
 

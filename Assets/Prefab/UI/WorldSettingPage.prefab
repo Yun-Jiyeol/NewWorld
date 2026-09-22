@@ -603,6 +603,8 @@ MonoBehaviour:
     ChsSize: 42
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 42
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 42
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -1022,7 +1024,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00049723726}
+  m_AnchoredPosition: {x: 0, y: 0.00015300018}
   m_SizeDelta: {x: 0, y: 450}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &5709303465906282134
@@ -1670,6 +1672,8 @@ MonoBehaviour:
     ChsSize: 42
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 42
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 42
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -2082,6 +2086,8 @@ MonoBehaviour:
     ChsSize: 42
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 42
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 42
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []

@@ -788,6 +788,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -1767,6 +1769,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -1970,6 +1974,8 @@ MonoBehaviour:
     ChsSize: 32
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 32
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -2819,6 +2825,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -3117,6 +3125,8 @@ MonoBehaviour:
     ChsSize: 19
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 19
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 19
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -4008,6 +4018,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -4594,6 +4606,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 24
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -5064,6 +5078,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -5737,6 +5753,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -7572,6 +7590,8 @@ MonoBehaviour:
     ChsSize: 16
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 16
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -9070,6 +9090,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -9443,6 +9465,8 @@ MonoBehaviour:
     ChsSize: 32
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 32
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -9741,6 +9765,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -9904,6 +9930,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -10287,6 +10315,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -11177,6 +11207,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -12268,6 +12300,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -13025,6 +13059,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -13188,6 +13224,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -14552,6 +14590,8 @@ MonoBehaviour:
     ChsSize: 29
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 29
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -15778,6 +15818,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -16725,6 +16767,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -16985,6 +17029,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -17727,6 +17773,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -18562,6 +18610,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -20345,6 +20395,8 @@ MonoBehaviour:
     ChsSize: 32
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 32
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -21455,6 +21507,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -22071,6 +22125,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -22364,6 +22420,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -23004,6 +23062,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -23399,6 +23459,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -23863,6 +23925,8 @@ MonoBehaviour:
     ChsSize: 10
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 10
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -24679,6 +24743,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -25851,6 +25917,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -26148,6 +26216,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -26495,6 +26565,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -28180,6 +28252,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -28820,6 +28894,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -29262,6 +29338,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 24
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -29577,6 +29655,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -30228,6 +30308,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -31222,6 +31304,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -31925,6 +32009,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -32067,6 +32153,8 @@ MonoBehaviour:
     ChsSize: 12
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 12
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -33737,6 +33825,8 @@ MonoBehaviour:
     ChsSize: 28
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 28
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 28
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -34732,6 +34822,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -35225,6 +35317,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -35464,6 +35558,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -35779,6 +35875,8 @@ MonoBehaviour:
     ChsSize: 25
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 25
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -36329,6 +36427,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -36533,6 +36633,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -36977,6 +37079,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -37329,6 +37433,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -38764,6 +38870,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -39261,6 +39369,8 @@ MonoBehaviour:
     ChsSize: 28
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 28
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 28
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -39424,6 +39534,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -41084,6 +41196,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -42682,6 +42796,8 @@ MonoBehaviour:
     ChsSize: 12
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 12
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -43453,6 +43569,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -46817,6 +46935,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -47452,6 +47572,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -47615,6 +47737,8 @@ MonoBehaviour:
     ChsSize: 16
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 16
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -48671,6 +48795,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -53998,6 +54124,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -54703,6 +54831,8 @@ MonoBehaviour:
     ChsSize: 24
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 24
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 24
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -55019,6 +55149,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -55410,6 +55542,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -55746,6 +55880,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -56137,6 +56273,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -58073,6 +58211,8 @@ MonoBehaviour:
     ChsSize: 16
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 16
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -59346,6 +59486,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -59509,6 +59651,8 @@ MonoBehaviour:
     ChsSize: 0
     Chtfont: {fileID: 0}
     ChtSize: 0
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls:
@@ -59840,6 +59984,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -63100,6 +63246,8 @@ MonoBehaviour:
     ChsSize: 28
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 28
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 28
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -63166,6 +63314,8 @@ MonoBehaviour:
     ChsSize: 16
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 16
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -64165,6 +64315,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -65540,6 +65692,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -65779,6 +65933,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 11400000, guid: 1cb81a0a227e06f4785c45d10f6eee5c, type: 2}
+    JpnSize: 20
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -66059,6 +66215,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -66527,6 +66685,8 @@ MonoBehaviour:
     ChsSize: 12
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 12
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -66927,6 +67087,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -67275,6 +67437,8 @@ MonoBehaviour:
     ChsSize: 12
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 12
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -67438,6 +67602,8 @@ MonoBehaviour:
     ChsSize: 30
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 30
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -68116,6 +68282,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -68279,6 +68447,8 @@ MonoBehaviour:
     ChsSize: 20
     Chtfont: {fileID: 11400000, guid: e328f185ac3fae7459e17f66dc0cab5e, type: 2}
     ChtSize: 20
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -69752,6 +69922,8 @@ MonoBehaviour:
     ChsSize: 12
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 12
+    Jpnfont: {fileID: 0}
+    JpnSize: 0
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []

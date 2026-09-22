@@ -1764,6 +1764,8 @@ MonoBehaviour:
     ChsSize: 45
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 45
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 36
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -2003,6 +2005,8 @@ MonoBehaviour:
     ChsSize: 32
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 32
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
@@ -2419,6 +2423,8 @@ MonoBehaviour:
     ChsSize: 32
     Chtfont: {fileID: 11400000, guid: a655905f9614d5242a5ce6883746b5d4, type: 2}
     ChtSize: 32
+    Jpnfont: {fileID: 11400000, guid: 6a1d37ef9838fd44db7d199f715fa775, type: 2}
+    JpnSize: 32
   AdditionalEffect:
     m_PersistentCalls:
       m_Calls: []
