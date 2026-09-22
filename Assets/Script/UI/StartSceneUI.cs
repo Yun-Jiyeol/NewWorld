@@ -101,6 +101,10 @@ public class StartSceneUI : MonoBehaviour
                 case LanguageEnum.Cht:
                     nextText = SaveData[nextText].Cht;
                     break;
+
+                case LanguageEnum.Jpn:
+                    nextText = SaveData[nextText].Jpn;
+                    break;
             }
 
             SetRandomLineSoundThickness();

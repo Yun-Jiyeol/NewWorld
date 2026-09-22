@@ -10,7 +10,8 @@ public enum LanguageEnum
     Kor,
     Eng,
     Chs,
-    Cht
+    Cht,
+    Jpn
 }
 
 [Serializable]
@@ -18,9 +19,10 @@ public class SaveString
 {
     public string Com;
     public string Kor;
-    public string Eng; 
+    public string Eng;
     public string Chs;
     public string Cht;
+    public string Jpn;
 }
 
 [System.Serializable]
@@ -40,6 +42,9 @@ public class StringFont
 
     public TMP_FontAsset Chtfont;
     public float ChtSize;
+
+    public TMP_FontAsset Jpnfont;
+    public float JpnSize;
 }
 
 public class TranslationManager : MonoBehaviour
