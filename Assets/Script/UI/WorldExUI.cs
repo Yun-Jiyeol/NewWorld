@@ -147,6 +147,9 @@ public class WorldExUI : MonoBehaviour,
 
             case LanguageEnum.Cht:
                 return text.Cht;
+
+            case LanguageEnum.Jpn:
+                return text.Jpn;
         }
 
 
