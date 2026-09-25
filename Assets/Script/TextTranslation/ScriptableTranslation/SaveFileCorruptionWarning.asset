@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
+  m_Name: SaveFileCorruptionWarning
+  m_EditorClassIdentifier: 
+  Strings:
+    Com: 0x534156455F46494C455F444D47
+    Kor: "\uC800\uC7A5 \uC911 \uAC8C\uC784\uC744 \uC885\uB8CC\uD560 \uACBD\uC6B0 \uC138\uC774\uBE0C \uD30C\uC77C\uC774 \uC190\uC0C1\uB420 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    Eng: Quitting the game while saving may corrupt the save file.
+    Chs: "\u4FDD\u5B58\u8FC7\u7A0B\u4E2D\u9000\u51FA\u6E38\u620F\u53EF\u80FD\u4F1A\u635F\u574F\u5B58\u6863\u6587\u4EF6\u3002"
+    Cht: "\u5132\u5B58\u904E\u7A0B\u4E2D\u96E2\u958B\u904A\u6232\u53EF\u80FD\u6703\u640D\u58DE\u5B58\u6A94\u6A94\u6848\u3002"
+    Jpn: "\u4FDD\u5B58\u4E2D\u306B\u30B2\u30FC\u30E0\u3092\u7D42\u4E86\u3059\u308B\u3068\u3001\u30BB\u30FC\u30D6\u30D5\u30A1\u30A4\u30EB\u304C\u7834\u640D\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
