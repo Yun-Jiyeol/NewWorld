@@ -133,7 +133,7 @@ public class LightUI : BasicUI
             ShowLight = Instantiate(GameManager.Instance.LightManager.SphereLight, target.transform);
         }
 
-        ShowLight.layer = 6;
+        SetLayerAll(ShowLight, 6);
 
         Vector3Int SZ = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().GiveThreeSize();
         float maxSZ = Mathf.Max(SZ.x, SZ.y, SZ.z);
@@ -323,6 +323,16 @@ public class LightUI : BasicUI
 
         showSettingAngleInput.text = "";
         showSettingAngle.text = SettingAngle.ToString("F1");
+    }
+
+    void SetLayerAll(GameObject obj, int layer)
+    {
+        obj.layer = layer;
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerAll(child.gameObject, layer);
+        }
     }
 
     public void ChangeColor()

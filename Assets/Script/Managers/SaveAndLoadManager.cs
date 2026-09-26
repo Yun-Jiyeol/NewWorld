@@ -172,6 +172,8 @@ public class SaveAndLoadManager : MonoBehaviour
     HashSet<ChunkCode> queuedWorlds = new HashSet<ChunkCode>();
     HashSet<ChunkCode> dirtyWorlds = new HashSet<ChunkCode>();
 
+    HashSet<string> deletedWorlds = new HashSet<string>();
+
     bool isSaving = false;
     bool isLoading = false;
     bool cancelLoading = false;
@@ -275,18 +277,22 @@ public class SaveAndLoadManager : MonoBehaviour
         return Path.Combine(WorldSaveFolder, "World_" + time);
     }
 
-    public void SaveWorldData(ChunkCode _world) //설치 한 이후 1회, 제작 중 1분 단위로 1회
+    public void SaveWorldData(ChunkCode _world)
     {
+        if (_world == null)
+            return;
+
+        if (deletedWorlds.Contains(_world.Savedtime))
+            return;
+
         _world.isSavedBefore = false;
 
-        // 이미 저장 중이면 dirty 처리
         if (isSaving && currentSavingWorld == _world)
         {
             dirtyWorlds.Add(_world);
             return;
         }
 
-        // 이미 Queue에 있으면 덮어쓰기
         if (queuedWorlds.Contains(_world))
         {
             dirtyWorlds.Add(_world);
@@ -317,12 +323,25 @@ public class SaveAndLoadManager : MonoBehaviour
             yield return StartCoroutine(SaveWorldCoroutine(world));
 
             // 저장 중 추가 요청이 있었다면 다시 Queue
-            if (dirtyWorlds.Contains(world))
+            if (world != null)
             {
-                dirtyWorlds.Remove(world);
+                string worldID = world.Savedtime;
 
-                saveQueue.Enqueue(world);
-                queuedWorlds.Add(world);
+                if (!deletedWorlds.Contains(worldID))
+                {
+                    if (dirtyWorlds.Contains(world))
+                    {
+                        dirtyWorlds.Remove(world);
+
+                        saveQueue.Enqueue(world);
+                        queuedWorlds.Add(world);
+                    }
+                }
+                else
+                {
+                    dirtyWorlds.Remove(world);
+                    queuedWorlds.Remove(world);
+                }
             }
         }
 
@@ -401,18 +420,147 @@ public class SaveAndLoadManager : MonoBehaviour
 
     IEnumerator SaveChunksCoroutine(ChunkCode world)
     {
-        string folder = GetWorldFolder(world.Savedtime);
+        if (world == null)
+            yield break;
 
-        float start = Time.realtimeSinceStartup;
+        string worldID = world.Savedtime;
 
-        foreach (var chunk in world.BlocksinChunk)
+        // 이미 삭제된 월드라면 저장하지 않음
+        if (deletedWorlds.Contains(worldID))
+            yield break;
+
+        string folder = GetWorldFolder(worldID);
+
+        // 폴더가 없다면 생성
+        if (!Directory.Exists(folder))
         {
-            SaveChunk(chunk.Key, chunk.Value, folder);
+            Directory.CreateDirectory(folder);
+        }
 
-            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+
+        // =====================================================
+        // 저장 시작 시점의 Chunk 좌표만 복사
+        // =====================================================
+
+        List<Vector3Int> chunkPositions =
+            world.BlocksinChunk.Keys.ToList();
+
+
+        // =====================================================
+        // 현재 존재하는 Chunk 파일 목록 제작
+        // =====================================================
+
+        HashSet<string> currentChunkFiles =
+            new HashSet<string>();
+
+        foreach (Vector3Int chunkPos in chunkPositions)
+        {
+            string fileName =
+                $"chunk_{chunkPos.x}_{chunkPos.y}_{chunkPos.z}.bin";
+
+            currentChunkFiles.Add(fileName);
+        }
+
+
+        // 삭제 작업이 들어왔는지 확인
+        if (deletedWorlds.Contains(worldID))
+            yield break;
+
+
+        // =====================================================
+        // 더 이상 존재하지 않는 예전 Chunk 파일 삭제
+        // =====================================================
+
+        string[] oldChunkFiles =
+            Directory.GetFiles(
+                folder,
+                "chunk_*.bin"
+            );
+
+        foreach (string oldFile in oldChunkFiles)
+        {
+            if (deletedWorlds.Contains(worldID))
+                yield break;
+
+            string fileName =
+                Path.GetFileName(oldFile);
+
+            if (!currentChunkFiles.Contains(fileName))
+            {
+                if (File.Exists(oldFile))
+                {
+                    File.Delete(oldFile);
+                }
+            }
+        }
+
+
+        // =====================================================
+        // 저장 시작 시 존재했던 Chunk 전체 저장
+        // =====================================================
+
+        float start =
+            Time.realtimeSinceStartup;
+
+        foreach (Vector3Int chunkPos in chunkPositions)
+        {
+            // 저장 도중 월드 자체가 삭제됐는지 확인
+            if (deletedWorlds.Contains(worldID))
+            {
+                yield break;
+            }
+
+
+            // -----------------------------------------
+            // 저장 도중 해당 Chunk가 삭제될 수도 있음
+            // -----------------------------------------
+
+            if (!world.BlocksinChunk.TryGetValue(
+                chunkPos,
+                out Dictionary<Vector3Int, BlockInChunkData> blocks))
+            {
+                // 저장 시작 당시에는 있었는데
+                // 현재는 Chunk가 사라진 경우
+
+                string oldFile =
+                    Path.Combine(
+                        folder,
+                        $"chunk_{chunkPos.x}_{chunkPos.y}_{chunkPos.z}.bin"
+                    );
+
+                if (File.Exists(oldFile))
+                {
+                    File.Delete(oldFile);
+                }
+
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // 현재 존재하는 Chunk 저장
+            // -----------------------------------------
+
+            SaveChunk(
+                chunkPos,
+                blocks,
+                folder
+            );
+
+
+            // -----------------------------------------
+            // 프레임 부하 분산
+            // -----------------------------------------
+
+            if (
+                (Time.realtimeSinceStartup - start) * 1000f
+                > 5f
+            )
             {
                 yield return null;
-                start = Time.realtimeSinceStartup;
+
+                start =
+                    Time.realtimeSinceStartup;
             }
         }
     }
@@ -442,9 +590,58 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void DeleteData(ChunkCode _world)
     {
+        if (_world == null)
+            return;
+
         EnsureSaveFolder();
 
-        string folder = Path.Combine(WorldSaveFolder, $"World_{_world.Savedtime}");
+        string worldID = _world.Savedtime;
+
+        // 이 월드는 이제 저장되면 안 됨
+        deletedWorlds.Add(worldID);
+
+        // dirty 목록 제거
+        dirtyWorlds.Remove(_world);
+
+        // queued 표시 제거
+        queuedWorlds.Remove(_world);
+
+
+        // =========================
+        // Save Queue에서 제거
+        // =========================
+
+        if (saveQueue.Count > 0)
+        {
+            Queue<ChunkCode> newQueue =
+                new Queue<ChunkCode>();
+
+            while (saveQueue.Count > 0)
+            {
+                ChunkCode world = saveQueue.Dequeue();
+
+                if (world == null)
+                    continue;
+
+                if (world == _world)
+                    continue;
+
+                newQueue.Enqueue(world);
+            }
+
+            saveQueue = newQueue;
+        }
+
+
+        // =========================
+        // 실제 저장 폴더 삭제
+        // =========================
+
+        string folder =
+            Path.Combine(
+                WorldSaveFolder,
+                $"World_{worldID}"
+            );
 
         if (Directory.Exists(folder))
         {
