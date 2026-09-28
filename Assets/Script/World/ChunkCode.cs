@@ -12,6 +12,13 @@ public class BlockInChunkData
     public GameObject _go;
 }
 
+public enum WorldLoadState
+{
+    NotLoaded,  // 아직 제작 시작 전
+    Loading,    // 데이터/메시 제작 중
+    Complete    // 완전히 사용 가능
+}
+
 public class ChunkCode : MonoBehaviour
 {
     struct BlockColorChangeRequest
@@ -38,6 +45,13 @@ public class ChunkCode : MonoBehaviour
 
     public string _name = "NewWorld";
     public string Savedtime;
+
+    public WorldLoadState LoadState = WorldLoadState.NotLoaded;
+
+    public bool IsLoadComplete()
+    {
+        return LoadState == WorldLoadState.Complete;
+    }
 
     public GameObject LightBlock;
     public bool isSavedBefore = false;
@@ -102,8 +116,13 @@ public class ChunkCode : MonoBehaviour
 
     public IEnumerator BuildRoutine()
     {
-        if (BlocksinChunk == null) BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
-        if (Chunks == null) Chunks = new Dictionary<Vector3Int, GameObject>();
+        LoadState = WorldLoadState.Loading;
+
+        if (BlocksinChunk == null)
+            BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+
+        if (Chunks == null)
+            Chunks = new Dictionary<Vector3Int, GameObject>();
 
         float start = Time.realtimeSinceStartup;
 
@@ -125,18 +144,20 @@ public class ChunkCode : MonoBehaviour
 
                 if (!BlocksinChunk[chunkpos].ContainsKey(localPos))
                 {
-                    if(newblock._color.a != 1)
+                    if (newblock._color.a != 1)
                     {
                         MakeBlockData(newblock._position, newblock._color);
                     }
                     else
                     {
-                        BlocksinChunk[chunkpos].Add(localPos,
+                        BlocksinChunk[chunkpos].Add(
+                            localPos,
                             new BlockInChunkData
                             {
                                 _position = newblock._position,
                                 _color = newblock._color
-                            });
+                            }
+                        );
                     }
 
                     CheckSize(newblock._position);
@@ -165,6 +186,9 @@ public class ChunkCode : MonoBehaviour
         }
 
         FinishSettingBlock();
+
+        // 여기까지 왔으면 블록 + Chunk + Mesh 준비 완료
+        LoadState = WorldLoadState.Complete;
     }
 
     void ClearAll()

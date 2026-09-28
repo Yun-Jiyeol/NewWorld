@@ -113,11 +113,25 @@ public class InputManager : MonoBehaviour
                             // 태그 확인
                             if (hitObject.CompareTag("World"))
                             {
-                                TargetGameObject = hitObject.GetComponentInParent<ChunkCode>().gameObject;
+                                ChunkCode chunk =
+                                    hitObject.GetComponentInParent<ChunkCode>();
 
-                                _cam.GetComponent<MainCamera>().LookAt(TargetGameObject.transform);
+                                if (chunk == null)
+                                    return;
 
-                                GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+                                if (!chunk.IsLoadComplete())
+                                    return;
+
+
+                                TargetGameObject =
+                                    chunk.gameObject;
+
+                                _cam.GetComponent<MainCamera>()
+                                    .LookAt(TargetGameObject.transform);
+
+                                GameManager.Instance.ChangeFlow(
+                                    GameFlow.SelectOneWorld
+                                );
                             }
                         }
                     }
@@ -164,9 +178,25 @@ public class InputManager : MonoBehaviour
                     {
                         if (OnRaycast.transform.CompareTag("World"))
                         {
-                            TargetGameObject = OnRaycast.transform.GetComponentInParent<ChunkCode>().gameObject;
-                            _cam.GetComponent<MainCamera>().LookAt(TargetGameObject.transform);
-                            GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+                            ChunkCode chunk =
+                                OnRaycast.transform.GetComponentInParent<ChunkCode>();
+
+                            if (chunk == null)
+                                return;
+
+                            if (!chunk.IsLoadComplete())
+                                return;
+
+
+                            TargetGameObject =
+                                chunk.gameObject;
+
+                            _cam.GetComponent<MainCamera>()
+                                .LookAt(TargetGameObject.transform);
+
+                            GameManager.Instance.ChangeFlow(
+                                GameFlow.SelectOneWorld
+                            );
                         }
                     }
                 }

@@ -93,25 +93,50 @@ public class PlayerPosUI : BasicUI
 
     public void TryToLookAt(WorldExUI _give)
     {
-        if(LastLook != _give)
+        if (_give == null)
+            return;
+
+        if (!_give.CanSelect())
+        {
+            SelectBtn.SetActive(false);
+            return;
+        }
+
+        if (LastLook != _give)
         {
             LastLook = _give;
 
-            foreach(GameObject weu in worldexuis)
+            foreach (GameObject weu in worldexuis)
             {
-                weu.GetComponent<WorldExUI>().OnSelect.SetActive(false);
+                weu.GetComponent<WorldExUI>()
+                    .OnSelect.SetActive(false);
             }
 
             _give.LooAtThis();
-            GameManager.Instance.SoundManager.PlayEffect(OnLookWorldSound);
+
+            GameManager.Instance.SoundManager
+                .PlayEffect(OnLookWorldSound);
+
             SelectBtn.SetActive(true);
         }
     }
 
     public void ClickSelectBtn()
     {
-        GameManager.Instance.InputManager.TargetGameObject = LastLook.getChunkCode().gameObject;
+        if (LastLook == null)
+            return;
 
-        GameManager.Instance.ChangeFlow(GameFlow.SelectOneWorld);
+        if (!LastLook.CanSelect())
+        {
+            SelectBtn.SetActive(false);
+            return;
+        }
+
+        GameManager.Instance.InputManager.TargetGameObject =
+            LastLook.getChunkCode().gameObject;
+
+        GameManager.Instance.ChangeFlow(
+            GameFlow.SelectOneWorld
+        );
     }
 }

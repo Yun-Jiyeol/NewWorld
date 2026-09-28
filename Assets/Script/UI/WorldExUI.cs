@@ -36,32 +36,49 @@ public class WorldExUI : MonoBehaviour,
     public void Setting(GameObject _world, PlayerPosUI _ppui)
     {
         PPUI = _ppui;
-
         ChunkCode = _world.GetComponent<ChunkCode>();
 
-        worldTransform = _world.transform;
-
-
-        if (!ChunkCode.isSavedBefore)
-        {
-            OnError.SetActive(true);
-        }
-
+        RefreshLoadState();
 
         Name.text = ChunkCode._name;
 
+        xpos.text =
+            "X좌표 = " +
+            _world.transform.position.x.ToString("F1");
 
-        // TranslationManager 연결
-        translationManager =
-            GameManager.Instance.TranslationManager;
+        ypos.text =
+            "Y좌표 = " +
+            _world.transform.position.y.ToString("F1");
 
-        SubscribeLanguage();
+        zpos.text =
+            "Z좌표 = " +
+            _world.transform.position.z.ToString("F1");
+    }
 
+    void Update()
+    {
+        RefreshLoadState();
+    }
 
-        // 처음 생성될 때 한번 출력
-        RefreshPositionText(
-            translationManager.GetLanguage()
+    void RefreshLoadState()
+    {
+        if (ChunkCode == null)
+        {
+            OnError.SetActive(true);
+            return;
+        }
+
+        OnError.SetActive(
+            !ChunkCode.IsLoadComplete()
         );
+    }
+
+    public bool CanSelect()
+    {
+        if (ChunkCode == null)
+            return false;
+
+        return ChunkCode.IsLoadComplete();
     }
 
 
@@ -191,11 +208,13 @@ public class WorldExUI : MonoBehaviour,
 
     public void LooAtThis()
     {
+        if (!CanSelect())
+            return;
+
         OnSelect.SetActive(true);
 
-        GameManager.Instance.MainCamera.LookAt(
-            ChunkCode.gameObject.transform
-        );
+        GameManager.Instance.MainCamera
+            .LookAt(ChunkCode.gameObject.transform);
     }
 
 
