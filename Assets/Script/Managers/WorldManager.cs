@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -63,11 +64,30 @@ public class WorldManager : MonoBehaviour
 
     public void LoadAllWorld()
     {
-        GameObject maincam = Camera.main.gameObject;
-        SortWorldsByDistance(maincam);
-        GameManager.Instance.UIManager.StartSceneUI.AddText("TapeRead");
+        StartCoroutine(
+            LoadAllWorldCoroutine()
+        );
+    }
 
-        StartCoroutine(LoadAllworld());
+
+    public IEnumerator LoadAllWorldCoroutine(
+        Func<bool> shouldCancel = null
+    )
+    {
+        GameObject maincam =
+            Camera.main.gameObject;
+
+
+        SortWorldsByDistance(maincam);
+
+
+        GameManager.Instance.UIManager.StartSceneUI
+            .AddText("TapeRead");
+
+
+        yield return StartCoroutine(
+            LoadAllworld(shouldCancel)
+        );
     }
 
     void SortWorldsByDistance(GameObject go)
@@ -80,29 +100,74 @@ public class WorldManager : MonoBehaviour
         });
     }
 
-    IEnumerator LoadAllworld()
+    IEnumerator LoadAllworld(
+    Func<bool> shouldCancel = null
+)
     {
-        GameManager.Instance.StartAdditionalUI.ReconstructionValue(0);
+        GameManager.Instance.StartAdditionalUI
+            .ReconstructionValue(0);
 
-        for (int i = 0;i<Worlds.Count; i++)
+
+        for (int i = 0; i < Worlds.Count; i++)
         {
-            ChunkCode chunk = Worlds[i].GetComponent<ChunkCode>();
+            // =========================
+            // 취소 확인
+            // =========================
 
-            GameManager.Instance.UIManager.StartSceneUI.AddText("WorldCreate");
+            if (
+                shouldCancel != null &&
+                shouldCancel()
+            )
+            {
+                yield break;
+            }
 
-            // 코루틴 끝날 때까지 기다림
-            yield return StartCoroutine(chunk.BuildRoutine());
+
+            ChunkCode chunk =
+                Worlds[i].GetComponent<ChunkCode>();
+
+
+            GameManager.Instance.UIManager.StartSceneUI
+                .AddText("WorldCreate");
+
+
+            // =========================
+            // 해당 World 완성까지 기다림
+            // =========================
+
+            yield return StartCoroutine(
+                chunk.BuildRoutine()
+            );
+
+
+            // BuildRoutine 도중 취소 요청이 들어왔는지 확인
+            if (
+                shouldCancel != null &&
+                shouldCancel()
+            )
+            {
+                yield break;
+            }
+
 
             chunk.PutThisWorld();
 
-            GameManager.Instance.StartAdditionalUI
-                .ReconstructionValue((float)(i + 1) / Worlds.Count);
 
-            // 한 프레임 쉬기 (선택)
+            GameManager.Instance.StartAdditionalUI
+                .ReconstructionValue(
+                    (float)(i + 1) / Worlds.Count
+                );
+
+
             yield return null;
         }
 
-        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Done);
-        GameManager.Instance.UIManager.StartSceneUI.AddText("Eject");
+
+        GameManager.Instance.UIManager.StartAdditionalUI
+            .ChangeCreationState(CreateState.Done);
+
+
+        GameManager.Instance.UIManager.StartSceneUI
+            .AddText("Eject");
     }
 }   

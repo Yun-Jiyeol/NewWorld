@@ -177,7 +177,13 @@ public class SaveAndLoadManager : MonoBehaviour
     bool isSaving = false;
     bool isLoading = false;
     bool cancelLoading = false;
-    List<Coroutine> loadingCoroutines = new List<Coroutine>();
+
+    Coroutine loadWorldFolderCoroutine;
+
+    List<GameObject> worldsCreatedDuringLoad =
+        new List<GameObject>();
+
+    public bool IsLoading => isLoading;
 
     public static void EnsureSaveFolder(string _saveFolderName)
     {
@@ -226,50 +232,193 @@ public class SaveAndLoadManager : MonoBehaviour
     public void CancelLoadWorldFolder()
     {
         CancelLoading();
-
-        cancelLoading = false;
     }
 
     public void LoadWorldFolder()
     {
+        // 이미 로드 중이라면 중복 로드 금지
+        if (isLoading)
+            return;
+
+        loadWorldFolderCoroutine =
+            StartCoroutine(LoadWorldFolderCoroutine());
+    }
+
+
+    IEnumerator LoadWorldFolderCoroutine()
+    {
         isLoading = true;
+        cancelLoading = false;
+
+        worldsCreatedDuringLoad.Clear();
 
         EnsureSaveFolder();
 
-        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Setting);
-        if (Directory.Exists(WorldPlayerSetting) && Directory.EnumerateFiles(WorldPlayerSetting).Any())
+
+        // =====================================================
+        // 월드 설정 불러오기
+        // =====================================================
+
+        GameManager.Instance.UIManager.StartAdditionalUI
+            .ChangeCreationState(CreateState.Setting);
+
+
+        if (
+            Directory.Exists(WorldPlayerSetting) &&
+            Directory.EnumerateFiles(WorldPlayerSetting).Any()
+        )
+        {
             LoadFile(WorldPlayerSetting);
+        }
         else
-            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+        {
+            GameManager.Instance.MainCamera
+                .GetComponent<CameraShaderPutter>()
+                .ResetMaterial();
+        }
 
-        string[] worldFolders = Directory.GetDirectories(WorldSaveFolder);
 
-        List<string> validWorlds = new List<string>();
+        // =====================================================
+        // 유효한 World 폴더 찾기
+        // =====================================================
+
+        string[] worldFolders =
+            Directory.GetDirectories(WorldSaveFolder);
+
+        List<string> validWorlds =
+            new List<string>();
+
 
         foreach (string folder in worldFolders)
         {
-            string folderName = Path.GetFileName(folder);
+            string folderName =
+                Path.GetFileName(folder);
 
             if (!folderName.StartsWith("World_"))
                 continue;
 
-            string worldInfoPath = Path.Combine(folder, "world.json");
+
+            string worldInfoPath =
+                Path.Combine(
+                    folder,
+                    "world.json"
+                );
+
 
             if (File.Exists(worldInfoPath))
+            {
                 validWorlds.Add(folder);
+            }
         }
+
+
+        // =====================================================
+        // 모든 World의 Chunk 데이터를 먼저 읽는다
+        // =====================================================
 
         foreach (string folder in validWorlds)
         {
-            if (cancelLoading) break;
+            if (cancelLoading)
+            {
+                CleanupCancelledLoadedWorlds();
+                FinishLoadingState();
+                yield break;
+            }
 
-            LoadWorldData(folder);
+
+            // 중요
+            // LoadWorldData가 끝날 때까지 기다림
+            yield return StartCoroutine(
+                LoadWorldData(folder)
+            );
+
+
+            if (cancelLoading)
+            {
+                CleanupCancelledLoadedWorlds();
+                FinishLoadingState();
+                yield break;
+            }
         }
 
-        GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Making);
-        GameManager.Instance.WorldManager.LoadAllWorld();
 
+        // =====================================================
+        // 여기까지 왔으면 모든 MakeWorldQueue가 준비됨
+        // =====================================================
+
+        if (cancelLoading)
+        {
+            CleanupCancelledLoadedWorlds();
+            FinishLoadingState();
+            yield break;
+        }
+
+
+        GameManager.Instance.UIManager.StartAdditionalUI
+            .ChangeCreationState(CreateState.Making);
+
+
+        // =====================================================
+        // 이제 실제 월드 제작 시작
+        // =====================================================
+
+        yield return StartCoroutine(
+            GameManager.Instance.WorldManager
+                .LoadAllWorldCoroutine(
+                    () => cancelLoading
+                )
+        );
+
+
+        // 제작 중 취소됐을 경우
+        if (cancelLoading)
+        {
+            CleanupCancelledLoadedWorlds();
+            FinishLoadingState();
+            yield break;
+        }
+
+
+        // 정상적으로 모두 로드 완료
+        worldsCreatedDuringLoad.Clear();
+
+        FinishLoadingState();
+    }
+
+    void CleanupCancelledLoadedWorlds()
+    {
+        for (
+            int i = worldsCreatedDuringLoad.Count - 1;
+            i >= 0;
+            i--
+        )
+        {
+            GameObject world =
+                worldsCreatedDuringLoad[i];
+
+
+            if (world == null)
+                continue;
+
+
+            // WorldManager 목록에서는 제거
+            GameManager.Instance.WorldManager.Worlds
+                .Remove(world);
+
+
+            // GameObject만 제거
+            Destroy(world);
+        }
+
+
+        worldsCreatedDuringLoad.Clear();
+    }
+
+    void FinishLoadingState()
+    {
         isLoading = false;
+        cancelLoading = false;
+        loadWorldFolderCoroutine = null;
     }
 
     string GetWorldFolder(string time)
@@ -670,45 +819,144 @@ public class SaveAndLoadManager : MonoBehaviour
         Debug.Log($"[Save] 세이브 폴더 삭제 완료: {folder}");
     }
 
-    void LoadWorldData(string folder)
+    IEnumerator LoadWorldData(string folder)
     {
-        if (cancelLoading) return;
+        if (cancelLoading)
+            yield break;
 
-        string json = File.ReadAllText(Path.Combine(folder, "world.json"));
-        WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
 
-        GameObject world = GameManager.Instance.WorldManager.MakeWorld();
+        string json =
+            File.ReadAllText(
+                Path.Combine(
+                    folder,
+                    "world.json"
+                )
+            );
+
+
+        WorldSaveData worldsave =
+            JsonUtility.FromJson<WorldSaveData>(
+                json
+            );
+
+
+        if (cancelLoading)
+            yield break;
+
+
+        // =====================================================
+        // World GameObject 생성
+        // =====================================================
+
+        GameObject world =
+            GameManager.Instance.WorldManager.MakeWorld();
+
+
+        // 취소 시 제거할 수 있도록 기억
+        worldsCreatedDuringLoad.Add(world);
+
 
         world.transform.position =
-            new Vector3(worldsave.x, worldsave.y, worldsave.z);
+            new Vector3(
+                worldsave.x,
+                worldsave.y,
+                worldsave.z
+            );
+
 
         world.transform.rotation =
-            new Quaternion(worldsave.xrot, worldsave.yrot, worldsave.zrot, worldsave.wrot);
+            new Quaternion(
+                worldsave.xrot,
+                worldsave.yrot,
+                worldsave.zrot,
+                worldsave.wrot
+            );
 
-        world.transform.localScale = Vector3.one * worldsave.size;
 
-        ChunkCode worldCode = world.GetComponent<ChunkCode>();
+        world.transform.localScale =
+            Vector3.one * worldsave.size;
 
-        worldCode._name = worldsave.Name;
-        worldCode.Savedtime = worldsave.Time;
-        worldCode.isSavedBefore = true;
+
+        ChunkCode worldCode =
+            world.GetComponent<ChunkCode>();
+
+
+        worldCode._name =
+            worldsave.Name;
+
+        worldCode.Savedtime =
+            worldsave.Time;
+
+        worldCode.isSavedBefore =
+            true;
+
+
+        // =====================================================
+        // Light 복원
+        // =====================================================
 
         if (worldsave.isLightBlock)
         {
-            Light _light = worldCode.ChangeLightPower();
-            _light.gameObject.transform.position = new Vector3(worldsave.lightblock.x, worldsave.lightblock.y, worldsave.lightblock.z);
-            _light.gameObject.transform.rotation = new Quaternion(worldsave.lightblock.xrot, worldsave.lightblock.yrot,
-                worldsave.lightblock.zrot, worldsave.lightblock.wrot);
-            _light.color = new Color(worldsave.lightblock.r, worldsave.lightblock.g, worldsave.lightblock.b);
+            Light _light =
+                worldCode.ChangeLightPower();
 
-            _light.type = worldsave.lightblock.type == 1 ? LightType.Spot : LightType.Point;
-            _light.spotAngle = worldsave.lightblock.SpotAngle;
-            _light.range = worldsave.lightblock.Range;
-            _light.intensity = worldsave.lightblock.Intensive;
+
+            _light.gameObject.transform.position =
+                new Vector3(
+                    worldsave.lightblock.x,
+                    worldsave.lightblock.y,
+                    worldsave.lightblock.z
+                );
+
+
+            _light.gameObject.transform.rotation =
+                new Quaternion(
+                    worldsave.lightblock.xrot,
+                    worldsave.lightblock.yrot,
+                    worldsave.lightblock.zrot,
+                    worldsave.lightblock.wrot
+                );
+
+
+            _light.color =
+                new Color(
+                    worldsave.lightblock.r,
+                    worldsave.lightblock.g,
+                    worldsave.lightblock.b
+                );
+
+
+            _light.type =
+                worldsave.lightblock.type == 1
+                ? LightType.Spot
+                : LightType.Point;
+
+
+            _light.spotAngle =
+                worldsave.lightblock.SpotAngle;
+
+            _light.range =
+                worldsave.lightblock.Range;
+
+            _light.intensity =
+                worldsave.lightblock.Intensive;
         }
 
-        Coroutine co = StartCoroutine(LoadChunksCoroutine(folder, worldCode));
-        loadingCoroutines.Add(co);
+
+        if (cancelLoading)
+            yield break;
+
+
+        // =====================================================
+        // 이 World의 모든 Chunk 파일 읽기가 끝날 때까지 기다림
+        // =====================================================
+
+        yield return StartCoroutine(
+            LoadChunksCoroutine(
+                folder,
+                worldCode
+            )
+        );
     }
 
     IEnumerator LoadChunksCoroutine(string folder, ChunkCode world)
@@ -756,21 +1004,12 @@ public class SaveAndLoadManager : MonoBehaviour
     }
     public void CancelLoading()
     {
-        if (!isLoading) return;
+        if (!isLoading)
+            return;
 
         cancelLoading = true;
 
-        foreach (var co in loadingCoroutines)
-        {
-            if (co != null)
-                StopCoroutine(co);
-        }
-
-        loadingCoroutines.Clear();
-
-        isLoading = false;
-
-        Debug.Log("로드 취소됨");
+        Debug.Log("로드 취소 요청");
     }
 
     public void SaveAll()

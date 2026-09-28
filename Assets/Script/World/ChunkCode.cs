@@ -200,7 +200,7 @@ public class ChunkCode : MonoBehaviour
 
     public void SetName()
     {
-        Savedtime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        Savedtime = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
     }
 
     public void MakeBlockData(Vector3 _position, Color color)
