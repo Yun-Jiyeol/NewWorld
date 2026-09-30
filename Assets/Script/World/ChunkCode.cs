@@ -866,22 +866,41 @@ public class ChunkCode : MonoBehaviour
 
     public Light ChangeLightPower()
     {
-        if (LightBlock == null) 
+        if (LightBlock == null)
         {
-            LightBlock = new GameObject("LightObject");
-            LightBlock.transform.SetParent(transform);
+            LightBlock =
+                new GameObject("LightObject");
+
+            LightBlock.transform.SetParent(
+                transform,
+                false
+            );
+
+            // 최초 생성 순간의 임시 위치
+            LightBlock.transform.localPosition =
+                Vector3.zero;
+
+            LightBlock.transform.localRotation =
+                Quaternion.identity;
         }
 
-        Light light;
-        LightBlock.TryGetComponent<Light>(out light);
+        LightBlock.TryGetComponent<Light>(
+            out Light light
+        );
+
         if (light == null)
         {
-            light = LightBlock.AddComponent<Light>();
-            light.type = UnityEngine.LightType.Point;
+            light =
+                LightBlock.AddComponent<Light>();
+
+            light.type =
+                LightType.Point;
+
             light.range = 0;
-            light.intensity = 0; 
-            light.cullingMask = ~(1 << 7);
-            LightBlock.transform.position = gameObject.transform.position;
+            light.intensity = 0;
+
+            light.cullingMask =
+                ~(1 << 7);
         }
 
         return light;
@@ -1182,6 +1201,39 @@ public class ChunkCode : MonoBehaviour
             colorChangeBuildMeshSet.Add(GetChunkCoord(nearPos));
             colorChangeUpdateBlockMeshSet.Add(nearPos);
         }
+    }
+
+    public bool TryGetWorldBounds(out Bounds bounds)
+    {
+        bounds = new Bounds();
+
+        bool hasBounds = false;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+            Renderer renderer =
+                chunk.GetComponent<Renderer>();
+
+            if (renderer == null)
+                continue;
+
+            if (!hasBounds)
+            {
+                bounds = renderer.bounds;
+                hasBounds = true;
+            }
+            else
+            {
+                bounds.Encapsulate(
+                    renderer.bounds
+                );
+            }
+        }
+
+        return hasBounds;
     }
 
     IEnumerator RebuildColorChangedMeshes()

@@ -53,6 +53,10 @@ public class LightUI : BasicUI
 
     GameObject ShowLight;
     bool isLightMove = true;
+    bool isFirstLightSetting = false;
+
+    Vector3 resetLightPosition;
+    bool hasResetLightPosition = false;
 
     KeyManager _keyManager;
 
@@ -62,39 +66,376 @@ public class LightUI : BasicUI
     public SoundData SettingValueSound;
     public SoundData ResetSound;
 
-    public override void OnSetting() 
+    public override void OnSetting()
     {
-        if (GameManager.Instance.InputManager.TargetGameObject == null) return;
-        target = GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().ChangeLightPower();
-        _keyManager = GameManager.Instance.KeyManager;
-        SettingLight = (int)target.intensity;
-        _color = target.color;
-        targettype = target.type;
-        SettingRange = target.range;
-        SettingAngle = target.spotAngle;
+        if (GameManager.Instance.InputManager.TargetGameObject == null)
+            return;
+
+        ChunkCode chunk =
+            GameManager.Instance.InputManager
+                .TargetGameObject
+                .GetComponent<ChunkCode>();
+
+
+        // ChangeLightPower()가 Light를 만들기 전에 판단
+        bool isNewLight =
+            chunk.LightBlock == null;
+
+
+        target =
+            chunk.ChangeLightPower();
+
+
+        _keyManager =
+            GameManager.Instance.KeyManager;
+
+        SettingLight =
+            (int)target.intensity;
+
+        _color =
+            target.color;
+
+        targettype =
+            target.type;
+
+        SettingRange =
+            target.range;
+
+        SettingAngle =
+            target.spotAngle;
 
         isLightMove = true;
 
+
+        // Reset 기준 초기화
+        hasResetLightPosition = false;
+
+
+        // 원래부터 존재하던 Light라면
+        // UI에 들어온 바로 이 위치가 Reset 기준
+        if (!isNewLight)
+        {
+            resetLightPosition =
+                target.transform.position;
+
+            hasResetLightPosition =
+                true;
+        }
+
+
         CopyLine.Setting(this);
         CopyChoose.Setting(this);
+
         RightClick.Setting(this);
         LeftClick.Setting(this);
+
         RightRangeClick.Setting(this);
         LeftRangeClick.Setting(this);
+
         RightAngleClick.Setting(this);
         LeftAngleClick.Setting(this);
+
         Spot.Setting(this);
         Point.Setting(this);
 
         SettingType();
+
         ShowSettingLightRange();
         ShowSettingLight();
         ShowSettingLightAngle();
+
+
+        // 새 Light라면
+        // 자동 배치가 끝난 뒤 Reset 위치를 정함
+        if (isNewLight)
+        {
+            StartCoroutine(
+                SettingFirstLight(chunk)
+            );
+        }
+    }
+
+    IEnumerator SettingFirstLight(
+    ChunkCode chunk
+)
+    {
+        isFirstLightSetting = true;
+
+
+        if (!chunk.TryGetWorldBounds(
+            out Bounds bounds
+        ))
+        {
+            isFirstLightSetting = false;
+            yield break;
+        }
+
+
+        Camera cam =
+            Camera.main;
+
+        Transform camTransform =
+            cam.transform;
+
+
+        // -------------------------
+        // 1. 월드를 바라볼 방향 결정
+        // -------------------------
+
+        Vector3 viewDirection;
+
+        // 플레이어가 물체 안에 있으면
+        // 현재 카메라 방향을 기준으로 밖으로 빼냄
+        if (bounds.Contains(camTransform.position))
+        {
+            viewDirection =
+                camTransform.forward;
+        }
+        else
+        {
+            viewDirection =
+                bounds.center -
+                camTransform.position;
+        }
+
+
+        if (viewDirection.sqrMagnitude < 0.001f)
+        {
+            viewDirection =
+                camTransform.forward;
+        }
+
+        viewDirection.Normalize();
+
+
+        // -------------------------
+        // 2. 월드 전체가 보이는 거리 계산
+        // -------------------------
+
+        float radius =
+            bounds.extents.magnitude;
+
+
+        float verticalFov =
+            cam.fieldOfView *
+            Mathf.Deg2Rad;
+
+
+        float horizontalFov =
+            2f *
+            Mathf.Atan(
+                Mathf.Tan(
+                    verticalFov * 0.5f
+                )
+                * cam.aspect
+            );
+
+
+        float useFov =
+            Mathf.Min(
+                verticalFov,
+                horizontalFov
+            );
+
+
+        float distance =
+            radius /
+            Mathf.Sin(
+                useFov * 0.5f
+            );
+
+
+        // 화면 가장자리에 너무 딱 붙지 않게
+        distance *= 1.2f;
+
+
+        Vector3 targetCameraPosition =
+            bounds.center -
+            viewDirection * distance;
+
+
+        Quaternion targetCameraRotation =
+            Quaternion.LookRotation(
+                bounds.center -
+                targetCameraPosition,
+                Vector3.up
+            );
+
+
+        // -------------------------
+        // 3. 카메라 부드럽게 이동
+        // -------------------------
+
+        Vector3 startPosition =
+            camTransform.position;
+
+        Quaternion startRotation =
+            camTransform.rotation;
+
+
+        float duration = 0.5f;
+        float time = 0f;
+
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    time / duration
+                );
+
+
+            camTransform.position =
+                Vector3.Lerp(
+                    startPosition,
+                    targetCameraPosition,
+                    t
+                );
+
+
+            camTransform.rotation =
+                Quaternion.Slerp(
+                    startRotation,
+                    targetCameraRotation,
+                    t
+                );
+
+
+            yield return null;
+        }
+
+
+        camTransform.position =
+            targetCameraPosition;
+
+        camTransform.rotation =
+            targetCameraRotation;
+
+
+        // -------------------------
+        // 4. 새 시야 기준으로 Light 위치 결정
+        // -------------------------
+
+        SetFirstLightPosition(
+       chunk,
+       bounds,
+       cam
+   );
+
+
+        // 최초 자동 생성된 위치를
+        // Reset 기준 위치로 저장
+        resetLightPosition =
+            target.transform.position;
+
+        hasResetLightPosition =
+            true;
+
+
+        GameManager.Instance.MainCamera
+            .TryCheckrot();
+
+
+        isFirstLightSetting = false;
+
+
+        // 카메라 내부 회전값 보정
+        GameManager.Instance.MainCamera
+            .TryCheckrot();
+
+
+        isFirstLightSetting = false;
+    }
+
+    void SetFirstLightPosition(
+    ChunkCode chunk,
+    Bounds bounds,
+    Camera cam
+)
+    {
+        if (chunk.LightBlock == null)
+            return;
+
+
+        // 화면 기준 위쪽
+        // +
+        // 약간 카메라 쪽
+        Vector3 direction =
+            (
+                cam.transform.up
+                -
+                cam.transform.forward * 0.35f
+            ).normalized;
+
+
+        Vector3 extents =
+            bounds.extents;
+
+
+        float tx =
+            Mathf.Abs(direction.x) > 0.001f
+            ? extents.x /
+              Mathf.Abs(direction.x)
+            : float.PositiveInfinity;
+
+
+        float ty =
+            Mathf.Abs(direction.y) > 0.001f
+            ? extents.y /
+              Mathf.Abs(direction.y)
+            : float.PositiveInfinity;
+
+
+        float tz =
+            Mathf.Abs(direction.z) > 0.001f
+            ? extents.z /
+              Mathf.Abs(direction.z)
+            : float.PositiveInfinity;
+
+
+        // Bounds 중심에서 해당 방향으로
+        // 표면까지의 거리
+        float surfaceDistance =
+            Mathf.Min(
+                tx,
+                Mathf.Min(ty, tz)
+            );
+
+
+        Vector3 surfacePosition =
+            bounds.center +
+            direction * surfaceDistance;
+
+
+        float worldSize =
+            Mathf.Max(
+                bounds.size.x,
+                bounds.size.y,
+                bounds.size.z
+            );
+
+
+        // 표면에서 조금 더 바깥
+        float margin =
+            Mathf.Max(
+                1f,
+                worldSize * 0.15f
+            );
+
+
+        chunk.LightBlock.transform.position =
+            surfacePosition +
+            direction * margin;
     }
 
     private void Update()
     {
-        if(target == null) return;
+        if (isFirstLightSetting)
+            return;
+
+        if (target == null) return;
         if (EventSystem.current.IsPointerOverGameObject())
         {
             GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
@@ -393,8 +734,24 @@ public class LightUI : BasicUI
 
     public void ResetPosition()
     {
-        GameManager.Instance.SoundManager.PlayEffect(ResetSound);
-        GameManager.Instance.InputManager.TargetGameObject.GetComponent<ChunkCode>().SetLightPosition();
+        if (target == null)
+            return;
+
+        // 최초 Light 위치 계산이 아직 안 끝났으면
+        // Reset 하지 않음
+        if (isFirstLightSetting)
+            return;
+
+        if (!hasResetLightPosition)
+            return;
+
+
+        GameManager.Instance.SoundManager
+            .PlayEffect(ResetSound);
+
+
+        target.transform.position =
+            resetLightPosition;
     }
 
     public void OnSelection(GameObject _go)
