@@ -56,6 +56,9 @@ public class ChunkCode : MonoBehaviour
     public GameObject LightBlock;
     public bool isSavedBefore = false;
 
+    public GameObject CombinedColliderObject;
+    MeshCollider CombinedWorldCollider;
+
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
@@ -506,7 +509,12 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
-        foreach(GameObject chunk in Chunks.Values)
+        // 편집 상태에서는
+        // Chunk별 Collider 사용
+        UseChunkColliders();
+
+
+        foreach (GameObject chunk in Chunks.Values)
         {
             chunk.tag = "Block";
         }
@@ -518,6 +526,12 @@ public class ChunkCode : MonoBehaviour
         {
             chunk.tag = "World";
         }
+
+
+        // 설치 완료
+        // →
+        // 모든 Chunk Collider를 하나로 통합
+        UseCombinedWorldCollider();
     }
 
     void CheckSize(Vector3 position)
@@ -575,20 +589,25 @@ public class ChunkCode : MonoBehaviour
     public void BuildMesh(Vector3Int worldPos)
     {
         Vector3Int chunkCoord = GetChunkCoord(worldPos);
-        if(!BlocksinChunk.ContainsKey(chunkCoord)) return;
+
+        if (!BlocksinChunk.ContainsKey(chunkCoord))
+            return;
+
+
+        // =========================
+        // Render Mesh
+        // =========================
 
         List<Vector3> renderVertices = new();
         List<int> renderTriangles = new();
         List<Color> renderColors = new();
+
         int renderVertexIndex = 0;
 
-        List<Vector3> colliderVertices = new();
-        List<int> colliderTriangles = new();
-        int colliderVertexIndex = 0;
 
         foreach (var kvp in BlocksinChunk[chunkCoord])
         {
-            var block = kvp.Value;
+            BlockInChunkData block = kvp.Value;
 
             AddCube(
                 chunkCoord,
@@ -597,118 +616,675 @@ public class ChunkCode : MonoBehaviour
                 ref renderVertices,
                 ref renderTriangles,
                 ref renderColors,
-                ref renderVertexIndex,
-
-                ref colliderVertices,
-                ref colliderTriangles,
-                ref colliderVertexIndex
+                ref renderVertexIndex
             );
         }
 
+
         Mesh renderMesh = new Mesh();
+
         renderMesh.SetVertices(renderVertices);
         renderMesh.SetTriangles(renderTriangles, 0);
         renderMesh.SetColors(renderColors);
+
         renderMesh.RecalculateNormals();
         renderMesh.RecalculateBounds();
 
-        MeshFilter mf = Chunks[chunkCoord].GetComponent<MeshFilter>();
+
+        MeshFilter mf =
+            Chunks[chunkCoord].GetComponent<MeshFilter>();
+
         mf.mesh = renderMesh;
 
-        Mesh colliderMesh = new Mesh();
-        colliderMesh.SetVertices(colliderVertices);
-        colliderMesh.SetTriangles(colliderTriangles, 0);
-        colliderMesh.RecalculateNormals();
-        colliderMesh.RecalculateBounds();
 
-        MeshCollider mc = Chunks[chunkCoord].GetComponent<MeshCollider>();
-        if (mc == null)
-            mc = Chunks[chunkCoord].AddComponent<MeshCollider>();
+        // =========================
+        // Collider Mesh
+        // =========================
 
-        mc.sharedMesh = null; // 중요
-        mc.sharedMesh = colliderMesh;
+        BuildChunkCollider(chunkCoord);
     }
 
     void AddCube(
-     Vector3Int chunkCoord,
-     BlockInChunkData block,
+      Vector3Int chunkCoord,
+      BlockInChunkData block,
 
-     ref List<Vector3> renderVertices,
-     ref List<int> renderTriangles,
-     ref List<Color> renderColors,
-     ref int renderVertexIndex,
-
-     ref List<Vector3> colliderVertices,
-     ref List<int> colliderTriangles,
-     ref int colliderVertexIndex
- )
+      ref List<Vector3> renderVertices,
+      ref List<int> renderTriangles,
+      ref List<Color> renderColors,
+      ref int renderVertexIndex
+  )
     {
-        Vector3Int localPos = GetLocalPos(block._position);
-        Vector3Int worldPos = block._position;
+        Vector3Int localPos =
+            GetLocalPos(block._position);
 
-        bool currentOpaque = block._color.a >= 1f;
+        Vector3Int worldPos =
+            block._position;
+
+
+        bool currentOpaque =
+            block._color.a >= 1f;
+
 
         Vector3[,] faceVerts = new Vector3[6, 4]
         {
-        { new(-0.5f,-0.5f, 0.5f), new( 0.5f,-0.5f, 0.5f), new( 0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f) },
-        { new( 0.5f,-0.5f,-0.5f), new(-0.5f,-0.5f,-0.5f), new(-0.5f, 0.5f,-0.5f), new( 0.5f, 0.5f,-0.5f) },
-        { new(-0.5f,-0.5f,-0.5f), new(-0.5f,-0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f,-0.5f) },
-        { new( 0.5f,-0.5f, 0.5f), new( 0.5f,-0.5f,-0.5f), new( 0.5f, 0.5f,-0.5f), new( 0.5f, 0.5f, 0.5f) },
-        { new(-0.5f, 0.5f, 0.5f), new( 0.5f, 0.5f, 0.5f), new( 0.5f, 0.5f,-0.5f), new(-0.5f, 0.5f,-0.5f) },
-        { new(-0.5f,-0.5f,-0.5f), new( 0.5f,-0.5f,-0.5f), new( 0.5f,-0.5f, 0.5f), new(-0.5f,-0.5f, 0.5f) }
+        {
+            new(-0.5f,-0.5f, 0.5f),
+            new( 0.5f,-0.5f, 0.5f),
+            new( 0.5f, 0.5f, 0.5f),
+            new(-0.5f, 0.5f, 0.5f)
+        },
+
+        {
+            new( 0.5f,-0.5f,-0.5f),
+            new(-0.5f,-0.5f,-0.5f),
+            new(-0.5f, 0.5f,-0.5f),
+            new( 0.5f, 0.5f,-0.5f)
+        },
+
+        {
+            new(-0.5f,-0.5f,-0.5f),
+            new(-0.5f,-0.5f, 0.5f),
+            new(-0.5f, 0.5f, 0.5f),
+            new(-0.5f, 0.5f,-0.5f)
+        },
+
+        {
+            new( 0.5f,-0.5f, 0.5f),
+            new( 0.5f,-0.5f,-0.5f),
+            new( 0.5f, 0.5f,-0.5f),
+            new( 0.5f, 0.5f, 0.5f)
+        },
+
+        {
+            new(-0.5f, 0.5f, 0.5f),
+            new( 0.5f, 0.5f, 0.5f),
+            new( 0.5f, 0.5f,-0.5f),
+            new(-0.5f, 0.5f,-0.5f)
+        },
+
+        {
+            new(-0.5f,-0.5f,-0.5f),
+            new( 0.5f,-0.5f,-0.5f),
+            new( 0.5f,-0.5f, 0.5f),
+            new(-0.5f,-0.5f, 0.5f)
+        }
         };
+
 
         for (int face = 0; face < 6; face++)
         {
-            Vector3Int neighborWorld = worldPos + directions[face];
-            Vector3Int neighborChunk = GetChunkCoord(neighborWorld);
-            Vector3Int neighborLocal = GetLocalPos(neighborWorld);
+            Vector3Int neighborWorld =
+                worldPos + directions[face];
 
-            bool neighborExists = false;
+            Vector3Int neighborChunk =
+                GetChunkCoord(neighborWorld);
+
+            Vector3Int neighborLocal =
+                GetLocalPos(neighborWorld);
+
+
             bool neighborOpaque = false;
 
-            if (BlocksinChunk.ContainsKey(neighborChunk) &&
-                BlocksinChunk[neighborChunk].TryGetValue(neighborLocal, out var neighborBlock))
+
+            if (
+                BlocksinChunk.ContainsKey(neighborChunk) &&
+                BlocksinChunk[neighborChunk].TryGetValue(
+                    neighborLocal,
+                    out BlockInChunkData neighborBlock
+                )
+            )
             {
-                neighborExists = true;
-                neighborOpaque = neighborBlock._color.a >= 1f;
+                neighborOpaque =
+                    neighborBlock._color.a >= 1f;
             }
+
 
             Vector3 p = localPos;
 
-            if (!neighborExists)
-            {
-                for (int i = 0; i < 4; i++)
-                    colliderVertices.Add(p + faceVerts[face, i]);
 
-                colliderTriangles.Add(colliderVertexIndex + 0);
-                colliderTriangles.Add(colliderVertexIndex + 1);
-                colliderTriangles.Add(colliderVertexIndex + 2);
-                colliderTriangles.Add(colliderVertexIndex + 0);
-                colliderTriangles.Add(colliderVertexIndex + 2);
-                colliderTriangles.Add(colliderVertexIndex + 3);
-
-                colliderVertexIndex += 4;
-            }
-
+            // 불투명 블록의 보이는 면만 Render
             if (!neighborOpaque && currentOpaque)
             {
                 for (int i = 0; i < 4; i++)
-                    renderVertices.Add(p + faceVerts[face, i]);
+                {
+                    renderVertices.Add(
+                        p + faceVerts[face, i]
+                    );
+                }
 
-                renderTriangles.Add(renderVertexIndex + 0);
-                renderTriangles.Add(renderVertexIndex + 1);
-                renderTriangles.Add(renderVertexIndex + 2);
-                renderTriangles.Add(renderVertexIndex + 0);
-                renderTriangles.Add(renderVertexIndex + 2);
-                renderTriangles.Add(renderVertexIndex + 3);
+
+                renderTriangles.Add(
+                    renderVertexIndex + 0
+                );
+
+                renderTriangles.Add(
+                    renderVertexIndex + 1
+                );
+
+                renderTriangles.Add(
+                    renderVertexIndex + 2
+                );
+
+
+                renderTriangles.Add(
+                    renderVertexIndex + 0
+                );
+
+                renderTriangles.Add(
+                    renderVertexIndex + 2
+                );
+
+                renderTriangles.Add(
+                    renderVertexIndex + 3
+                );
+
 
                 for (int i = 0; i < 4; i++)
-                    renderColors.Add(block._color);
+                {
+                    renderColors.Add(
+                        block._color
+                    );
+                }
+
 
                 renderVertexIndex += 4;
             }
         }
+    }
+
+    void BuildChunkCollider(
+    Vector3Int chunkCoord
+)
+    {
+        if (!Chunks.TryGetValue(
+            chunkCoord,
+            out GameObject chunkObject
+        ))
+        {
+            return;
+        }
+
+
+        List<Vector3> vertices =
+            new List<Vector3>();
+
+        List<int> triangles =
+            new List<int>();
+
+
+        bool[,] mask =
+            new bool[ChunkSize, ChunkSize];
+
+
+        // 6방향 검사
+        for (int face = 0; face < 6; face++)
+        {
+            // 청크 내부의 각 단면
+            for (
+                int slice = 0;
+                slice < ChunkSize;
+                slice++
+            )
+            {
+                Array.Clear(
+                    mask,
+                    0,
+                    mask.Length
+                );
+
+
+                // =========================
+                // 노출된 Solid 면 찾기
+                // =========================
+
+                for (
+                    int v = 0;
+                    v < ChunkSize;
+                    v++
+                )
+                {
+                    for (
+                        int u = 0;
+                        u < ChunkSize;
+                        u++
+                    )
+                    {
+                        Vector3Int localPos =
+                            GetColliderLocalPosition(
+                                face,
+                                slice,
+                                u,
+                                v
+                            );
+
+
+                        Vector3Int worldPos =
+                            chunkCoord * ChunkSize
+                            + localPos;
+
+
+                        // 현재 블록이 불투명이 아니면
+                        // Collider 없음
+                        if (!IsSolidBlock(worldPos))
+                            continue;
+
+
+                        Vector3Int neighborPos =
+                            worldPos
+                            + directions[face];
+
+
+                        // 옆에도 Solid 블록이면
+                        // 내부 면이므로 Collider 필요 없음
+                        if (IsSolidBlock(neighborPos))
+                            continue;
+
+
+                        mask[u, v] = true;
+                    }
+                }
+
+
+                // =========================
+                // 같은 면들을 큰 사각형으로 합치기
+                // =========================
+
+                MergeColliderMask(
+                    face,
+                    slice,
+                    mask,
+                    vertices,
+                    triangles
+                );
+            }
+        }
+
+
+        Mesh colliderMesh =
+            new Mesh();
+
+        colliderMesh.name =
+            $"Collider_{chunkCoord}";
+
+
+        colliderMesh.SetVertices(
+            vertices
+        );
+
+        colliderMesh.SetTriangles(
+            triangles,
+            0
+        );
+
+        colliderMesh.RecalculateBounds();
+
+
+        MeshCollider mc =
+            chunkObject.GetComponent<MeshCollider>();
+
+
+        if (mc == null)
+        {
+            mc =
+                chunkObject.AddComponent<MeshCollider>();
+        }
+
+
+        mc.sharedMesh = null;
+        mc.sharedMesh = colliderMesh;
+    }
+
+    bool IsSolidBlock(
+    Vector3Int worldPos
+)
+    {
+        Vector3Int chunkCoord =
+            GetChunkCoord(worldPos);
+
+        Vector3Int localPos =
+            GetLocalPos(worldPos);
+
+
+        if (!BlocksinChunk.TryGetValue(
+            chunkCoord,
+            out Dictionary<Vector3Int, BlockInChunkData> blocks
+        ))
+        {
+            return false;
+        }
+
+
+        if (!blocks.TryGetValue(
+            localPos,
+            out BlockInChunkData block
+        ))
+        {
+            return false;
+        }
+
+
+        return block._color.a >= 1f;
+    }
+
+    Vector3Int GetColliderLocalPosition(
+    int face,
+    int slice,
+    int u,
+    int v
+)
+    {
+        switch (face)
+        {
+            // Front / Back
+            // X, Y 평면
+            case 0:
+            case 1:
+
+                return new Vector3Int(
+                    u,
+                    v,
+                    slice
+                );
+
+
+            // Left / Right
+            // Z, Y 평면
+            case 2:
+            case 3:
+
+                return new Vector3Int(
+                    slice,
+                    v,
+                    u
+                );
+
+
+            // Top / Bottom
+            // X, Z 평면
+            case 4:
+            case 5:
+
+                return new Vector3Int(
+                    u,
+                    slice,
+                    v
+                );
+        }
+
+
+        return Vector3Int.zero;
+    }
+
+    void MergeColliderMask(
+    int face,
+    int slice,
+    bool[,] mask,
+    List<Vector3> vertices,
+    List<int> triangles
+)
+    {
+        for (
+            int v = 0;
+            v < ChunkSize;
+            v++
+        )
+        {
+            int u = 0;
+
+
+            while (u < ChunkSize)
+            {
+                if (!mask[u, v])
+                {
+                    u++;
+                    continue;
+                }
+
+
+                // =========================
+                // 가로 길이 찾기
+                // =========================
+
+                int width = 1;
+
+
+                while (
+                    u + width < ChunkSize &&
+                    mask[u + width, v]
+                )
+                {
+                    width++;
+                }
+
+
+                // =========================
+                // 세로 길이 찾기
+                // =========================
+
+                int height = 1;
+
+                bool canGrow = true;
+
+
+                while (
+                    v + height < ChunkSize &&
+                    canGrow
+                )
+                {
+                    for (
+                        int x = 0;
+                        x < width;
+                        x++
+                    )
+                    {
+                        if (
+                            !mask[
+                                u + x,
+                                v + height
+                            ]
+                        )
+                        {
+                            canGrow = false;
+                            break;
+                        }
+                    }
+
+
+                    if (canGrow)
+                    {
+                        height++;
+                    }
+                }
+
+
+                // =========================
+                // 사용된 영역 제거
+                // =========================
+
+                for (
+                    int y = 0;
+                    y < height;
+                    y++
+                )
+                {
+                    for (
+                        int x = 0;
+                        x < width;
+                        x++
+                    )
+                    {
+                        mask[
+                            u + x,
+                            v + y
+                        ] = false;
+                    }
+                }
+
+
+                // 큰 Quad 하나 생성
+                AddColliderQuad(
+                    face,
+                    slice,
+
+                    u,
+                    v,
+
+                    width,
+                    height,
+
+                    vertices,
+                    triangles
+                );
+
+
+                u += width;
+            }
+        }
+    }
+
+    void AddColliderQuad(
+    int face,
+    int slice,
+
+    int u,
+    int v,
+
+    int width,
+    int height,
+
+    List<Vector3> vertices,
+    List<int> triangles
+)
+    {
+        float u0 =
+            u - 0.5f;
+
+        float u1 =
+            u + width - 0.5f;
+
+        float v0 =
+            v - 0.5f;
+
+        float v1 =
+            v + height - 0.5f;
+
+
+        Vector3 p0;
+        Vector3 p1;
+        Vector3 p2;
+        Vector3 p3;
+
+
+        switch (face)
+        {
+            // Front +Z
+            case 0:
+                {
+                    float z =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, v0, z);
+                    p1 = new Vector3(u1, v0, z);
+                    p2 = new Vector3(u1, v1, z);
+                    p3 = new Vector3(u0, v1, z);
+
+                    break;
+                }
+
+
+            // Back -Z
+            case 1:
+                {
+                    float z =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u1, v0, z);
+                    p1 = new Vector3(u0, v0, z);
+                    p2 = new Vector3(u0, v1, z);
+                    p3 = new Vector3(u1, v1, z);
+
+                    break;
+                }
+
+
+            // Left -X
+            case 2:
+                {
+                    float x =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(x, v0, u0);
+                    p1 = new Vector3(x, v0, u1);
+                    p2 = new Vector3(x, v1, u1);
+                    p3 = new Vector3(x, v1, u0);
+
+                    break;
+                }
+
+
+            // Right +X
+            case 3:
+                {
+                    float x =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(x, v0, u1);
+                    p1 = new Vector3(x, v0, u0);
+                    p2 = new Vector3(x, v1, u0);
+                    p3 = new Vector3(x, v1, u1);
+
+                    break;
+                }
+
+
+            // Top +Y
+            case 4:
+                {
+                    float y =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, y, v1);
+                    p1 = new Vector3(u1, y, v1);
+                    p2 = new Vector3(u1, y, v0);
+                    p3 = new Vector3(u0, y, v0);
+
+                    break;
+                }
+
+
+            // Bottom -Y
+            default:
+                {
+                    float y =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u0, y, v0);
+                    p1 = new Vector3(u1, y, v0);
+                    p2 = new Vector3(u1, y, v1);
+                    p3 = new Vector3(u0, y, v1);
+
+                    break;
+                }
+        }
+
+
+        int index =
+            vertices.Count;
+
+
+        vertices.Add(p0);
+        vertices.Add(p1);
+        vertices.Add(p2);
+        vertices.Add(p3);
+
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 1);
+        triangles.Add(index + 2);
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 2);
+        triangles.Add(index + 3);
     }
 
     bool IsFullyCovered(Vector3Int pos)
@@ -765,6 +1341,218 @@ public class ChunkCode : MonoBehaviour
 
             bool covered = IsFullyCovered(nPos);
             data._go.SetActive(!covered);
+        }
+    }
+
+    void BuildCombinedWorldCollider()
+    {
+        if (Chunks == null || Chunks.Count == 0)
+            return;
+
+
+        // =========================
+        // 통합 Collider 오브젝트 준비
+        // =========================
+
+        if (CombinedColliderObject == null)
+        {
+            CombinedColliderObject =
+                new GameObject("CombinedWorldCollider");
+
+            CombinedColliderObject.transform.SetParent(
+                transform,
+                false
+            );
+
+            CombinedColliderObject.transform.localPosition =
+                Vector3.zero;
+
+            CombinedColliderObject.transform.localRotation =
+                Quaternion.identity;
+
+            CombinedColliderObject.transform.localScale =
+                Vector3.one;
+
+
+            CombinedWorldCollider =
+                CombinedColliderObject.AddComponent<MeshCollider>();
+        }
+        else
+        {
+            if (CombinedWorldCollider == null)
+            {
+                CombinedWorldCollider =
+                    CombinedColliderObject.GetComponent<MeshCollider>();
+
+                if (CombinedWorldCollider == null)
+                {
+                    CombinedWorldCollider =
+                        CombinedColliderObject.AddComponent<MeshCollider>();
+                }
+            }
+        }
+
+
+        CombinedColliderObject.layer =
+            gameObject.layer;
+
+        CombinedColliderObject.tag =
+            "World";
+
+
+        // =========================
+        // 청크 Collider Mesh 수집
+        // =========================
+
+        List<CombineInstance> combines =
+            new List<CombineInstance>();
+
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshCollider chunkCollider =
+                chunk.GetComponent<MeshCollider>();
+
+            if (chunkCollider == null)
+                continue;
+
+            if (chunkCollider.sharedMesh == null)
+                continue;
+
+
+            CombineInstance combine =
+                new CombineInstance();
+
+
+            combine.mesh =
+                chunkCollider.sharedMesh;
+
+
+            // Chunk local mesh
+            // →
+            // CombinedCollider local 좌표로 변환
+            combine.transform =
+                CombinedColliderObject.transform.worldToLocalMatrix
+                *
+                chunk.transform.localToWorldMatrix;
+
+
+            combines.Add(combine);
+        }
+
+
+        if (combines.Count == 0)
+        {
+            CombinedWorldCollider.sharedMesh = null;
+            CombinedColliderObject.SetActive(false);
+
+            return;
+        }
+
+
+        // =========================
+        // 하나의 Mesh로 통합
+        // =========================
+
+        Mesh combinedMesh =
+            new Mesh();
+
+        combinedMesh.name =
+            "CombinedWorldColliderMesh";
+
+
+        // 큰 월드에서 정점 65535개 제한 방지
+        combinedMesh.indexFormat =
+            UnityEngine.Rendering.IndexFormat.UInt32;
+
+
+        combinedMesh.CombineMeshes(
+            combines.ToArray(),
+            true,
+            true
+        );
+
+
+        combinedMesh.RecalculateBounds();
+
+
+        // 기존 통합 Mesh 정리
+        Mesh oldMesh =
+            CombinedWorldCollider.sharedMesh;
+
+        CombinedWorldCollider.sharedMesh =
+            null;
+
+
+        if (oldMesh != null)
+        {
+            Destroy(oldMesh);
+        }
+
+
+        CombinedWorldCollider.sharedMesh =
+            combinedMesh;
+
+
+        CombinedColliderObject.SetActive(true);
+    }
+
+    void UseChunkColliders()
+    {
+        // 통합 Collider OFF
+        if (CombinedColliderObject != null)
+        {
+            CombinedColliderObject.SetActive(false);
+        }
+
+
+        // 각 Chunk Collider ON
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshCollider collider =
+                chunk.GetComponent<MeshCollider>();
+
+            if (collider != null)
+            {
+                collider.enabled = true;
+            }
+        }
+    }
+
+    void UseCombinedWorldCollider()
+    {
+        // 현재 청크 Collider 결과를 합침
+        BuildCombinedWorldCollider();
+
+
+        // Chunk Collider 전부 OFF
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshCollider collider =
+                chunk.GetComponent<MeshCollider>();
+
+            if (collider != null)
+            {
+                collider.enabled = false;
+            }
+        }
+
+
+        if (CombinedColliderObject != null)
+        {
+            CombinedColliderObject.SetActive(true);
         }
     }
 
