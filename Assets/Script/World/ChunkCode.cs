@@ -865,7 +865,7 @@ public class ChunkCode : MonoBehaviour
 
                         // 현재 블록이 불투명이 아니면
                         // Collider 없음
-                        if (!IsSolidBlock(worldPos))
+                        if (!IsColliderBlock(worldPos))
                             continue;
 
 
@@ -876,7 +876,7 @@ public class ChunkCode : MonoBehaviour
 
                         // 옆에도 Solid 블록이면
                         // 내부 면이므로 Collider 필요 없음
-                        if (IsSolidBlock(neighborPos))
+                        if (IsColliderBlock(neighborPos))
                             continue;
 
 
@@ -934,9 +934,7 @@ public class ChunkCode : MonoBehaviour
         mc.sharedMesh = colliderMesh;
     }
 
-    bool IsSolidBlock(
-    Vector3Int worldPos
-)
+    bool IsColliderBlock(Vector3Int worldPos)
     {
         Vector3Int chunkCoord =
             GetChunkCoord(worldPos);
@@ -954,16 +952,9 @@ public class ChunkCode : MonoBehaviour
         }
 
 
-        if (!blocks.TryGetValue(
-            localPos,
-            out BlockInChunkData block
-        ))
-        {
-            return false;
-        }
-
-
-        return block._color.a >= 1f;
+        // Alpha와 상관없이
+        // 블록 데이터가 존재하면 Collider 대상
+        return blocks.ContainsKey(localPos);
     }
 
     Vector3Int GetColliderLocalPosition(
