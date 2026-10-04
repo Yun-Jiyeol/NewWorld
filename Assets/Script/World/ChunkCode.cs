@@ -1337,13 +1337,16 @@ public class ChunkCode : MonoBehaviour
 
     void BuildCombinedWorldCollider()
     {
-        if (Chunks == null || Chunks.Count == 0)
+        if (BlocksinChunk == null ||
+            BlocksinChunk.Count == 0)
+        {
             return;
+        }
 
 
-        // =========================
-        // 통합 Collider 오브젝트 준비
-        // =========================
+        // =====================================
+        // Combined Collider Object 준비
+        // =====================================
 
         if (CombinedColliderObject == null)
         {
@@ -1391,87 +1394,111 @@ public class ChunkCode : MonoBehaviour
             "World";
 
 
-        // =========================
-        // 청크 Collider Mesh 수집
-        // =========================
+        // =====================================
+        // 월드 전체의 노출면 수집
+        // =====================================
 
-        List<CombineInstance> combines =
-            new List<CombineInstance>();
+        Dictionary<int, HashSet<Vector2Int>>[] planes =
+            new Dictionary<int, HashSet<Vector2Int>>[6];
 
 
-        foreach (GameObject chunk in Chunks.Values)
+        for (int face = 0; face < 6; face++)
         {
-            if (chunk == null)
-                continue;
-
-
-            MeshCollider chunkCollider =
-                chunk.GetComponent<MeshCollider>();
-
-            if (chunkCollider == null)
-                continue;
-
-            if (chunkCollider.sharedMesh == null)
-                continue;
-
-
-            CombineInstance combine =
-                new CombineInstance();
-
-
-            combine.mesh =
-                chunkCollider.sharedMesh;
-
-
-            // Chunk local mesh
-            // →
-            // CombinedCollider local 좌표로 변환
-            combine.transform =
-                CombinedColliderObject.transform.worldToLocalMatrix
-                *
-                chunk.transform.localToWorldMatrix;
-
-
-            combines.Add(combine);
+            planes[face] =
+                new Dictionary<int, HashSet<Vector2Int>>();
         }
 
 
-        if (combines.Count == 0)
+        foreach (var chunk in BlocksinChunk.Values)
         {
-            CombinedWorldCollider.sharedMesh = null;
-            CombinedColliderObject.SetActive(false);
+            foreach (BlockInChunkData block in chunk.Values)
+            {
+                Vector3Int worldPos =
+                    block._position;
 
-            return;
+
+                for (int face = 0; face < 6; face++)
+                {
+                    Vector3Int neighborPos =
+                        worldPos + directions[face];
+
+
+                    // 옆에도 블록이 있으면 내부면
+                    if (IsColliderBlock(neighborPos))
+                        continue;
+
+
+                    GetWorldColliderPlanePosition(
+                        face,
+                        worldPos,
+
+                        out int slice,
+                        out int u,
+                        out int v
+                    );
+
+
+                    if (!planes[face].TryGetValue(
+                        slice,
+                        out HashSet<Vector2Int> cells
+                    ))
+                    {
+                        cells =
+                            new HashSet<Vector2Int>();
+
+                        planes[face].Add(
+                            slice,
+                            cells
+                        );
+                    }
+
+
+                    cells.Add(
+                        new Vector2Int(u, v)
+                    );
+                }
+            }
         }
 
 
-        // =========================
-        // 하나의 Mesh로 통합
-        // =========================
+        // =====================================
+        // 월드 전체 Greedy Merge
+        // =====================================
 
-        Mesh combinedMesh =
-            new Mesh();
+        List<Vector3> vertices =
+            new List<Vector3>();
 
-        combinedMesh.name =
-            "CombinedWorldColliderMesh";
-
-
-        // 큰 월드에서 정점 65535개 제한 방지
-        combinedMesh.indexFormat =
-            UnityEngine.Rendering.IndexFormat.UInt32;
+        List<int> triangles =
+            new List<int>();
 
 
-        combinedMesh.CombineMeshes(
-            combines.ToArray(),
-            true,
-            true
-        );
+        for (int face = 0; face < 6; face++)
+        {
+            foreach (var plane in planes[face])
+            {
+                int slice =
+                    plane.Key;
+
+                HashSet<Vector2Int> cells =
+                    plane.Value;
 
 
-        combinedMesh.RecalculateBounds();
+                MergeWorldColliderPlane(
+                    face,
+                    slice,
+                    cells,
+
+                    vertices,
+                    triangles
+                );
+            }
+        }
 
 
-        // 기존 통합 Mesh 정리
+        // =====================================
+        // 기존 Combined Mesh 제거
+        // =====================================
+
         Mesh oldMesh =
             CombinedWorldCollider.sharedMesh;
 
@@ -1485,11 +1512,396 @@ public class ChunkCode : MonoBehaviour
         }
 
 
+        if (vertices.Count == 0)
+        {
+            CombinedColliderObject.SetActive(false);
+
+            return;
+        }
+
+
+        // =====================================
+        // 새 Combined Collider Mesh
+        // =====================================
+
+        Mesh combinedMesh =
+            new Mesh();
+
+        combinedMesh.name =
+            "CombinedWorldGreedyCollider";
+
+
+        combinedMesh.indexFormat =
+            UnityEngine.Rendering.IndexFormat.UInt32;
+
+
+        combinedMesh.SetVertices(
+            vertices
+        );
+
+        combinedMesh.SetTriangles(
+            triangles,
+            0
+        );
+
+        combinedMesh.RecalculateBounds();
+
+
         CombinedWorldCollider.sharedMesh =
             combinedMesh;
 
 
         CombinedColliderObject.SetActive(true);
+    }
+
+    void GetWorldColliderPlanePosition(
+    int face,
+    Vector3Int worldPos,
+
+    out int slice,
+    out int u,
+    out int v
+)
+    {
+        switch (face)
+        {
+            // Front / Back
+            // X,Y 평면
+            case 0:
+            case 1:
+
+                slice = worldPos.z;
+                u = worldPos.x;
+                v = worldPos.y;
+
+                break;
+
+
+            // Left / Right
+            // Z,Y 평면
+            case 2:
+            case 3:
+
+                slice = worldPos.x;
+                u = worldPos.z;
+                v = worldPos.y;
+
+                break;
+
+
+            // Top / Bottom
+            // X,Z 평면
+            default:
+
+                slice = worldPos.y;
+                u = worldPos.x;
+                v = worldPos.z;
+
+                break;
+        }
+    }
+
+    void MergeWorldColliderPlane(
+    int face,
+    int slice,
+
+    HashSet<Vector2Int> cells,
+
+    List<Vector3> vertices,
+    List<int> triangles
+)
+    {
+        while (cells.Count > 0)
+        {
+            Vector2Int start =
+                cells.First();
+
+
+            int minU =
+                start.x;
+
+            int maxU =
+                start.x;
+
+
+            // 왼쪽으로 확장
+            while (
+                cells.Contains(
+                    new Vector2Int(
+                        minU - 1,
+                        start.y
+                    )
+                )
+            )
+            {
+                minU--;
+            }
+
+
+            // 오른쪽으로 확장
+            while (
+                cells.Contains(
+                    new Vector2Int(
+                        maxU + 1,
+                        start.y
+                    )
+                )
+            )
+            {
+                maxU++;
+            }
+
+
+            int minV =
+                start.y;
+
+            int maxV =
+                start.y;
+
+
+            // 아래 방향으로 확장
+            while (
+                HasCompleteWorldColliderRow(
+                    cells,
+                    minU,
+                    maxU,
+                    minV - 1
+                )
+            )
+            {
+                minV--;
+            }
+
+
+            // 위 방향으로 확장
+            while (
+                HasCompleteWorldColliderRow(
+                    cells,
+                    minU,
+                    maxU,
+                    maxV + 1
+                )
+            )
+            {
+                maxV++;
+            }
+
+
+            int width =
+                maxU - minU + 1;
+
+            int height =
+                maxV - minV + 1;
+
+
+            // 사용한 Cell 제거
+            for (
+                int v = minV;
+                v <= maxV;
+                v++
+            )
+            {
+                for (
+                    int u = minU;
+                    u <= maxU;
+                    u++
+                )
+                {
+                    cells.Remove(
+                        new Vector2Int(u, v)
+                    );
+                }
+            }
+
+
+            AddWorldColliderQuad(
+                face,
+                slice,
+
+                minU,
+                minV,
+
+                width,
+                height,
+
+                vertices,
+                triangles
+            );
+        }
+    }
+
+    bool HasCompleteWorldColliderRow(
+    HashSet<Vector2Int> cells,
+
+    int minU,
+    int maxU,
+
+    int v
+)
+    {
+        for (
+            int u = minU;
+            u <= maxU;
+            u++
+        )
+        {
+            if (
+                !cells.Contains(
+                    new Vector2Int(u, v)
+                )
+            )
+            {
+                return false;
+            }
+        }
+
+
+        return true;
+    }
+
+    void AddWorldColliderQuad(
+    int face,
+    int slice,
+
+    int u,
+    int v,
+
+    int width,
+    int height,
+
+    List<Vector3> vertices,
+    List<int> triangles
+)
+    {
+        float u0 =
+            u - 0.5f;
+
+        float u1 =
+            u + width - 0.5f;
+
+        float v0 =
+            v - 0.5f;
+
+        float v1 =
+            v + height - 0.5f;
+
+
+        Vector3 p0;
+        Vector3 p1;
+        Vector3 p2;
+        Vector3 p3;
+
+
+        switch (face)
+        {
+            // Front +Z
+            case 0:
+                {
+                    float z =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, v0, z);
+                    p1 = new Vector3(u1, v0, z);
+                    p2 = new Vector3(u1, v1, z);
+                    p3 = new Vector3(u0, v1, z);
+
+                    break;
+                }
+
+
+            // Back -Z
+            case 1:
+                {
+                    float z =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u1, v0, z);
+                    p1 = new Vector3(u0, v0, z);
+                    p2 = new Vector3(u0, v1, z);
+                    p3 = new Vector3(u1, v1, z);
+
+                    break;
+                }
+
+
+            // Left -X
+            case 2:
+                {
+                    float x =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(x, v0, u0);
+                    p1 = new Vector3(x, v0, u1);
+                    p2 = new Vector3(x, v1, u1);
+                    p3 = new Vector3(x, v1, u0);
+
+                    break;
+                }
+
+
+            // Right +X
+            case 3:
+                {
+                    float x =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(x, v0, u1);
+                    p1 = new Vector3(x, v0, u0);
+                    p2 = new Vector3(x, v1, u0);
+                    p3 = new Vector3(x, v1, u1);
+
+                    break;
+                }
+
+
+            // Top +Y
+            case 4:
+                {
+                    float y =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, y, v1);
+                    p1 = new Vector3(u1, y, v1);
+                    p2 = new Vector3(u1, y, v0);
+                    p3 = new Vector3(u0, y, v0);
+
+                    break;
+                }
+
+
+            // Bottom -Y
+            default:
+                {
+                    float y =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u0, y, v0);
+                    p1 = new Vector3(u1, y, v0);
+                    p2 = new Vector3(u1, y, v1);
+                    p3 = new Vector3(u0, y, v1);
+
+                    break;
+                }
+        }
+
+
+        int index =
+            vertices.Count;
+
+
+        vertices.Add(p0);
+        vertices.Add(p1);
+        vertices.Add(p2);
+        vertices.Add(p3);
+
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 1);
+        triangles.Add(index + 2);
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 2);
+        triangles.Add(index + 3);
     }
 
     void UseChunkColliders()
