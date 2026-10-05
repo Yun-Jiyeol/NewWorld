@@ -442,17 +442,27 @@ public class InputManager : MonoBehaviour
 
     public void PutWorldInSpace()
     {
-        GameManager.Instance.ChangeFlow(GameFlow.None);
+        StartCoroutine(PutWorldInSpaceCoroutine());
+    }
 
+    IEnumerator PutWorldInSpaceCoroutine()
+    {
         GameManager.Instance.SoundManager.PlayEffect(OnClickSetBtn);
 
-        TargetGameObject.transform.parent = GameManager.Instance.WorldManager.SpawnedWorlds.transform;
+        TargetGameObject.transform.parent =
+            GameManager.Instance.WorldManager.SpawnedWorlds.transform;
 
-        TargetGameObject.GetComponent<ChunkCode>().PutThisWorld();
+        ChunkCode chunk =
+            TargetGameObject.GetComponent<ChunkCode>();
+
+        chunk.LoadState = WorldLoadState.Loading;
+
+        StartCoroutine(chunk.PutThisWorldCoroutine());
 
         UnChooseWorld();
-
         ChangeToWatchAllWorld();
+
+        yield break;
     }
 
     void ChangeTypeOfMove()

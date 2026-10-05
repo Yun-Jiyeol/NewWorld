@@ -36,6 +36,9 @@ public class ChunkCode : MonoBehaviour
     [Header("Color Change")]
     [SerializeField] private float colorChangeFrameTime = 3f;
 
+    [Header("World Combine")]
+    [SerializeField] private float combineFrameTime = 3f;
+
     Queue<BlockColorChangeRequest> colorChangeQueue = new Queue<BlockColorChangeRequest>();
     HashSet<Vector3Int> colorChangeBuildMeshSet = new HashSet<Vector3Int>();
     HashSet<Vector3Int> colorChangeUpdateBlockMeshSet = new HashSet<Vector3Int>();
@@ -121,7 +124,7 @@ public class ChunkCode : MonoBehaviour
         StartCoroutine(BuildRoutine());
     }
 
-    public IEnumerator BuildRoutine()
+    public IEnumerator BuildRoutine(bool finishSettingBlock = true)
     {
         LoadState = WorldLoadState.Loading;
 
@@ -192,10 +195,15 @@ public class ChunkCode : MonoBehaviour
             }
         }
 
-        FinishSettingBlock();
+        if (finishSettingBlock)
+        {
+            FinishSettingBlock();
+
+            // Normal creation/edit path completes here.
+            LoadState = WorldLoadState.Complete;
+        }
 
         // 여기까지 왔으면 블록 + Chunk + Mesh 준비 완료
-        LoadState = WorldLoadState.Complete;
     }
 
     void ClearAll()
@@ -571,6 +579,37 @@ public class ChunkCode : MonoBehaviour
         // Render 통합
         UseCombinedWorldRenderer();
     }
+
+    public IEnumerator PutThisWorldCoroutine()
+    {
+        LoadState = WorldLoadState.Loading;
+
+        float start = Time.realtimeSinceStartup;
+
+        // Chunk Tag 변경도 한 프레임에 몰리지 않게 분산
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+            chunk.tag = "World";
+
+            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        // Collider 통합
+        yield return StartCoroutine(UseCombinedWorldColliderCoroutine());
+
+        // Renderer 통합
+        yield return StartCoroutine(UseCombinedWorldRendererCoroutine());
+
+        LoadState = WorldLoadState.Complete;
+    }
+
 
     void CheckSize(Vector3 position)
     {
@@ -1914,6 +1953,389 @@ public class ChunkCode : MonoBehaviour
 
             bool covered = IsFullyCovered(nPos);
             data._go.SetActive(!covered);
+        }
+    }
+
+
+    IEnumerator BuildCombinedWorldColliderCoroutine()
+    {
+        if (BlocksinChunk == null || BlocksinChunk.Count == 0)
+            yield break;
+
+        // Combined Collider Object 준비
+        if (CombinedColliderObject == null)
+        {
+            CombinedColliderObject = new GameObject("CombinedWorldCollider");
+            CombinedColliderObject.transform.SetParent(transform, false);
+            CombinedColliderObject.transform.localPosition = Vector3.zero;
+            CombinedColliderObject.transform.localRotation = Quaternion.identity;
+            CombinedColliderObject.transform.localScale = Vector3.one;
+            CombinedWorldCollider = CombinedColliderObject.AddComponent<MeshCollider>();
+        }
+        else if (CombinedWorldCollider == null)
+        {
+            CombinedWorldCollider = CombinedColliderObject.GetComponent<MeshCollider>();
+            if (CombinedWorldCollider == null)
+                CombinedWorldCollider = CombinedColliderObject.AddComponent<MeshCollider>();
+        }
+
+        CombinedColliderObject.layer = gameObject.layer;
+        CombinedColliderObject.tag = "World";
+
+        Dictionary<int, HashSet<Vector2Int>>[] planes =
+            new Dictionary<int, HashSet<Vector2Int>>[6];
+
+        for (int face = 0; face < 6; face++)
+            planes[face] = new Dictionary<int, HashSet<Vector2Int>>();
+
+        float start = Time.realtimeSinceStartup;
+
+        // 월드 전체 노출면 수집
+        foreach (var chunk in BlocksinChunk.Values)
+        {
+            foreach (BlockInChunkData block in chunk.Values)
+            {
+                Vector3Int worldPos = block._position;
+
+                for (int face = 0; face < 6; face++)
+                {
+                    Vector3Int neighborPos = worldPos + directions[face];
+
+                    if (IsColliderBlock(neighborPos))
+                        continue;
+
+                    GetWorldColliderPlanePosition(
+                        face,
+                        worldPos,
+                        out int slice,
+                        out int u,
+                        out int v
+                    );
+
+                    if (!planes[face].TryGetValue(slice, out HashSet<Vector2Int> cells))
+                    {
+                        cells = new HashSet<Vector2Int>();
+                        planes[face].Add(slice, cells);
+                    }
+
+                    cells.Add(new Vector2Int(u, v));
+                }
+
+                if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+                {
+                    yield return null;
+                    start = Time.realtimeSinceStartup;
+                }
+            }
+        }
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+
+        // Greedy Merge도 프레임 분할
+        for (int face = 0; face < 6; face++)
+        {
+            foreach (var plane in planes[face])
+            {
+                yield return StartCoroutine(
+                    MergeWorldColliderPlaneCoroutine(
+                        face,
+                        plane.Key,
+                        plane.Value,
+                        vertices,
+                        triangles
+                    )
+                );
+            }
+        }
+
+        Mesh oldMesh = CombinedWorldCollider.sharedMesh;
+        CombinedWorldCollider.sharedMesh = null;
+
+        if (oldMesh != null)
+            Destroy(oldMesh);
+
+        if (vertices.Count == 0)
+        {
+            CombinedColliderObject.SetActive(false);
+            yield break;
+        }
+
+        Mesh combinedMesh = new Mesh();
+        combinedMesh.name = "CombinedWorldGreedyCollider";
+        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+        combinedMesh.SetVertices(vertices);
+        yield return null;
+
+        combinedMesh.SetTriangles(triangles, 0);
+        combinedMesh.RecalculateBounds();
+        yield return null;
+
+        // PhysX cooking 자체는 한 번에 실행되므로 앞 작업과 프레임을 분리해서 호출
+        CombinedWorldCollider.sharedMesh = combinedMesh;
+        CombinedColliderObject.SetActive(true);
+    }
+
+    IEnumerator MergeWorldColliderPlaneCoroutine(
+        int face,
+        int slice,
+        HashSet<Vector2Int> cells,
+        List<Vector3> vertices,
+        List<int> triangles
+    )
+    {
+        float startTime = Time.realtimeSinceStartup;
+
+        while (cells.Count > 0)
+        {
+            Vector2Int first = cells.First();
+
+            int minU = first.x;
+            int maxU = first.x;
+
+            while (cells.Contains(new Vector2Int(minU - 1, first.y)))
+                minU--;
+
+            while (cells.Contains(new Vector2Int(maxU + 1, first.y)))
+                maxU++;
+
+            int minV = first.y;
+            int maxV = first.y;
+
+            while (HasCompleteWorldColliderRow(cells, minU, maxU, minV - 1))
+                minV--;
+
+            while (HasCompleteWorldColliderRow(cells, minU, maxU, maxV + 1))
+                maxV++;
+
+            int width = maxU - minU + 1;
+            int height = maxV - minV + 1;
+
+            for (int v = minV; v <= maxV; v++)
+            {
+                for (int u = minU; u <= maxU; u++)
+                {
+                    cells.Remove(new Vector2Int(u, v));
+
+                    if ((Time.realtimeSinceStartup - startTime) * 1000f >= combineFrameTime)
+                    {
+                        yield return null;
+                        startTime = Time.realtimeSinceStartup;
+                    }
+                }
+            }
+
+            AddWorldColliderQuad(
+                face,
+                slice,
+                minU,
+                minV,
+                width,
+                height,
+                vertices,
+                triangles
+            );
+
+            if ((Time.realtimeSinceStartup - startTime) * 1000f >= combineFrameTime)
+            {
+                yield return null;
+                startTime = Time.realtimeSinceStartup;
+            }
+        }
+    }
+
+    IEnumerator UseCombinedWorldColliderCoroutine()
+    {
+        yield return StartCoroutine(BuildCombinedWorldColliderCoroutine());
+
+        float start = Time.realtimeSinceStartup;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+            MeshCollider collider = chunk.GetComponent<MeshCollider>();
+            if (collider != null)
+                collider.enabled = false;
+
+            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        if (CombinedColliderObject != null)
+            CombinedColliderObject.SetActive(true);
+    }
+
+    IEnumerator BuildCombinedWorldRenderCoroutine()
+    {
+        if (Chunks == null || Chunks.Count == 0)
+            yield break;
+
+        // Combined Render Object 준비
+        if (CombinedRenderObject == null)
+        {
+            CombinedRenderObject = new GameObject("CombinedWorldRenderer");
+            CombinedRenderObject.transform.SetParent(transform, false);
+            CombinedRenderObject.transform.localPosition = Vector3.zero;
+            CombinedRenderObject.transform.localRotation = Quaternion.identity;
+            CombinedRenderObject.transform.localScale = Vector3.one;
+
+            CombinedWorldMeshFilter = CombinedRenderObject.AddComponent<MeshFilter>();
+            CombinedWorldMeshRenderer = CombinedRenderObject.AddComponent<MeshRenderer>();
+            CombinedWorldMeshRenderer.sharedMaterial =
+                GameManager.Instance.MaterialManager.MainMaterial;
+        }
+        else
+        {
+            if (CombinedWorldMeshFilter == null)
+                CombinedWorldMeshFilter = CombinedRenderObject.GetComponent<MeshFilter>();
+
+            if (CombinedWorldMeshRenderer == null)
+                CombinedWorldMeshRenderer = CombinedRenderObject.GetComponent<MeshRenderer>();
+        }
+
+        CombinedRenderObject.layer = gameObject.layer;
+        CombinedRenderObject.tag = "World";
+
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+        List<Color> colors = new List<Color>();
+        List<Vector3> normals = new List<Vector3>();
+
+        float start = Time.realtimeSinceStartup;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+            MeshFilter meshFilter = chunk.GetComponent<MeshFilter>();
+            if (meshFilter == null || meshFilter.sharedMesh == null)
+                continue;
+
+            Mesh mesh = meshFilter.sharedMesh;
+            if (mesh.vertexCount == 0)
+                continue;
+
+            Vector3[] sourceVertices = mesh.vertices;
+            int[] sourceTriangles = mesh.triangles;
+            Color[] sourceColors = mesh.colors;
+            Vector3[] sourceNormals = mesh.normals;
+
+            Matrix4x4 matrix =
+                CombinedRenderObject.transform.worldToLocalMatrix *
+                chunk.transform.localToWorldMatrix;
+
+            Matrix4x4 normalMatrix = matrix.inverse.transpose;
+            int vertexOffset = vertices.Count;
+
+            for (int i = 0; i < sourceVertices.Length; i++)
+            {
+                vertices.Add(matrix.MultiplyPoint3x4(sourceVertices[i]));
+
+                if (sourceColors != null && sourceColors.Length == sourceVertices.Length)
+                    colors.Add(sourceColors[i]);
+                else
+                    colors.Add(Color.white);
+
+                if (sourceNormals != null && sourceNormals.Length == sourceVertices.Length)
+                    normals.Add(normalMatrix.MultiplyVector(sourceNormals[i]).normalized);
+                else
+                    normals.Add(Vector3.zero);
+
+                if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+                {
+                    yield return null;
+                    start = Time.realtimeSinceStartup;
+                }
+            }
+
+            for (int i = 0; i < sourceTriangles.Length; i++)
+            {
+                triangles.Add(vertexOffset + sourceTriangles[i]);
+
+                if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+                {
+                    yield return null;
+                    start = Time.realtimeSinceStartup;
+                }
+            }
+        }
+
+        if (vertices.Count == 0)
+        {
+            Mesh oldEmptyMesh = CombinedWorldMeshFilter.sharedMesh;
+            CombinedWorldMeshFilter.sharedMesh = null;
+
+            if (oldEmptyMesh != null)
+                Destroy(oldEmptyMesh);
+
+            CombinedRenderObject.SetActive(false);
+            yield break;
+        }
+
+        Mesh combinedMesh = new Mesh();
+        combinedMesh.name = "CombinedWorldRenderMesh";
+        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+        combinedMesh.SetVertices(vertices);
+        yield return null;
+
+        combinedMesh.SetTriangles(triangles, 0);
+        yield return null;
+
+        combinedMesh.SetColors(colors);
+        combinedMesh.SetNormals(normals);
+        combinedMesh.RecalculateBounds();
+        yield return null;
+
+        Mesh previousMesh = CombinedWorldMeshFilter.sharedMesh;
+        CombinedWorldMeshFilter.sharedMesh = null;
+
+        if (previousMesh != null)
+            Destroy(previousMesh);
+
+        CombinedWorldMeshFilter.sharedMesh = combinedMesh;
+        CombinedWorldMeshRenderer.sharedMaterial =
+            GameManager.Instance.MaterialManager.MainMaterial;
+
+        CombinedRenderObject.SetActive(true);
+    }
+
+    IEnumerator UseCombinedWorldRendererCoroutine()
+    {
+        yield return StartCoroutine(BuildCombinedWorldRenderCoroutine());
+
+        float start = Time.realtimeSinceStartup;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+            MeshRenderer renderer = chunk.GetComponent<MeshRenderer>();
+            if (renderer != null)
+                renderer.enabled = false;
+
+            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
+            {
+                yield return null;
+                start = Time.realtimeSinceStartup;
+            }
+        }
+
+        if (
+            CombinedRenderObject != null &&
+            CombinedWorldMeshFilter != null &&
+            CombinedWorldMeshFilter.sharedMesh != null
+        )
+        {
+            CombinedRenderObject.SetActive(true);
         }
     }
 

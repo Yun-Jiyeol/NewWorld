@@ -135,8 +135,10 @@ public class WorldManager : MonoBehaviour
             // 해당 World 완성까지 기다림
             // =========================
 
+            // 로드에서는 BuildRoutine 끝의 FinishSettingBlock()을 실행하지 않음.
+            // 즉, 동기식 PutThisWorld()이 끼어들지 않게 한다.
             yield return StartCoroutine(
-                chunk.BuildRoutine()
+                chunk.BuildRoutine(false)
             );
 
 
@@ -150,7 +152,14 @@ public class WorldManager : MonoBehaviour
             }
 
 
-            chunk.PutThisWorld();
+            // 로드 완료 시 통합 작업도 프레임 분할 버전으로 실행
+            yield return StartCoroutine(
+                chunk.PutThisWorldCoroutine()
+            );
+
+
+            chunk.LoadState =
+                WorldLoadState.Complete;
 
 
             GameManager.Instance.StartAdditionalUI
