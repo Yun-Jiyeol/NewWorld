@@ -1248,16 +1248,42 @@ public class SaveAndLoadManager : MonoBehaviour
 
     void LoadPlayer(string _path)
     {
-        if (!File.Exists(_path)) return;
+        if (!File.Exists(_path))
+            return;
 
-        string json = File.ReadAllText(_path);
 
-        PlayerPositionSave data = JsonUtility.FromJson<PlayerPositionSave>(json);
+        string json =
+            File.ReadAllText(_path);
 
-        Transform Player = GameManager.Instance.MainCamera.gameObject.transform;
+        PlayerPositionSave data =
+            JsonUtility.FromJson<PlayerPositionSave>(json);
 
-        Player.position = new Vector3(data.x, data.y, data.z);
-        Player.rotation = new Quaternion(data.xrot, data.yrot, data.zrot, data.wrot);
+
+        MainCamera mainCamera =
+            GameManager.Instance.MainCamera;
+
+        Transform player =
+            mainCamera.transform;
+
+
+        player.position =
+            new Vector3(
+                data.x,
+                data.y,
+                data.z
+            );
+
+        player.rotation =
+            new Quaternion(
+                data.xrot,
+                data.yrot,
+                data.zrot,
+                data.wrot
+            );
+
+
+        mainCamera.TryCheckrot();
+        mainCamera.SavePos();
     }
 
     void LoadLight(string _path)
@@ -1570,20 +1596,111 @@ public class SaveAndLoadManager : MonoBehaviour
         StartCoroutine(CreateNewSaveWithDefaultWorldCoroutine(saveFolderName, defaultWorldIndex));
     }
 
-    IEnumerator CreateNewSaveWithDefaultWorldCoroutine(string saveFolderName, int defaultWorldIndex)
+    IEnumerator CreateNewSaveWithDefaultWorldCoroutine(
+    string saveFolderName,
+    int defaultWorldIndex
+)
     {
         AwaitForMaking = false;
 
+
+        // =========================
+        // 새 Save 폴더 생성
+        // =========================
+
         EnsureSaveFolder(saveFolderName);
 
-        yield return StartCoroutine(CopyDefaultWorldToSaveCoroutine(saveFolderName, defaultWorldIndex));
 
-        while(!AwaitForMaking) 
+        // =========================
+        // 기본 Player 설정 생성
+        // =========================
+
+        yield return StartCoroutine(
+            CopyDefaultPlayerSettingToSaveCoroutine(
+                saveFolderName
+            )
+        );
+
+
+        // =========================
+        // 현재 Runtime 상태도
+        // 새 Save 기본값으로 초기화
+        // =========================
+
+        string newPlayerSettingFolder =
+            Path.Combine(
+                SaveFolder,
+                saveFolderName,
+                "WorldPlayerSetting"
+            );
+
+
+        if (Directory.Exists(newPlayerSettingFolder))
+        {
+            ResetWorldPlayerRuntime();
+
+            LoadFile(newPlayerSettingFolder);
+        }
+
+
+        // =========================
+        // 기본 World 복사
+        // =========================
+
+        yield return StartCoroutine(
+            CopyDefaultWorldToSaveCoroutine(
+                saveFolderName,
+                defaultWorldIndex
+            )
+        );
+
+
+        while (!AwaitForMaking)
         {
             yield return null;
         }
 
-        GameManager.Instance.UIManager.StartAdditionalUI.SpawnUI(StartUIs.LoadUI);
+
+        GameManager.Instance.UIManager
+            .StartAdditionalUI
+            .SpawnUI(StartUIs.LoadUI);
+    }
+
+    void ResetWorldPlayerRuntime()
+    {
+        BuildManager BM =
+            GameManager.Instance.BuildManager;
+
+
+        // =========================
+        // Color 데이터 초기화
+        // =========================
+
+        BM.PreColors.Clear();
+        BM.SaveColors.Clear();
+
+
+        // =========================
+        // Player Achievement 초기화
+        // =========================
+
+        GameManager.Instance
+            .WorldManager
+            .HowManyYouMakeWorld = 0;
+
+
+        // =========================
+        // Camera Effect 초기화
+        // =========================
+
+        CameraShaderPutter cameraShader =
+            GameManager.Instance.MainCamera
+                .GetComponent<CameraShaderPutter>();
+
+        if (cameraShader != null)
+        {
+            cameraShader.ResetMaterial();
+        }
     }
 
     public static string GetDefaultWorldTemplateFolder(int defaultWorldIndex)
@@ -1596,6 +1713,12 @@ public class SaveAndLoadManager : MonoBehaviour
             $"World_Default_{defaultWorldIndex}"
         );
     }
+
+    public static string DefaultWorldPlayerSettingFolder =>
+    Path.Combine(
+        Application.streamingAssetsPath,
+        "DefaultWorldPlayerSetting"
+    );
 
     IEnumerator CopyDefaultWorldToSaveCoroutine(string saveFolderName, int defaultWorldIndex)
     {
@@ -1661,6 +1784,49 @@ public class SaveAndLoadManager : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    IEnumerator CopyDefaultPlayerSettingToSaveCoroutine(
+    string saveFolderName
+)
+    {
+        string sourceFolder =
+            DefaultWorldPlayerSettingFolder;
+
+        string targetFolder =
+            Path.Combine(
+                SaveFolder,
+                saveFolderName,
+                "WorldPlayerSetting"
+            );
+
+
+        if (!Directory.Exists(sourceFolder))
+        {
+            Debug.LogWarning(
+                $"[Save] 기본 플레이어 설정 폴더가 없습니다: {sourceFolder}"
+            );
+
+            yield break;
+        }
+
+
+        // 새 세이브이므로
+        // 빈 폴더까지 완전히 초기화
+        if (Directory.Exists(targetFolder))
+        {
+            yield return StartCoroutine(
+                DeleteDirectoryCoroutine(targetFolder)
+            );
+        }
+
+
+        yield return StartCoroutine(
+            CopyDirectoryCoroutine(
+                sourceFolder,
+                targetFolder
+            )
+        );
     }
 
     IEnumerator CopyDirectoryCoroutine(string sourceDir, string targetDir)

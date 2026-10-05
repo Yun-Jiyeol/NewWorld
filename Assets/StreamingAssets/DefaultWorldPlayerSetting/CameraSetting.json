@@ -1,0 +1,53 @@
+{
+    "CameraAdditionalEffect": [
+        {
+            "type": 0,
+            "isOn": false,
+            "NowValue": 0.0
+        },
+        {
+            "type": 1,
+            "isOn": false,
+            "NowValue": 0.0
+        },
+        {
+            "type": 2,
+            "isOn": false,
+            "NowValue": 0.5
+        },
+        {
+            "type": 3,
+            "isOn": false,
+            "NowValue": 4.0
+        },
+        {
+            "type": 4,
+            "isOn": false,
+            "NowValue": 254.0
+        },
+        {
+            "type": 5,
+            "isOn": false,
+            "NowValue": 1.0
+        },
+        {
+            "type": 6,
+            "isOn": false,
+            "NowValue": 1.0
+        },
+        {
+            "type": 7,
+            "isOn": false,
+            "NowValue": 0.10000000149011612
+        },
+        {
+            "type": 8,
+            "isOn": false,
+            "NowValue": 0.20000000298023225
+        }
+    ],
+    "IsSubCameraUse": [
+        true,
+        true
+    ]
+}
