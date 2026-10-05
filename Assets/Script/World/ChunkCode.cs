@@ -59,6 +59,10 @@ public class ChunkCode : MonoBehaviour
     public GameObject CombinedColliderObject;
     MeshCollider CombinedWorldCollider;
 
+    public GameObject CombinedRenderObject;
+    MeshFilter CombinedWorldMeshFilter;
+    MeshRenderer CombinedWorldMeshRenderer;
+
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
@@ -208,11 +212,43 @@ public class ChunkCode : MonoBehaviour
         }
         BlocksinChunk.Clear();
 
-        foreach(GameObject chunk in Chunks.Values)
+        foreach (GameObject chunk in Chunks.Values)
         {
             Destroy(chunk);
         }
+
         Chunks.Clear();
+
+
+        // =========================
+        // Combined Render 정리
+        // =========================
+
+        if (CombinedWorldMeshFilter != null)
+        {
+            Mesh combinedMesh =
+                CombinedWorldMeshFilter.sharedMesh;
+
+            CombinedWorldMeshFilter.sharedMesh =
+                null;
+
+
+            if (combinedMesh != null)
+            {
+                Destroy(combinedMesh);
+            }
+        }
+
+
+        if (CombinedRenderObject != null)
+        {
+            Destroy(CombinedRenderObject);
+        }
+
+
+        CombinedRenderObject = null;
+        CombinedWorldMeshFilter = null;
+        CombinedWorldMeshRenderer = null;
     }
 
     public bool ishaveblock(Vector3 _position)
@@ -509,9 +545,9 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
-        // 편집 상태에서는
-        // Chunk별 Collider 사용
+        // 편집 상태
         UseChunkColliders();
+        UseChunkRenderers();
 
 
         foreach (GameObject chunk in Chunks.Values)
@@ -529,9 +565,11 @@ public class ChunkCode : MonoBehaviour
 
 
         // 설치 완료
-        // →
-        // 모든 Chunk Collider를 하나로 통합
+        // Collider 통합
         UseCombinedWorldCollider();
+
+        // Render 통합
+        UseCombinedWorldRenderer();
     }
 
     void CheckSize(Vector3 position)
@@ -569,72 +607,63 @@ public class ChunkCode : MonoBehaviour
 
     void MakeNewChunk(Vector3Int _position)
     {
-        GameObject _chunk = new GameObject($"Chunk_{_position}");
+        GameObject _chunk =
+            new GameObject($"Chunk_{_position}");
 
-        _chunk.transform.parent = gameObject.transform;
-        _chunk.transform.localPosition = _position * ChunkSize;
-        _chunk.transform.localRotation = Quaternion.identity;
-        _chunk.transform.localScale = Vector3.one;
+        _chunk.transform.parent =
+            gameObject.transform;
+
+        _chunk.transform.localPosition =
+            _position * ChunkSize;
+
+        _chunk.transform.localRotation =
+            Quaternion.identity;
+
+        _chunk.transform.localScale =
+            Vector3.one;
+
         _chunk.tag = "Block";
         _chunk.layer = gameObject.layer;
 
+
         _chunk.AddComponent<MeshFilter>();
-        _chunk.AddComponent<MeshRenderer>().material = new Material(GameManager.Instance.MaterialManager.MainMaterial);
+
+
+        MeshRenderer renderer =
+            _chunk.AddComponent<MeshRenderer>();
+
+        renderer.sharedMaterial =
+            GameManager.Instance.MaterialManager.MainMaterial;
+
+
         _chunk.AddComponent<MeshCollider>();
 
-        Chunks.Add(_position, _chunk);
-        BlocksinChunk.Add(_position, new Dictionary<Vector3Int, BlockInChunkData>());
+
+        Chunks.Add(
+            _position,
+            _chunk
+        );
+
+        BlocksinChunk.Add(
+            _position,
+            new Dictionary<Vector3Int, BlockInChunkData>()
+        );
     }
 
     public void BuildMesh(Vector3Int worldPos)
     {
-        Vector3Int chunkCoord = GetChunkCoord(worldPos);
+        Vector3Int chunkCoord =
+            GetChunkCoord(worldPos);
 
         if (!BlocksinChunk.ContainsKey(chunkCoord))
             return;
 
 
         // =========================
-        // Render Mesh
+        // Opaque Render Mesh
         // =========================
 
-        List<Vector3> renderVertices = new();
-        List<int> renderTriangles = new();
-        List<Color> renderColors = new();
-
-        int renderVertexIndex = 0;
-
-
-        foreach (var kvp in BlocksinChunk[chunkCoord])
-        {
-            BlockInChunkData block = kvp.Value;
-
-            AddCube(
-                chunkCoord,
-                block,
-
-                ref renderVertices,
-                ref renderTriangles,
-                ref renderColors,
-                ref renderVertexIndex
-            );
-        }
-
-
-        Mesh renderMesh = new Mesh();
-
-        renderMesh.SetVertices(renderVertices);
-        renderMesh.SetTriangles(renderTriangles, 0);
-        renderMesh.SetColors(renderColors);
-
-        renderMesh.RecalculateNormals();
-        renderMesh.RecalculateBounds();
-
-
-        MeshFilter mf =
-            Chunks[chunkCoord].GetComponent<MeshFilter>();
-
-        mf.mesh = renderMesh;
+        BuildChunkRenderMesh(chunkCoord);
 
 
         // =========================
@@ -642,6 +671,559 @@ public class ChunkCode : MonoBehaviour
         // =========================
 
         BuildChunkCollider(chunkCoord);
+    }
+
+    struct RenderMaskCell
+    {
+        public bool active;
+        public Color color;
+
+        public RenderMaskCell(
+            bool _active,
+            Color _color
+        )
+        {
+            active = _active;
+            color = _color;
+        }
+    }
+
+    bool IsOpaqueRenderBlock(Vector3Int worldPos)
+    {
+        Vector3Int chunkCoord =
+            GetChunkCoord(worldPos);
+
+        Vector3Int localPos =
+            GetLocalPos(worldPos);
+
+
+        if (!BlocksinChunk.TryGetValue(
+            chunkCoord,
+            out Dictionary<Vector3Int, BlockInChunkData> blocks
+        ))
+        {
+            return false;
+        }
+
+
+        if (!blocks.TryGetValue(
+            localPos,
+            out BlockInChunkData block
+        ))
+        {
+            return false;
+        }
+
+
+        return block._color.a >= 1f;
+    }
+
+    void BuildChunkRenderMesh(Vector3Int chunkCoord)
+    {
+        if (!Chunks.TryGetValue(
+            chunkCoord,
+            out GameObject chunkObject
+        ))
+        {
+            return;
+        }
+
+
+        if (!BlocksinChunk.TryGetValue(
+            chunkCoord,
+            out Dictionary<Vector3Int, BlockInChunkData> blocks
+        ))
+        {
+            return;
+        }
+
+
+        List<Vector3> vertices =
+            new List<Vector3>();
+
+        List<int> triangles =
+            new List<int>();
+
+        List<Color> colors =
+            new List<Color>();
+
+
+        RenderMaskCell[,] mask =
+            new RenderMaskCell[
+                ChunkSize,
+                ChunkSize
+            ];
+
+
+        // =========================
+        // 6방향
+        // =========================
+
+        for (int face = 0; face < 6; face++)
+        {
+            for (
+                int slice = 0;
+                slice < ChunkSize;
+                slice++
+            )
+            {
+                Array.Clear(
+                    mask,
+                    0,
+                    mask.Length
+                );
+
+
+                // =========================
+                // 보이는 면 찾기
+                // =========================
+
+                for (
+                    int v = 0;
+                    v < ChunkSize;
+                    v++
+                )
+                {
+                    for (
+                        int u = 0;
+                        u < ChunkSize;
+                        u++
+                    )
+                    {
+                        Vector3Int localPos =
+                            GetColliderLocalPosition(
+                                face,
+                                slice,
+                                u,
+                                v
+                            );
+
+
+                        if (!blocks.TryGetValue(
+                            localPos,
+                            out BlockInChunkData block
+                        ))
+                        {
+                            continue;
+                        }
+
+
+                        // 투명 블록은 기존 개별 Renderer 사용
+                        if (block._color.a < 1f)
+                            continue;
+
+
+                        Vector3Int worldBlockPos =
+                            chunkCoord * ChunkSize
+                            + localPos;
+
+
+                        Vector3Int neighborPos =
+                            worldBlockPos
+                            + directions[face];
+
+
+                        // 옆도 불투명이면 내부면
+                        if (IsOpaqueRenderBlock(neighborPos))
+                            continue;
+
+
+                        mask[u, v] =
+                            new RenderMaskCell(
+                                true,
+                                block._color
+                            );
+                    }
+                }
+
+
+                // =========================
+                // 같은 색 면 Greedy Merge
+                // =========================
+
+                MergeRenderMask(
+                    face,
+                    slice,
+                    mask,
+
+                    vertices,
+                    triangles,
+                    colors
+                );
+            }
+        }
+
+
+        // =========================
+        // Mesh 적용
+        // =========================
+
+        MeshFilter mf =
+            chunkObject.GetComponent<MeshFilter>();
+
+
+        Mesh mesh =
+            mf.sharedMesh;
+
+
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+
+            mesh.name =
+                $"Render_{chunkCoord}";
+
+            mf.sharedMesh =
+                mesh;
+        }
+        else
+        {
+            mesh.Clear();
+        }
+
+
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.SetColors(colors);
+
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+
+        // =========================
+        // 빈 Chunk Renderer OFF
+        // =========================
+
+        MeshRenderer mr =
+            chunkObject.GetComponent<MeshRenderer>();
+
+        if (mr != null)
+        {
+            mr.enabled =
+                vertices.Count > 0;
+        }
+    }
+
+    void MergeRenderMask(
+    int face,
+    int slice,
+
+    RenderMaskCell[,] mask,
+
+    List<Vector3> vertices,
+    List<int> triangles,
+    List<Color> colors
+)
+    {
+        for (
+            int v = 0;
+            v < ChunkSize;
+            v++
+        )
+        {
+            int u = 0;
+
+
+            while (u < ChunkSize)
+            {
+                if (!mask[u, v].active)
+                {
+                    u++;
+                    continue;
+                }
+
+
+                Color color =
+                    mask[u, v].color;
+
+
+                // =========================
+                // 가로 확장
+                // =========================
+
+                int width = 1;
+
+
+                while (
+                    u + width < ChunkSize
+                    &&
+                    mask[u + width, v].active
+                    &&
+                    SameRenderColor(
+                        mask[u + width, v].color,
+                        color
+                    )
+                )
+                {
+                    width++;
+                }
+
+
+                // =========================
+                // 세로 확장
+                // =========================
+
+                int height = 1;
+
+                bool canGrow = true;
+
+
+                while (
+                    v + height < ChunkSize
+                    &&
+                    canGrow
+                )
+                {
+                    for (
+                        int x = 0;
+                        x < width;
+                        x++
+                    )
+                    {
+                        RenderMaskCell cell =
+                            mask[
+                                u + x,
+                                v + height
+                            ];
+
+
+                        if (
+                            !cell.active
+                            ||
+                            !SameRenderColor(
+                                cell.color,
+                                color
+                            )
+                        )
+                        {
+                            canGrow = false;
+                            break;
+                        }
+                    }
+
+
+                    if (canGrow)
+                    {
+                        height++;
+                    }
+                }
+
+
+                // =========================
+                // 사용한 영역 제거
+                // =========================
+
+                for (
+                    int y = 0;
+                    y < height;
+                    y++
+                )
+                {
+                    for (
+                        int x = 0;
+                        x < width;
+                        x++
+                    )
+                    {
+                        mask[
+                            u + x,
+                            v + y
+                        ].active = false;
+                    }
+                }
+
+
+                // =========================
+                // 큰 Quad 하나 생성
+                // =========================
+
+                AddRenderQuad(
+                    face,
+                    slice,
+
+                    u,
+                    v,
+
+                    width,
+                    height,
+
+                    color,
+
+                    vertices,
+                    triangles,
+                    colors
+                );
+
+
+                u += width;
+            }
+        }
+    }
+
+    bool SameRenderColor(
+    Color a,
+    Color b
+)
+    {
+        return
+            a.r == b.r &&
+            a.g == b.g &&
+            a.b == b.b &&
+            a.a == b.a;
+    }
+
+    void AddRenderQuad(
+    int face,
+    int slice,
+
+    int u,
+    int v,
+
+    int width,
+    int height,
+
+    Color color,
+
+    List<Vector3> vertices,
+    List<int> triangles,
+    List<Color> colors
+)
+    {
+        float u0 =
+            u - 0.5f;
+
+        float u1 =
+            u + width - 0.5f;
+
+        float v0 =
+            v - 0.5f;
+
+        float v1 =
+            v + height - 0.5f;
+
+
+        Vector3 p0;
+        Vector3 p1;
+        Vector3 p2;
+        Vector3 p3;
+
+
+        switch (face)
+        {
+            // Front +Z
+            case 0:
+                {
+                    float z =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, v0, z);
+                    p1 = new Vector3(u1, v0, z);
+                    p2 = new Vector3(u1, v1, z);
+                    p3 = new Vector3(u0, v1, z);
+
+                    break;
+                }
+
+
+            // Back -Z
+            case 1:
+                {
+                    float z =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u1, v0, z);
+                    p1 = new Vector3(u0, v0, z);
+                    p2 = new Vector3(u0, v1, z);
+                    p3 = new Vector3(u1, v1, z);
+
+                    break;
+                }
+
+
+            // Left -X
+            case 2:
+                {
+                    float x =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(x, v0, u0);
+                    p1 = new Vector3(x, v0, u1);
+                    p2 = new Vector3(x, v1, u1);
+                    p3 = new Vector3(x, v1, u0);
+
+                    break;
+                }
+
+
+            // Right +X
+            case 3:
+                {
+                    float x =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(x, v0, u1);
+                    p1 = new Vector3(x, v0, u0);
+                    p2 = new Vector3(x, v1, u0);
+                    p3 = new Vector3(x, v1, u1);
+
+                    break;
+                }
+
+
+            // Top +Y
+            case 4:
+                {
+                    float y =
+                        slice + 0.5f;
+
+                    p0 = new Vector3(u0, y, v1);
+                    p1 = new Vector3(u1, y, v1);
+                    p2 = new Vector3(u1, y, v0);
+                    p3 = new Vector3(u0, y, v0);
+
+                    break;
+                }
+
+
+            // Bottom -Y
+            default:
+                {
+                    float y =
+                        slice - 0.5f;
+
+                    p0 = new Vector3(u0, y, v0);
+                    p1 = new Vector3(u1, y, v0);
+                    p2 = new Vector3(u1, y, v1);
+                    p3 = new Vector3(u0, y, v1);
+
+                    break;
+                }
+        }
+
+
+        int index =
+            vertices.Count;
+
+
+        vertices.Add(p0);
+        vertices.Add(p1);
+        vertices.Add(p2);
+        vertices.Add(p3);
+
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 1);
+        triangles.Add(index + 2);
+
+        triangles.Add(index + 0);
+        triangles.Add(index + 2);
+        triangles.Add(index + 3);
+
+
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
     }
 
     void AddCube(
@@ -1552,6 +2134,281 @@ public class ChunkCode : MonoBehaviour
 
 
         CombinedColliderObject.SetActive(true);
+    }
+
+    void BuildCombinedWorldRender()
+    {
+        if (Chunks == null || Chunks.Count == 0)
+            return;
+
+
+        // =========================
+        // Combined Render Object 준비
+        // =========================
+
+        if (CombinedRenderObject == null)
+        {
+            CombinedRenderObject =
+                new GameObject("CombinedWorldRenderer");
+
+            CombinedRenderObject.transform.SetParent(
+                transform,
+                false
+            );
+
+            CombinedRenderObject.transform.localPosition =
+                Vector3.zero;
+
+            CombinedRenderObject.transform.localRotation =
+                Quaternion.identity;
+
+            CombinedRenderObject.transform.localScale =
+                Vector3.one;
+
+
+            CombinedWorldMeshFilter =
+                CombinedRenderObject.AddComponent<MeshFilter>();
+
+            CombinedWorldMeshRenderer =
+                CombinedRenderObject.AddComponent<MeshRenderer>();
+
+
+            CombinedWorldMeshRenderer.sharedMaterial =
+                GameManager.Instance
+                    .MaterialManager
+                    .MainMaterial;
+        }
+        else
+        {
+            if (CombinedWorldMeshFilter == null)
+            {
+                CombinedWorldMeshFilter =
+                    CombinedRenderObject.GetComponent<MeshFilter>();
+            }
+
+            if (CombinedWorldMeshRenderer == null)
+            {
+                CombinedWorldMeshRenderer =
+                    CombinedRenderObject.GetComponent<MeshRenderer>();
+            }
+        }
+
+
+        CombinedRenderObject.layer =
+            gameObject.layer;
+
+        CombinedRenderObject.tag =
+            "World";
+
+
+        // =========================
+        // Chunk Render Mesh 수집
+        // =========================
+
+        List<CombineInstance> combines =
+            new List<CombineInstance>();
+
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshFilter chunkMeshFilter =
+                chunk.GetComponent<MeshFilter>();
+
+            if (chunkMeshFilter == null)
+                continue;
+
+
+            Mesh chunkMesh =
+                chunkMeshFilter.sharedMesh;
+
+            if (chunkMesh == null)
+                continue;
+
+            if (chunkMesh.vertexCount == 0)
+                continue;
+
+
+            CombineInstance combine =
+                new CombineInstance();
+
+            combine.mesh =
+                chunkMesh;
+
+
+            // Chunk Local 좌표
+            // ↓
+            // CombinedWorldRenderer Local 좌표
+            combine.transform =
+                CombinedRenderObject.transform.worldToLocalMatrix
+                *
+                chunk.transform.localToWorldMatrix;
+
+
+            combines.Add(combine);
+        }
+
+
+        // =========================
+        // 그릴 것이 없음
+        // =========================
+
+        if (combines.Count == 0)
+        {
+            Mesh oldMesh =
+                CombinedWorldMeshFilter.sharedMesh;
+
+            CombinedWorldMeshFilter.sharedMesh =
+                null;
+
+
+            if (oldMesh != null)
+            {
+                Destroy(oldMesh);
+            }
+
+
+            CombinedRenderObject.SetActive(false);
+
+            return;
+        }
+
+
+        // =========================
+        // 통합 Mesh 생성
+        // =========================
+
+        Mesh combinedMesh =
+            new Mesh();
+
+        combinedMesh.name =
+            "CombinedWorldRenderMesh";
+
+
+        combinedMesh.indexFormat =
+            UnityEngine.Rendering.IndexFormat.UInt32;
+
+
+        combinedMesh.CombineMeshes(
+            combines.ToArray(),
+
+            true,   // 모든 SubMesh 하나로
+            true    // Transform 적용
+        );
+
+
+        combinedMesh.RecalculateBounds();
+
+
+        // =========================
+        // 기존 통합 Mesh 제거
+        // =========================
+
+        Mesh previousMesh =
+            CombinedWorldMeshFilter.sharedMesh;
+
+        CombinedWorldMeshFilter.sharedMesh =
+            null;
+
+
+        if (previousMesh != null)
+        {
+            Destroy(previousMesh);
+        }
+
+
+        // =========================
+        // 새 Mesh 적용
+        // =========================
+
+        CombinedWorldMeshFilter.sharedMesh =
+            combinedMesh;
+
+
+        CombinedWorldMeshRenderer.sharedMaterial =
+            GameManager.Instance
+                .MaterialManager
+                .MainMaterial;
+
+
+        CombinedRenderObject.SetActive(true);
+    }
+
+    void UseChunkRenderers()
+    {
+        // 통합 Renderer OFF
+        if (CombinedRenderObject != null)
+        {
+            CombinedRenderObject.SetActive(false);
+        }
+
+
+        // 각 Chunk Renderer ON
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshRenderer renderer =
+                chunk.GetComponent<MeshRenderer>();
+
+            MeshFilter meshFilter =
+                chunk.GetComponent<MeshFilter>();
+
+
+            if (renderer == null)
+                continue;
+
+
+            // 실제 Render Mesh가 있는 Chunk만 활성화
+            renderer.enabled =
+                meshFilter != null
+                &&
+                meshFilter.sharedMesh != null
+                &&
+                meshFilter.sharedMesh.vertexCount > 0;
+        }
+    }
+
+    void UseCombinedWorldRenderer()
+    {
+        // 현재 Chunk Mesh 결과를 하나로 통합
+        BuildCombinedWorldRender();
+
+
+        // 각 Chunk Renderer OFF
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (chunk == null)
+                continue;
+
+
+            MeshRenderer renderer =
+                chunk.GetComponent<MeshRenderer>();
+
+
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
+        }
+
+
+        // 통합 Renderer ON
+        if (
+            CombinedRenderObject != null
+            &&
+            CombinedWorldMeshFilter != null
+            &&
+            CombinedWorldMeshFilter.sharedMesh != null
+        )
+        {
+            CombinedRenderObject.SetActive(true);
+        }
     }
 
     void GetWorldColliderPlanePosition(
