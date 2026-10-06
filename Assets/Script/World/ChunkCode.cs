@@ -57,6 +57,7 @@ public class ChunkCode : MonoBehaviour
     }
 
     public GameObject LightBlock;
+    public GameObject ChunksRoot;
     public bool isSavedBefore = false;
 
     public GameObject CombinedColliderObject;
@@ -91,6 +92,51 @@ public class ChunkCode : MonoBehaviour
     new Vector3Int(0,1,0),  // Top
     new Vector3Int(0,-1,0)  // Bottom
 };
+
+    void EnsureChunksRoot()
+    {
+        if (ChunksRoot != null)
+            return;
+
+        ChunksRoot = new GameObject("ChunksRoot");
+        ChunksRoot.transform.SetParent(transform, false);
+        ChunksRoot.transform.localPosition = Vector3.zero;
+        ChunksRoot.transform.localRotation = Quaternion.identity;
+        ChunksRoot.transform.localScale = Vector3.one;
+        ChunksRoot.layer = gameObject.layer;
+    }
+
+    void SetEditingRepresentation()
+    {
+        EnsureChunksRoot();
+        ChunksRoot.SetActive(true);
+
+        if (CombinedRenderObject != null)
+            CombinedRenderObject.SetActive(false);
+
+        if (CombinedColliderObject != null)
+            CombinedColliderObject.SetActive(false);
+    }
+
+    void SetInstalledRepresentation()
+    {
+        if (CombinedRenderObject != null &&
+            CombinedWorldMeshFilter != null &&
+            CombinedWorldMeshFilter.sharedMesh != null)
+        {
+            CombinedRenderObject.SetActive(true);
+        }
+
+        if (CombinedColliderObject != null &&
+            CombinedWorldCollider != null &&
+            CombinedWorldCollider.sharedMesh != null)
+        {
+            CombinedColliderObject.SetActive(true);
+        }
+
+        if (ChunksRoot != null)
+            ChunksRoot.SetActive(false);
+    }
 
     public void MakeNewWorld(int x, int y, int z)
     {
@@ -553,60 +599,24 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
-        // 편집 상태
-        UseChunkColliders();
-        UseChunkRenderers();
-
-
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            chunk.tag = "Block";
-        }
+        SetEditingRepresentation();
     }
 
     public void PutThisWorld()
     {
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            chunk.tag = "World";
-        }
-
-
-        // 설치 완료
-        // Collider 통합
         UseCombinedWorldCollider();
-
-        // Render 통합
         UseCombinedWorldRenderer();
+        SetInstalledRepresentation();
     }
 
     public IEnumerator PutThisWorldCoroutine()
     {
         LoadState = WorldLoadState.Loading;
 
-        float start = Time.realtimeSinceStartup;
-
-        // Chunk Tag 변경도 한 프레임에 몰리지 않게 분산
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-            chunk.tag = "World";
-
-            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
-            {
-                yield return null;
-                start = Time.realtimeSinceStartup;
-            }
-        }
-
-        // Collider 통합
         yield return StartCoroutine(UseCombinedWorldColliderCoroutine());
-
-        // Renderer 통합
         yield return StartCoroutine(UseCombinedWorldRendererCoroutine());
 
+        SetInstalledRepresentation();
         LoadState = WorldLoadState.Complete;
     }
 
@@ -649,8 +659,12 @@ public class ChunkCode : MonoBehaviour
         GameObject _chunk =
             new GameObject($"Chunk_{_position}");
 
-        _chunk.transform.parent =
-            gameObject.transform;
+        EnsureChunksRoot();
+
+        _chunk.transform.SetParent(
+            ChunksRoot.transform,
+            false
+        );
 
         _chunk.transform.localPosition =
             _position * ChunkSize;
@@ -2149,26 +2163,12 @@ public class ChunkCode : MonoBehaviour
     {
         yield return StartCoroutine(BuildCombinedWorldColliderCoroutine());
 
-        float start = Time.realtimeSinceStartup;
-
-        foreach (GameObject chunk in Chunks.Values)
+        if (CombinedColliderObject != null &&
+            CombinedWorldCollider != null &&
+            CombinedWorldCollider.sharedMesh != null)
         {
-            if (chunk == null)
-                continue;
-
-            MeshCollider collider = chunk.GetComponent<MeshCollider>();
-            if (collider != null)
-                collider.enabled = false;
-
-            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
-            {
-                yield return null;
-                start = Time.realtimeSinceStartup;
-            }
-        }
-
-        if (CombinedColliderObject != null)
             CombinedColliderObject.SetActive(true);
+        }
     }
 
     IEnumerator BuildCombinedWorldRenderCoroutine()
@@ -2311,29 +2311,9 @@ public class ChunkCode : MonoBehaviour
     {
         yield return StartCoroutine(BuildCombinedWorldRenderCoroutine());
 
-        float start = Time.realtimeSinceStartup;
-
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-            MeshRenderer renderer = chunk.GetComponent<MeshRenderer>();
-            if (renderer != null)
-                renderer.enabled = false;
-
-            if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
-            {
-                yield return null;
-                start = Time.realtimeSinceStartup;
-            }
-        }
-
-        if (
-            CombinedRenderObject != null &&
+        if (CombinedRenderObject != null &&
             CombinedWorldMeshFilter != null &&
-            CombinedWorldMeshFilter.sharedMesh != null
-        )
+            CombinedWorldMeshFilter.sharedMesh != null)
         {
             CombinedRenderObject.SetActive(true);
         }
@@ -2761,73 +2741,16 @@ public class ChunkCode : MonoBehaviour
 
     void UseChunkRenderers()
     {
-        // 통합 Renderer OFF
-        if (CombinedRenderObject != null)
-        {
-            CombinedRenderObject.SetActive(false);
-        }
-
-
-        // 각 Chunk Renderer ON
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-
-            MeshRenderer renderer =
-                chunk.GetComponent<MeshRenderer>();
-
-            MeshFilter meshFilter =
-                chunk.GetComponent<MeshFilter>();
-
-
-            if (renderer == null)
-                continue;
-
-
-            // 실제 Render Mesh가 있는 Chunk만 활성화
-            renderer.enabled =
-                meshFilter != null
-                &&
-                meshFilter.sharedMesh != null
-                &&
-                meshFilter.sharedMesh.vertexCount > 0;
-        }
+        SetEditingRepresentation();
     }
 
     void UseCombinedWorldRenderer()
     {
-        // 현재 Chunk Mesh 결과를 하나로 통합
         BuildCombinedWorldRender();
 
-
-        // 각 Chunk Renderer OFF
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-
-            MeshRenderer renderer =
-                chunk.GetComponent<MeshRenderer>();
-
-
-            if (renderer != null)
-            {
-                renderer.enabled = false;
-            }
-        }
-
-
-        // 통합 Renderer ON
-        if (
-            CombinedRenderObject != null
-            &&
-            CombinedWorldMeshFilter != null
-            &&
-            CombinedWorldMeshFilter.sharedMesh != null
-        )
+        if (CombinedRenderObject != null &&
+            CombinedWorldMeshFilter != null &&
+            CombinedWorldMeshFilter.sharedMesh != null)
         {
             CombinedRenderObject.SetActive(true);
         }
@@ -3185,54 +3108,16 @@ public class ChunkCode : MonoBehaviour
 
     void UseChunkColliders()
     {
-        // 통합 Collider OFF
-        if (CombinedColliderObject != null)
-        {
-            CombinedColliderObject.SetActive(false);
-        }
-
-
-        // 각 Chunk Collider ON
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-
-            MeshCollider collider =
-                chunk.GetComponent<MeshCollider>();
-
-            if (collider != null)
-            {
-                collider.enabled = true;
-            }
-        }
+        SetEditingRepresentation();
     }
 
     void UseCombinedWorldCollider()
     {
-        // 현재 청크 Collider 결과를 합침
         BuildCombinedWorldCollider();
 
-
-        // Chunk Collider 전부 OFF
-        foreach (GameObject chunk in Chunks.Values)
-        {
-            if (chunk == null)
-                continue;
-
-
-            MeshCollider collider =
-                chunk.GetComponent<MeshCollider>();
-
-            if (collider != null)
-            {
-                collider.enabled = false;
-            }
-        }
-
-
-        if (CombinedColliderObject != null)
+        if (CombinedColliderObject != null &&
+            CombinedWorldCollider != null &&
+            CombinedWorldCollider.sharedMesh != null)
         {
             CombinedColliderObject.SetActive(true);
         }
@@ -3394,9 +3279,15 @@ public class ChunkCode : MonoBehaviour
     {
         gameObject.layer = num;
 
-        foreach (Transform child in gameObject.transform)
+        Transform[] children =
+            GetComponentsInChildren<Transform>(true);
+
+        for (int i = 0; i < children.Length; i++)
         {
-            child.gameObject.layer = num;
+            if (children[i] == transform)
+                continue;
+
+            children[i].gameObject.layer = num;
         }
     }
 

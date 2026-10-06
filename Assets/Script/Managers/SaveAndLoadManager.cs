@@ -184,6 +184,7 @@ public class SaveAndLoadManager : MonoBehaviour
         new List<GameObject>();
 
     public bool IsLoading => isLoading;
+    public bool IsSaving => isSaving;
 
     public static void EnsureSaveFolder(string _saveFolderName)
     {

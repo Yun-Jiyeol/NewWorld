@@ -18,7 +18,7 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     string NowChooseWorldName = null;
 
     GameObject BlockImage = null;
-    bool isEndCancel = true;
+    bool isSwitchingWorld = false;
 
     public GameObject MakeWorldIcon;
     public GameObject DestroyWorldIcon;
@@ -159,6 +159,9 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     public void StartLoadWorld()
     {
+        if (isSwitchingWorld)
+            return;
+
         StartCoroutine(CancelCoroutine());
     }
 
@@ -169,18 +172,29 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     IEnumerator CancelCoroutine()
     {
-        isEndCancel = false;
-        if(BlockImage != null)
+        isSwitchingWorld = true;
+        if (BlockImage == null)
         {
-            BlockImage = Instantiate(GameManager.Instance.UIManager.BlockImage, transform);
+            BlockImage = Instantiate(
+                GameManager.Instance.UIManager.BlockImage,
+                transform
+            );
         }
 
-        CancelBefore();
+        SaveAndLoadManager saveManager =
+            GameManager.Instance.SaveAndLoadManager;
 
-        if (!isEndCancel)
+        saveManager.CancelLoadWorldFolder();
+
+        while (saveManager.IsLoading || saveManager.IsSaving)
         {
             yield return null;
         }
+
+        GameManager.Instance.WorldManager.DestroyAllWorld();
+
+        // Destroy is deferred until the end of the frame.
+        yield return null;
 
         if (BlockImage != null)
         {
@@ -194,15 +208,9 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         GameManager.Instance.UIManager.StartSceneUI.AddText("TapeIn");
         GameManager.Instance.UIManager.StartAdditionalUI.ChangeCreationState(CreateState.Looking);
 
-        GameManager.Instance.SaveAndLoadManager.LoadWorldFolder();
-    }
+        saveManager.LoadWorldFolder();
 
-    void CancelBefore()
-    {
-        GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
-        GameManager.Instance.WorldManager.DestroyAllWorld();
-
-        isEndCancel = true;
+        isSwitchingWorld = false;
     }
 
     Color OriginalColor;
