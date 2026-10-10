@@ -24,6 +24,17 @@ public class InputManager : MonoBehaviour
     float PlayerMoveSpeed = 0f;
     float accelate = 5f;
 
+    [Header("Sensitivity")]
+    [SerializeField] private float playerMoveSensitivity = 1f;
+    [SerializeField] private float objectMoveSensitivity = 1f;
+    [SerializeField] private float objectRotationSensitivity = 1f;
+    [SerializeField] private float objectScaleSensitivity = 1f;
+
+    public float PlayerMoveSensitivity => playerMoveSensitivity;
+    public float ObjectMoveSensitivity => objectMoveSensitivity;
+    public float ObjectRotationSensitivity => objectRotationSensitivity;
+    public float ObjectScaleSensitivity => objectScaleSensitivity;
+
     public GameObject ReadyToBuildBlock;
     GameObject ReadyToDestroyBlock;
     Vector3? BeforeDestroyBlockPos;
@@ -717,7 +728,7 @@ public class InputManager : MonoBehaviour
             TargetMoveSensitive += accelate * Time.deltaTime;
             TargetMoveSensitive = Mathf.Clamp(TargetMoveSensitive, 0, TargetMoveSensitive);
 
-            _target.transform.position += move.normalized * TargetMoveSensitive * Time.deltaTime;
+            _target.transform.position += move.normalized * TargetMoveSensitive * objectMoveSensitivity * Time.deltaTime;
         }
         else
         {
@@ -738,7 +749,7 @@ public class InputManager : MonoBehaviour
             PlayerMoveSpeed += accelate * Time.deltaTime;
             PlayerMoveSpeed = Mathf.Clamp(PlayerMoveSpeed, 0, PlayerMoveSpeed);
 
-            _cam.position += move.normalized * PlayerMoveSpeed * Time.deltaTime;
+            _cam.position += move.normalized * PlayerMoveSpeed * playerMoveSensitivity * Time.deltaTime;
         }
         else
         {
@@ -752,7 +763,7 @@ public class InputManager : MonoBehaviour
         if (Mathf.Abs(scroll) != 0)
         {
             Vector3 scale = _target.transform.localScale;
-            scale += Vector3.one * scroll * scaleSpeed;
+            scale += Vector3.one * scroll * scaleSpeed * objectScaleSensitivity;
 
             _target.transform.localScale = Vector3.one * scale.x;
         }
@@ -891,7 +902,8 @@ public class InputManager : MonoBehaviour
 
         float rotationAmount =
             new Vector2(mouseX, mouseY).magnitude
-            * rotateSpeed;
+            * rotateSpeed
+            * objectRotationSensitivity;
 
         _target.transform.Rotate(
             rotationAxis,
@@ -923,7 +935,7 @@ public class InputManager : MonoBehaviour
     void TurnObjectLockedX(GameObject _target, Transform cam, float mouseX, float mouseY)
     {
         Vector3 rotationAxis = cam.up;
-        float rotationAmount = -mouseX * lockedRotateSpeed;
+        float rotationAmount = -mouseX * lockedRotateSpeed * objectRotationSensitivity;
 
         _target.transform.Rotate(
             rotationAxis,
@@ -935,7 +947,7 @@ public class InputManager : MonoBehaviour
     void TurnObjectLockedY(GameObject _target, Transform cam, float mouseX, float mouseY)
     {
         Vector3 rotationAxis = cam.right;
-        float rotationAmount = mouseY * lockedRotateSpeed;
+        float rotationAmount = mouseY * lockedRotateSpeed * objectRotationSensitivity;
 
         _target.transform.Rotate(
             rotationAxis,
@@ -980,7 +992,7 @@ public class InputManager : MonoBehaviour
 
         _target.transform.Rotate(
             cam.forward,
-            signedAngle * zCircleRotateMultiplier,
+            signedAngle * zCircleRotateMultiplier * objectRotationSensitivity,
             Space.World
         );
     }
@@ -1059,12 +1071,14 @@ public class InputManager : MonoBehaviour
 
         rotateTimer = 0f;
 
+        float rotationStep = objectRotationSensitivity;
+
         // X
         if (_keyManager.isGetKey(
             _keyManager.KeyboardDictionary[KeyNameSaves.TurnXPlus]))
         {
             _target.transform.Rotate(
-                1f,
+                rotationStep,
                 0f,
                 0f,
                 Space.Self
@@ -1074,7 +1088,7 @@ public class InputManager : MonoBehaviour
             _keyManager.KeyboardDictionary[KeyNameSaves.TurnXMinus]))
         {
             _target.transform.Rotate(
-                -1f,
+                -rotationStep,
                 0f,
                 0f,
                 Space.Self
@@ -1087,7 +1101,7 @@ public class InputManager : MonoBehaviour
         {
             _target.transform.Rotate(
                 0f,
-                1f,
+                rotationStep,
                 0f,
                 Space.Self
             );
@@ -1097,7 +1111,7 @@ public class InputManager : MonoBehaviour
         {
             _target.transform.Rotate(
                 0f,
-                -1f,
+                -rotationStep,
                 0f,
                 Space.Self
             );
@@ -1110,7 +1124,7 @@ public class InputManager : MonoBehaviour
             _target.transform.Rotate(
                 0f,
                 0f,
-                1f,
+                rotationStep,
                 Space.Self
             );
         }
@@ -1120,10 +1134,30 @@ public class InputManager : MonoBehaviour
             _target.transform.Rotate(
                 0f,
                 0f,
-                -1f,
+                -rotationStep,
                 Space.Self
             );
         }
+    }
+
+    public void SetPlayerMoveSensitivity(float value)
+    {
+        playerMoveSensitivity = Mathf.Clamp(value, 0.5f, 2.5f);
+    }
+
+    public void SetObjectMoveSensitivity(float value)
+    {
+        objectMoveSensitivity = Mathf.Clamp(value, 0.5f, 2.5f);
+    }
+
+    public void SetObjectRotationSensitivity(float value)
+    {
+        objectRotationSensitivity = Mathf.Clamp(value, 0.5f, 2.5f);
+    }
+
+    public void SetObjectScaleSensitivity(float value)
+    {
+        objectScaleSensitivity = Mathf.Clamp(value, 0.5f, 2.5f);
     }
 
     void CheckRaycast(bool isCamera, int _layer)

@@ -32,6 +32,12 @@ public class MainCamera : MonoBehaviour
     public GameObject SubCamera;
 
     public float sensitivity = 3f;
+
+    [Header("Sensitivity")]
+    [SerializeField] private float playerRotationSensitivity = 1f;
+
+    public float PlayerRotationSensitivity => playerRotationSensitivity;
+
     public float minPitch = -90f;
     public float maxPitch = 90f;
 
@@ -99,12 +105,14 @@ public class MainCamera : MonoBehaviour
         float mouseX =
             Input.GetAxis("Mouse X")
             * sensitivity
+            * playerRotationSensitivity
             * 100f
             * Time.deltaTime;
 
         float mouseY =
             Input.GetAxis("Mouse Y")
             * sensitivity
+            * playerRotationSensitivity
             * 100f
             * Time.deltaTime;
 
@@ -127,6 +135,11 @@ public class MainCamera : MonoBehaviour
         pitch -= mouseY;
 
         transform.rotation = Quaternion.Euler(pitch, yaw, roll);
+    }
+
+    public void SetPlayerRotationSensitivity(float value)
+    {
+        playerRotationSensitivity = Mathf.Clamp(value, 0.5f, 2.5f);
     }
 
     public void LookAt(Quaternion quaternion)

@@ -125,6 +125,16 @@ public class SoundSettingSave
 }
 
 [System.Serializable]
+public class SensitiveSettingSave
+{
+    public float PlayerMove = 1f;
+    public float PlayerRotation = 1f;
+    public float ObjectMove = 1f;
+    public float ObjectRotation = 1f;
+    public float ObjectScale = 1f;
+}
+
+[System.Serializable]
 public class LanguageSettingSave
 {
     public LanguageEnum Language;
@@ -1518,6 +1528,48 @@ public class SaveAndLoadManager : MonoBehaviour
         soundManager.SetBGMVolume(soundSave.BGM);
     }
 
+    public void PlayerSetting_SaveSensitive()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "SensitiveSetting.json");
+
+        InputManager inputManager = GameManager.Instance.InputManager;
+        MainCamera mainCamera = GameManager.Instance.MainCamera;
+
+        SensitiveSettingSave sensitiveSave = new SensitiveSettingSave()
+        {
+            PlayerMove = inputManager.PlayerMoveSensitivity,
+            PlayerRotation = mainCamera.PlayerRotationSensitivity,
+            ObjectMove = inputManager.ObjectMoveSensitivity,
+            ObjectRotation = inputManager.ObjectRotationSensitivity,
+            ObjectScale = inputManager.ObjectScaleSensitivity
+        };
+
+        File.WriteAllText(path, JsonUtility.ToJson(sensitiveSave, true));
+    }
+
+    public void PlayerSetting_LoadSensitive()
+    {
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "SensitiveSetting.json");
+
+        if (!File.Exists(path))
+            return;
+
+        string json = File.ReadAllText(path);
+        SensitiveSettingSave sensitiveSave =
+            JsonUtility.FromJson<SensitiveSettingSave>(json);
+
+        InputManager inputManager = GameManager.Instance.InputManager;
+        MainCamera mainCamera = GameManager.Instance.MainCamera;
+
+        inputManager.SetPlayerMoveSensitivity(sensitiveSave.PlayerMove);
+        mainCamera.SetPlayerRotationSensitivity(sensitiveSave.PlayerRotation);
+        inputManager.SetObjectMoveSensitivity(sensitiveSave.ObjectMove);
+        inputManager.SetObjectRotationSensitivity(sensitiveSave.ObjectRotation);
+        inputManager.SetObjectScaleSensitivity(sensitiveSave.ObjectScale);
+    }
+
     public void PlayerSetting_SaveLanguage()
     {
         string path = TryMakePlayerSettingFolder();
@@ -1567,6 +1619,10 @@ public class SaveAndLoadManager : MonoBehaviour
 
                 case "SoundSetting.json":
                     PlayerSetting_LoadSound();
+                    break;
+
+                case "SensitiveSetting.json":
+                    PlayerSetting_LoadSensitive();
                     break;
 
                 case "LanguageSetting.json":

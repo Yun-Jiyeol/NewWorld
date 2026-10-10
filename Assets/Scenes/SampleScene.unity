@@ -30648,6 +30648,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SubCamera: {fileID: 1224085064}
   sensitivity: 3
+  playerRotationSensitivity: 1
   minPitch: -90
   maxPitch: 90
   stopCamera: 1
@@ -37917,6 +37918,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetGameObject: {fileID: 0}
+  playerMoveSensitivity: 1
+  objectMoveSensitivity: 1
+  objectRotationSensitivity: 1
+  objectScaleSensitivity: 1
   ReadyToBuildBlock: {fileID: 0}
   SelectWorldPosition: {fileID: 1428416028}
   rotateSpeed: 5

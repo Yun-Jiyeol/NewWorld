@@ -10,6 +10,7 @@ public class SettingUI : NeedToDoOnit
     public GameObject KeySettingPage;
     public GameObject LanguageSettingPage;
     public GameObject WorldSettingPage;
+    public GameObject SensitivePage;
 
     public GameObject WorldSettingBtn;
 
@@ -71,6 +72,10 @@ public class SettingUI : NeedToDoOnit
                 break;
             case 3:
                 NowPage = Instantiate(WorldSettingPage, SpawnTransform);
+                WorlBtn.HoldChange();
+                break;
+            case 4:
+                NowPage = Instantiate(SensitivePage, SpawnTransform);
                 WorlBtn.HoldChange();
                 break;
         }
