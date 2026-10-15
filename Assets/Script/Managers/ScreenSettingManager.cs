@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 
 [Serializable]
@@ -39,6 +37,10 @@ public class ScreenSettingManager : MonoBehaviour
     [Header("Screen Mode")]
     [SerializeField] private ScreenModeType currentScreenMode =
         ScreenModeType.Windowed;
+
+    [Header("Window Safe Area")]
+    [SerializeField] private int windowReserveWidth = 32;
+    [SerializeField] private int windowReserveHeight = 80;
 
     public int CurrentResolutionIndex => currentResolutionIndex;
     public ScreenModeType CurrentScreenMode => currentScreenMode;
@@ -176,17 +178,28 @@ public class ScreenSettingManager : MonoBehaviour
 
     void ApplyScreenSetting(bool skipSave)
     {
-        ScreenResolutionData resolution =
+        ScreenResolutionData requestedResolution =
             GetCurrentResolution();
+
+        ScreenResolutionData applyResolution =
+            requestedResolution;
 
         FullScreenMode mode =
             currentScreenMode == ScreenModeType.Fullscreen
             ? FullScreenMode.FullScreenWindow
             : FullScreenMode.Windowed;
 
+        if (currentScreenMode == ScreenModeType.Windowed)
+        {
+            applyResolution =
+                GetSafeWindowResolution(
+                    requestedResolution
+                );
+        }
+
         Screen.SetResolution(
-            resolution.Width,
-            resolution.Height,
+            applyResolution.Width,
+            applyResolution.Height,
             mode
         );
 
@@ -194,6 +207,90 @@ public class ScreenSettingManager : MonoBehaviour
         {
             SaveScreenSetting();
         }
+    }
+
+    ScreenResolutionData GetSafeWindowResolution(
+        ScreenResolutionData requestedResolution
+    )
+    {
+        int availableWidth;
+        int availableHeight;
+
+        GetAvailableWindowSize(
+            out availableWidth,
+            out availableHeight
+        );
+
+        if (requestedResolution.Width <= availableWidth &&
+            requestedResolution.Height <= availableHeight)
+        {
+            return requestedResolution;
+        }
+
+        int requestedUnit =
+            Mathf.FloorToInt(
+                Mathf.Min(
+                    requestedResolution.Width / 16f,
+                    requestedResolution.Height / 9f
+                )
+            );
+
+        int availableUnit =
+            Mathf.FloorToInt(
+                Mathf.Min(
+                    availableWidth / 16f,
+                    availableHeight / 9f
+                )
+            );
+
+        int unit =
+            Mathf.Max(
+                1,
+                Mathf.Min(
+                    requestedUnit,
+                    availableUnit
+                )
+            );
+
+        return new ScreenResolutionData(
+            unit * 16,
+            unit * 9
+        );
+    }
+
+    void GetAvailableWindowSize(
+        out int width,
+        out int height
+    )
+    {
+        width = Screen.currentResolution.width;
+        height = Screen.currentResolution.height;
+
+#if UNITY_2022_2_OR_NEWER && !UNITY_EDITOR
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+        RectInt workArea =
+            Screen.mainWindowDisplayInfo.workArea;
+
+        if (workArea.width > 0 &&
+            workArea.height > 0)
+        {
+            width = workArea.width;
+            height = workArea.height;
+        }
+#endif
+#endif
+
+        width =
+            Mathf.Max(
+                16,
+                width - windowReserveWidth
+            );
+
+        height =
+            Mathf.Max(
+                9,
+                height - windowReserveHeight
+            );
     }
 
     void LoadOrCreateScreenSetting()
