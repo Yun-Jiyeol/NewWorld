@@ -125,6 +125,13 @@ public class SoundSettingSave
 }
 
 [System.Serializable]
+public class ScreenSettingSave
+{
+    public int ResolutionIndex = 2;
+    public ScreenModeType ScreenMode = ScreenModeType.Windowed;
+}
+
+[System.Serializable]
 public class SensitiveSettingSave
 {
     public float PlayerMove = 1f;
@@ -1526,6 +1533,59 @@ public class SaveAndLoadManager : MonoBehaviour
         soundManager.SetMainVolume(soundSave.Main);
         soundManager.SetEffectVolume(soundSave.Effect);
         soundManager.SetBGMVolume(soundSave.BGM);
+    }
+
+    public void PlayerSetting_SaveScreen(
+        ScreenSettingManager screenSettingManager
+    )
+    {
+        if (screenSettingManager == null)
+            return;
+
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "ScreenSetting.json");
+
+        ScreenSettingSave screenSave = new ScreenSettingSave()
+        {
+            ResolutionIndex =
+                screenSettingManager.CurrentResolutionIndex,
+            ScreenMode =
+                screenSettingManager.CurrentScreenMode
+        };
+
+        File.WriteAllText(
+            path,
+            JsonUtility.ToJson(screenSave, true)
+        );
+    }
+
+    public bool PlayerSetting_LoadScreen(
+        ScreenSettingManager screenSettingManager
+    )
+    {
+        if (screenSettingManager == null)
+            return false;
+
+        string path = TryMakePlayerSettingFolder();
+        path = Path.Combine(path, "ScreenSetting.json");
+
+        if (!File.Exists(path))
+            return false;
+
+        string json = File.ReadAllText(path);
+
+        ScreenSettingSave screenSave =
+            JsonUtility.FromJson<ScreenSettingSave>(json);
+
+        if (screenSave == null)
+            return false;
+
+        screenSettingManager.LoadScreenSetting(
+            screenSave.ResolutionIndex,
+            screenSave.ScreenMode
+        );
+
+        return true;
     }
 
     public void PlayerSetting_SaveSensitive()

@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public TimerManager TimerManager { get; private set; }
     public KeyManager KeyManager { get; private set; }
     public TranslationManager TranslationManager { get; private set; }
+    public ScreenSettingManager ScreenSettingManager { get; private set; }
 
     public UIManager UIManager;
 
@@ -64,6 +65,7 @@ public class GameManager : MonoBehaviour
         SoundManager = gameObject.GetComponent<SoundManager>();
         TimerManager = gameObject.GetComponent<TimerManager>();
         KeyManager = gameObject.GetComponent<KeyManager>();
+        ScreenSettingManager = gameObject.GetComponent<ScreenSettingManager>();
         TranslationManager = gameObject.GetComponent<TranslationManager>();
         MainCamera = Camera.main.GetComponent<MainCamera>();
     }
