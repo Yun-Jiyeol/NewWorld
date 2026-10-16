@@ -38118,6 +38118,8 @@ MonoBehaviour:
   Resolutions: []
   currentResolutionIndex: 2
   currentScreenMode: 0
+  windowReserveWidth: 32
+  windowReserveHeight: 80
 --- !u!1 &1183565373
 GameObject:
   m_ObjectHideFlags: 0

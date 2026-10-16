@@ -1018,6 +1018,12 @@ public class SaveAndLoadManager : MonoBehaviour
             {
                 int count = reader.ReadInt32();
 
+                Dictionary<Vector3Int, BlockInChunkData> blocks =
+                    world.PrepareLoadChunk(
+                        chunkPos,
+                        count
+                    );
+
                 for (int i = 0; i < count; i++)
                 {
                     if (cancelLoading)
@@ -1032,7 +1038,8 @@ public class SaveAndLoadManager : MonoBehaviour
                     float b = reader.ReadSingle();
                     float a = reader.ReadSingle();
 
-                    world.LoadChunkBlockData(
+                    world.LoadPreparedChunkBlockData(
+                        blocks,
                         chunkPos,
                         new Vector3Int(x, y, z),
                         new Color(r, g, b, a)

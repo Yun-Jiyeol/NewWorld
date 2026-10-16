@@ -365,10 +365,9 @@ public class ChunkCode : MonoBehaviour
         trytoBuildMesh(gridPos);
     }
 
-    public void LoadChunkBlockData(
+    public Dictionary<Vector3Int, BlockInChunkData> PrepareLoadChunk(
         Vector3Int chunkPos,
-        Vector3Int gridPos,
-        Color color
+        int blockCount
     )
     {
         if (BlocksinChunk == null)
@@ -379,13 +378,26 @@ public class ChunkCode : MonoBehaviour
 
         if (!Chunks.ContainsKey(chunkPos))
         {
-            MakeNewChunk(chunkPos);
+            MakeNewChunk(
+                chunkPos,
+                blockCount
+            );
         }
 
+        return BlocksinChunk[chunkPos];
+    }
+
+    public void LoadPreparedChunkBlockData(
+        Dictionary<Vector3Int, BlockInChunkData> blocks,
+        Vector3Int chunkPos,
+        Vector3Int gridPos,
+        Color color
+    )
+    {
         Vector3Int localPos =
             gridPos - (chunkPos * ChunkSize);
 
-        if (BlocksinChunk[chunkPos].ContainsKey(localPos))
+        if (blocks.ContainsKey(localPos))
             return;
 
         BlockInChunkData blockData =
@@ -395,7 +407,7 @@ public class ChunkCode : MonoBehaviour
                 _color = color
             };
 
-        BlocksinChunk[chunkPos].Add(
+        blocks.Add(
             localPos,
             blockData
         );
@@ -700,7 +712,10 @@ public class ChunkCode : MonoBehaviour
         );
     }
 
-    void MakeNewChunk(Vector3Int _position)
+    void MakeNewChunk(
+        Vector3Int _position,
+        int blockCapacity = 0
+    )
     {
         GameObject _chunk =
             new GameObject($"Chunk_{_position}");
@@ -745,7 +760,9 @@ public class ChunkCode : MonoBehaviour
 
         BlocksinChunk.Add(
             _position,
-            new Dictionary<Vector3Int, BlockInChunkData>()
+            new Dictionary<Vector3Int, BlockInChunkData>(
+                Mathf.Max(0, blockCapacity)
+            )
         );
     }
 
