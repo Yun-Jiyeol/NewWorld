@@ -272,6 +272,13 @@ public class SaveAndLoadManager : MonoBehaviour
 
         EnsureSaveFolder();
 
+        Debug.Log(
+            "[LoadTrace] LoadStart frame=" + Time.frameCount +
+            " time=" + Time.realtimeSinceStartup +
+            " save=" + GameManager.Instance.NowWorldSaveFolder +
+            " path=" + WorldSaveFolder
+        );
+
 
         // =====================================================
         // 월드 설정 불러오기
@@ -329,6 +336,12 @@ public class SaveAndLoadManager : MonoBehaviour
             }
         }
 
+
+        Debug.Log(
+            "[LoadTrace] WorldFolderScan frame=" + Time.frameCount +
+            " total=" + worldFolders.Length +
+            " valid=" + validWorlds.Count
+        );
 
         // =====================================================
         // 모든 World의 Chunk 데이터를 먼저 읽는다
@@ -873,6 +886,11 @@ public class SaveAndLoadManager : MonoBehaviour
         // 취소 시 제거할 수 있도록 기억
         worldsCreatedDuringLoad.Add(world);
 
+        Debug.Log(
+            "[LoadTrace] WorldShellCreated frame=" + Time.frameCount +
+            " folder=" + Path.GetFileName(folder)
+        );
+
 
         world.transform.position =
             new Vector3(
@@ -975,11 +993,52 @@ public class SaveAndLoadManager : MonoBehaviour
                 worldCode
             )
         );
+
+        int loadedChunkCount =
+            worldCode.BlocksinChunk != null
+            ? worldCode.BlocksinChunk.Count
+            : 0;
+
+        int loadedBlockCount = 0;
+
+        if (worldCode.BlocksinChunk != null)
+        {
+            foreach (var loadedChunk in worldCode.BlocksinChunk)
+            {
+                if (loadedChunk.Value != null)
+                    loadedBlockCount += loadedChunk.Value.Count;
+            }
+        }
+
+        Debug.Log(
+            "[LoadTrace] WorldDataReady frame=" + Time.frameCount +
+            " folder=" + Path.GetFileName(folder) +
+            " chunks=" + loadedChunkCount +
+            " blocks=" + loadedBlockCount
+        );
     }
 
     IEnumerator LoadChunksCoroutine(string folder, ChunkCode world)
     {
         string[] files = Directory.GetFiles(folder, "chunk_*.bin");
+
+        int loadedFileCount = 0;
+        int skippedFileCount = 0;
+        int emptyFileCount = 0;
+        int loadedBlockCount = 0;
+
+        Debug.Log(
+            "[LoadTrace] ChunkScan frame=" + Time.frameCount +
+            " folder=" + Path.GetFileName(folder) +
+            " files=" + files.Length
+        );
+
+        if (files.Length == 0)
+        {
+            Debug.LogWarning(
+                "[LoadTrace] NoChunkFiles folder=" + folder
+            );
+        }
 
         float start = Time.realtimeSinceStartup;
 
@@ -995,12 +1054,22 @@ public class SaveAndLoadManager : MonoBehaviour
                 fileName.Split('_');
 
             if (parts.Length != 4)
+            {
+                skippedFileCount++;
+                Debug.LogWarning(
+                    "[LoadTrace] SkipChunkName file=" + fileName
+                );
                 continue;
+            }
 
             if (!int.TryParse(parts[1], out int chunkX) ||
                 !int.TryParse(parts[2], out int chunkY) ||
                 !int.TryParse(parts[3], out int chunkZ))
             {
+                skippedFileCount++;
+                Debug.LogWarning(
+                    "[LoadTrace] SkipChunkCoord file=" + fileName
+                );
                 continue;
             }
 
@@ -1017,6 +1086,12 @@ public class SaveAndLoadManager : MonoBehaviour
                 ))
             {
                 int count = reader.ReadInt32();
+
+                loadedFileCount++;
+                loadedBlockCount += count;
+
+                if (count <= 0)
+                    emptyFileCount++;
 
                 Dictionary<Vector3Int, BlockInChunkData> blocks =
                     world.PrepareLoadChunk(
@@ -1053,6 +1128,16 @@ public class SaveAndLoadManager : MonoBehaviour
                 start = Time.realtimeSinceStartup;
             }
         }
+
+        Debug.Log(
+            "[LoadTrace] ChunkScanEnd frame=" + Time.frameCount +
+            " folder=" + Path.GetFileName(folder) +
+            " found=" + files.Length +
+            " loaded=" + loadedFileCount +
+            " skipped=" + skippedFileCount +
+            " empty=" + emptyFileCount +
+            " blocks=" + loadedBlockCount
+        );
     }
     public void CancelLoading()
     {
