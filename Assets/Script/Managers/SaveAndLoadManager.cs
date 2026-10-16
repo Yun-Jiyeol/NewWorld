@@ -985,15 +985,43 @@ public class SaveAndLoadManager : MonoBehaviour
 
         foreach (string file in files)
         {
-            if (cancelLoading) yield break; 
+            if (cancelLoading)
+                yield break;
 
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            string fileName =
+                Path.GetFileNameWithoutExtension(file);
+
+            string[] parts =
+                fileName.Split('_');
+
+            if (parts.Length != 4)
+                continue;
+
+            if (!int.TryParse(parts[1], out int chunkX) ||
+                !int.TryParse(parts[2], out int chunkY) ||
+                !int.TryParse(parts[3], out int chunkZ))
+            {
+                continue;
+            }
+
+            Vector3Int chunkPos =
+                new Vector3Int(
+                    chunkX,
+                    chunkY,
+                    chunkZ
+                );
+
+            using (BinaryReader reader =
+                new BinaryReader(
+                    File.Open(file, FileMode.Open)
+                ))
             {
                 int count = reader.ReadInt32();
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (cancelLoading) yield break;
+                    if (cancelLoading)
+                        yield break;
 
                     int x = reader.ReadInt32();
                     int y = reader.ReadInt32();
@@ -1004,12 +1032,11 @@ public class SaveAndLoadManager : MonoBehaviour
                     float b = reader.ReadSingle();
                     float a = reader.ReadSingle();
 
-                    world.MakeWorldQueue.Enqueue(
-                        new BlockInChunkData
-                        {
-                            _position = new Vector3Int(x, y, z),
-                            _color = new Color(r, g, b, a)
-                        });
+                    world.LoadChunkBlockData(
+                        chunkPos,
+                        new Vector3Int(x, y, z),
+                        new Color(r, g, b, a)
+                    );
                 }
             }
 

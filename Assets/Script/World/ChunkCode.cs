@@ -365,6 +365,52 @@ public class ChunkCode : MonoBehaviour
         trytoBuildMesh(gridPos);
     }
 
+    public void LoadChunkBlockData(
+        Vector3Int chunkPos,
+        Vector3Int gridPos,
+        Color color
+    )
+    {
+        if (BlocksinChunk == null)
+            BlocksinChunk = new Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>>();
+
+        if (Chunks == null)
+            Chunks = new Dictionary<Vector3Int, GameObject>();
+
+        if (!Chunks.ContainsKey(chunkPos))
+        {
+            MakeNewChunk(chunkPos);
+        }
+
+        Vector3Int localPos =
+            gridPos - (chunkPos * ChunkSize);
+
+        if (BlocksinChunk[chunkPos].ContainsKey(localPos))
+            return;
+
+        BlockInChunkData blockData =
+            new BlockInChunkData
+            {
+                _position = gridPos,
+                _color = color
+            };
+
+        BlocksinChunk[chunkPos].Add(
+            localPos,
+            blockData
+        );
+
+        if (color.a < 1f)
+        {
+            MakeAlphaBlockObjectIfNeed(
+                gridPos,
+                blockData
+            );
+        }
+
+        CheckSize(gridPos);
+    }
+
     Queue<Vector3> destroyQueue = new Queue<Vector3>();
     HashSet<Vector3Int> buildMeshSet = new HashSet<Vector3Int>();
 
