@@ -810,7 +810,7 @@ public class ChunkCode : MonoBehaviour
             GetChunkCoord(worldPos);
 
         Vector3Int localPos =
-            GetLocalPos(worldPos);
+            worldPos - (chunkCoord * ChunkSize);
 
 
         if (!BlocksinChunk.TryGetValue(
@@ -832,6 +832,53 @@ public class ChunkCode : MonoBehaviour
 
 
         return block._color.a >= 1f;
+    }
+
+    bool TryGetNeighborBlock(
+        Vector3Int chunkCoord,
+        Dictionary<Vector3Int, BlockInChunkData> currentBlocks,
+        Vector3Int localPos,
+        Vector3Int direction,
+        out BlockInChunkData block
+    )
+    {
+        Vector3Int neighborLocal =
+            localPos + direction;
+
+        if (
+            neighborLocal.x >= 0 &&
+            neighborLocal.x < ChunkSize &&
+            neighborLocal.y >= 0 &&
+            neighborLocal.y < ChunkSize &&
+            neighborLocal.z >= 0 &&
+            neighborLocal.z < ChunkSize
+        )
+        {
+            return currentBlocks.TryGetValue(
+                neighborLocal,
+                out block
+            );
+        }
+
+        Vector3Int neighborChunk =
+            chunkCoord + direction;
+
+        neighborLocal -=
+            direction * ChunkSize;
+
+        if (!BlocksinChunk.TryGetValue(
+            neighborChunk,
+            out Dictionary<Vector3Int, BlockInChunkData> neighborBlocks
+        ))
+        {
+            block = null;
+            return false;
+        }
+
+        return neighborBlocks.TryGetValue(
+            neighborLocal,
+            out block
+        );
     }
 
     void BuildChunkRenderMesh(Vector3Int chunkCoord)
@@ -929,19 +976,20 @@ public class ChunkCode : MonoBehaviour
                             continue;
 
 
-                        Vector3Int worldBlockPos =
-                            chunkCoord * ChunkSize
-                            + localPos;
-
-
-                        Vector3Int neighborPos =
-                            worldBlockPos
-                            + directions[face];
-
-
-                        // 옆도 불투명이면 내부면
-                        if (IsOpaqueRenderBlock(neighborPos))
+                        if (
+                            TryGetNeighborBlock(
+                                chunkCoord,
+                                blocks,
+                                localPos,
+                                directions[face],
+                                out BlockInChunkData neighborBlock
+                            )
+                            &&
+                            neighborBlock._color.a >= 1f
+                        )
+                        {
                             continue;
+                        }
 
 
                         mask[u, v] =
@@ -1503,6 +1551,15 @@ public class ChunkCode : MonoBehaviour
         }
 
 
+        if (!BlocksinChunk.TryGetValue(
+            chunkCoord,
+            out Dictionary<Vector3Int, BlockInChunkData> blocks
+        ))
+        {
+            return;
+        }
+
+
         List<Vector3> vertices =
             new List<Vector3>();
 
@@ -1556,26 +1613,22 @@ public class ChunkCode : MonoBehaviour
                             );
 
 
-                        Vector3Int worldPos =
-                            chunkCoord * ChunkSize
-                            + localPos;
-
-
-                        // 현재 블록이 불투명이 아니면
-                        // Collider 없음
-                        if (!IsColliderBlock(worldPos))
+                        if (!blocks.ContainsKey(localPos))
                             continue;
 
 
-                        Vector3Int neighborPos =
-                            worldPos
-                            + directions[face];
-
-
-                        // 옆에도 Solid 블록이면
-                        // 내부 면이므로 Collider 필요 없음
-                        if (IsColliderBlock(neighborPos))
+                        if (
+                            TryGetNeighborBlock(
+                                chunkCoord,
+                                blocks,
+                                localPos,
+                                directions[face],
+                                out _
+                            )
+                        )
+                        {
                             continue;
+                        }
 
 
                         mask[u, v] = true;
@@ -1638,7 +1691,7 @@ public class ChunkCode : MonoBehaviour
             GetChunkCoord(worldPos);
 
         Vector3Int localPos =
-            GetLocalPos(worldPos);
+            worldPos - (chunkCoord * ChunkSize);
 
 
         if (!BlocksinChunk.TryGetValue(
