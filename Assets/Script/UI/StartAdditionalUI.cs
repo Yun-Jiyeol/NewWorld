@@ -191,6 +191,8 @@ public class StartAdditionalUI : MonoBehaviour
         if (NowInTape == null) return;
         if (GameManager.Instance.NowWorldSaveFolder == null) return;
 
+        GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
+
         NowInTape = null;
         GameManager.Instance.NowWorldSaveFolder = null;
 
@@ -221,7 +223,6 @@ public class StartAdditionalUI : MonoBehaviour
             Destroy(_NowSpawnedtape);
         }
 
-        GameManager.Instance.SaveAndLoadManager.CancelLoadWorldFolder();
         GameManager.Instance.WorldManager.DestroyAllWorld();
         ReconstructionValue(0);
 

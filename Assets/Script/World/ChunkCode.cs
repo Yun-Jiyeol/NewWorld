@@ -170,7 +170,10 @@ public class ChunkCode : MonoBehaviour
         StartCoroutine(BuildRoutine());
     }
 
-    public IEnumerator BuildRoutine(bool finishSettingBlock = true)
+    public IEnumerator BuildRoutine(
+        bool finishSettingBlock = true,
+        Func<bool> shouldCancel = null
+    )
     {
         LoadState = WorldLoadState.Loading;
 
@@ -180,14 +183,23 @@ public class ChunkCode : MonoBehaviour
         if (Chunks == null)
             Chunks = new Dictionary<Vector3Int, GameObject>();
 
+        if (shouldCancel != null && shouldCancel())
+            yield break;
+
         float start = Time.realtimeSinceStartup;
 
         while (MakeWorldQueue.Count > 0)
         {
+            if (shouldCancel != null && shouldCancel())
+                yield break;
+
             start = Time.realtimeSinceStartup;
 
             while (MakeWorldQueue.Count > 0)
             {
+                if (shouldCancel != null && shouldCancel())
+                    yield break;
+
                 BlockInChunkData newblock = MakeWorldQueue.Dequeue();
                 Vector3Int chunkpos = GetChunkCoord(newblock._position);
 
@@ -226,13 +238,22 @@ public class ChunkCode : MonoBehaviour
             yield return null;
         }
 
+        if (shouldCancel != null && shouldCancel())
+            yield break;
+
         start = Time.realtimeSinceStartup;
 
         var chunkList = Chunks.Keys.ToList();
 
         for (int i = 0; i < chunkList.Count; i++)
         {
+            if (shouldCancel != null && shouldCancel())
+                yield break;
+
             BuildMesh(chunkList[i] * ChunkSize);
+
+            if (shouldCancel != null && shouldCancel())
+                yield break;
 
             if ((Time.realtimeSinceStartup - start) * 1000f > 10f)
             {
@@ -240,6 +261,9 @@ public class ChunkCode : MonoBehaviour
                 start = Time.realtimeSinceStartup;
             }
         }
+
+        if (shouldCancel != null && shouldCancel())
+            yield break;
 
         if (finishSettingBlock)
         {

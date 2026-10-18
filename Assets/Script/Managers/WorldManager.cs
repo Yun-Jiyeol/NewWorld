@@ -138,7 +138,10 @@ public class WorldManager : MonoBehaviour
             // 로드에서는 BuildRoutine 끝의 FinishSettingBlock()을 실행하지 않음.
             // 즉, 동기식 PutThisWorld()이 끼어들지 않게 한다.
             yield return StartCoroutine(
-                chunk.BuildRoutine(false)
+                chunk.BuildRoutine(
+                    false,
+                    shouldCancel
+                )
             );
 
 
