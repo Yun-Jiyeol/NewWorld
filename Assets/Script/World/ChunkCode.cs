@@ -81,6 +81,8 @@ public class ChunkCode : MonoBehaviour
 
     public Queue<BlockInChunkData> MakeWorldQueue = new();
 
+    bool hasLoggedFirstBuildTiming = false;
+
     List<System.Action> colorChangeCompleteActions = new List<System.Action>();
 
     Vector3Int[] directions = new Vector3Int[]
@@ -798,19 +800,32 @@ public class ChunkCode : MonoBehaviour
         if (!BlocksinChunk.ContainsKey(chunkCoord))
             return;
 
+        float totalStart = Time.realtimeSinceStartup;
 
-        // =========================
-        // Opaque Render Mesh
-        // =========================
-
+        float renderStart = Time.realtimeSinceStartup;
         BuildChunkRenderMesh(chunkCoord);
+        float renderMs =
+            (Time.realtimeSinceStartup - renderStart) * 1000f;
 
-
-        // =========================
-        // Collider Mesh
-        // =========================
-
+        float colliderStart = Time.realtimeSinceStartup;
         BuildChunkCollider(chunkCoord);
+        float colliderMs =
+            (Time.realtimeSinceStartup - colliderStart) * 1000f;
+
+        float totalMs =
+            (Time.realtimeSinceStartup - totalStart) * 1000f;
+
+        if (!hasLoggedFirstBuildTiming || totalMs >= 50f)
+        {
+            Debug.Log(
+                "[LoadTiming] Mesh chunk=" + chunkCoord +
+                " renderMs=" + renderMs.ToString("F2") +
+                " colliderMs=" + colliderMs.ToString("F2") +
+                " totalMs=" + totalMs.ToString("F2")
+            );
+
+            hasLoggedFirstBuildTiming = true;
+        }
     }
 
     struct RenderMaskCell

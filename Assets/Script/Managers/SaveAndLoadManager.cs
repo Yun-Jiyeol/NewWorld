@@ -1020,7 +1020,16 @@ public class SaveAndLoadManager : MonoBehaviour
 
     IEnumerator LoadChunksCoroutine(string folder, ChunkCode world)
     {
+        float fileListStart = Time.realtimeSinceStartup;
         string[] files = Directory.GetFiles(folder, "chunk_*.bin");
+        float fileListMs =
+            (Time.realtimeSinceStartup - fileListStart) * 1000f;
+
+        Debug.Log(
+            "[LoadTiming] FileList folder=" + Path.GetFileName(folder) +
+            " files=" + files.Length +
+            " ms=" + fileListMs.ToString("F2")
+        );
 
         int loadedFileCount = 0;
         int skippedFileCount = 0;
@@ -1041,6 +1050,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
 
         float start = Time.realtimeSinceStartup;
+        bool loggedFirstFileTiming = false;
 
         foreach (string file in files)
         {
@@ -1080,12 +1090,17 @@ public class SaveAndLoadManager : MonoBehaviour
                     chunkZ
                 );
 
+            float fileStart = Time.realtimeSinceStartup;
+            float prepareMs = 0f;
+            int fileBlockCount = 0;
+
             using (BinaryReader reader =
                 new BinaryReader(
                     File.Open(file, FileMode.Open)
                 ))
             {
                 int count = reader.ReadInt32();
+                fileBlockCount = count;
 
                 loadedFileCount++;
                 loadedBlockCount += count;
@@ -1093,11 +1108,16 @@ public class SaveAndLoadManager : MonoBehaviour
                 if (count <= 0)
                     emptyFileCount++;
 
+                float prepareStart = Time.realtimeSinceStartup;
+
                 Dictionary<Vector3Int, BlockInChunkData> blocks =
                     world.PrepareLoadChunk(
                         chunkPos,
                         count
                     );
+
+                prepareMs =
+                    (Time.realtimeSinceStartup - prepareStart) * 1000f;
 
                 for (int i = 0; i < count; i++)
                 {
@@ -1120,6 +1140,21 @@ public class SaveAndLoadManager : MonoBehaviour
                         new Color(r, g, b, a)
                     );
                 }
+            }
+
+            float fileMs =
+                (Time.realtimeSinceStartup - fileStart) * 1000f;
+
+            if (!loggedFirstFileTiming || fileMs >= 50f || prepareMs >= 50f)
+            {
+                Debug.Log(
+                    "[LoadTiming] File chunk=" + chunkPos +
+                    " blocks=" + fileBlockCount +
+                    " prepareMs=" + prepareMs.ToString("F2") +
+                    " fileLoadMs=" + fileMs.ToString("F2")
+                );
+
+                loggedFirstFileTiming = true;
             }
 
             if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
