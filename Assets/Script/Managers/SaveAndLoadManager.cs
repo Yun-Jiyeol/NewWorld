@@ -1157,7 +1157,7 @@ public class SaveAndLoadManager : MonoBehaviour
                 loggedFirstFileTiming = true;
             }
 
-            if ((Time.realtimeSinceStartup - start) * 1000f > 5f)
+            if ((Time.realtimeSinceStartup - start) * 1000f > 20f)
             {
                 yield return null;
                 start = Time.realtimeSinceStartup;
