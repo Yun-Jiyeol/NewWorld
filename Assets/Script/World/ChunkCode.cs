@@ -83,6 +83,11 @@ public class ChunkCode : MonoBehaviour
 
     bool hasLoggedFirstBuildTiming = false;
 
+    List<Vector3> renderVerticesBuffer = new List<Vector3>();
+    List<int> renderTrianglesBuffer = new List<int>();
+    List<Color> renderColorsBuffer = new List<Color>();
+    RenderMaskCell[,] renderMaskBuffer;
+
     List<System.Action> colorChangeCompleteActions = new List<System.Action>();
 
     Vector3Int[] directions = new Vector3Int[]
@@ -174,7 +179,8 @@ public class ChunkCode : MonoBehaviour
 
     public IEnumerator BuildRoutine(
         bool finishSettingBlock = true,
-        Func<bool> shouldCancel = null
+        Func<bool> shouldCancel = null,
+        bool buildCollider = true
     )
     {
         LoadState = WorldLoadState.Loading;
@@ -252,7 +258,10 @@ public class ChunkCode : MonoBehaviour
             if (shouldCancel != null && shouldCancel())
                 yield break;
 
-            BuildMesh(chunkList[i] * ChunkSize);
+            BuildMesh(
+                chunkList[i] * ChunkSize,
+                buildCollider
+            );
 
             if (shouldCancel != null && shouldCancel())
                 yield break;
@@ -683,7 +692,33 @@ public class ChunkCode : MonoBehaviour
 
     public void ChooseThisWorld()
     {
+        EnsureChunkCollidersForEditing();
         SetEditingRepresentation();
+    }
+
+    void EnsureChunkCollidersForEditing()
+    {
+        if (Chunks == null)
+            return;
+
+        foreach (var chunkEntry in Chunks)
+        {
+            GameObject chunkObject = chunkEntry.Value;
+
+            if (chunkObject == null)
+                continue;
+
+            MeshCollider meshCollider =
+                chunkObject.GetComponent<MeshCollider>();
+
+            if (meshCollider != null &&
+                meshCollider.sharedMesh != null)
+            {
+                continue;
+            }
+
+            BuildChunkCollider(chunkEntry.Key);
+        }
     }
 
     public void PutThisWorld()
@@ -792,7 +827,10 @@ public class ChunkCode : MonoBehaviour
         );
     }
 
-    public void BuildMesh(Vector3Int worldPos)
+    public void BuildMesh(
+        Vector3Int worldPos,
+        bool buildCollider = true
+    )
     {
         Vector3Int chunkCoord =
             GetChunkCoord(worldPos);
@@ -807,10 +845,15 @@ public class ChunkCode : MonoBehaviour
         float renderMs =
             (Time.realtimeSinceStartup - renderStart) * 1000f;
 
-        float colliderStart = Time.realtimeSinceStartup;
-        BuildChunkCollider(chunkCoord);
-        float colliderMs =
-            (Time.realtimeSinceStartup - colliderStart) * 1000f;
+        float colliderMs = 0f;
+
+        if (buildCollider)
+        {
+            float colliderStart = Time.realtimeSinceStartup;
+            BuildChunkCollider(chunkCoord);
+            colliderMs =
+                (Time.realtimeSinceStartup - colliderStart) * 1000f;
+        }
 
         float totalMs =
             (Time.realtimeSinceStartup - totalStart) * 1000f;
@@ -920,6 +963,26 @@ public class ChunkCode : MonoBehaviour
         );
     }
 
+    void PrepareRenderBuildBuffers()
+    {
+        renderVerticesBuffer.Clear();
+        renderTrianglesBuffer.Clear();
+        renderColorsBuffer.Clear();
+
+        if (
+            renderMaskBuffer == null ||
+            renderMaskBuffer.GetLength(0) != ChunkSize ||
+            renderMaskBuffer.GetLength(1) != ChunkSize
+        )
+        {
+            renderMaskBuffer =
+                new RenderMaskCell[
+                    ChunkSize,
+                    ChunkSize
+                ];
+        }
+    }
+
     void BuildChunkRenderMesh(Vector3Int chunkCoord)
     {
         if (!Chunks.TryGetValue(
@@ -940,21 +1003,19 @@ public class ChunkCode : MonoBehaviour
         }
 
 
+        PrepareRenderBuildBuffers();
+
         List<Vector3> vertices =
-            new List<Vector3>();
+            renderVerticesBuffer;
 
         List<int> triangles =
-            new List<int>();
+            renderTrianglesBuffer;
 
         List<Color> colors =
-            new List<Color>();
-
+            renderColorsBuffer;
 
         RenderMaskCell[,] mask =
-            new RenderMaskCell[
-                ChunkSize,
-                ChunkSize
-            ];
+            renderMaskBuffer;
 
 
         // =========================

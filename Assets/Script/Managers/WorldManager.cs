@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -140,7 +140,8 @@ public class WorldManager : MonoBehaviour
             yield return StartCoroutine(
                 chunk.BuildRoutine(
                     false,
-                    shouldCancel
+                    shouldCancel,
+                    false
                 )
             );
 
