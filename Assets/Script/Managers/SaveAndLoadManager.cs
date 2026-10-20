@@ -1020,15 +1020,27 @@ public class SaveAndLoadManager : MonoBehaviour
 
     IEnumerator LoadChunksCoroutine(string folder, ChunkCode world)
     {
+        float loadStartTime = Time.realtimeSinceStartup;
+        bool slowLoadMessageShown = false;
+
         float fileListStart = Time.realtimeSinceStartup;
-        string[] files = Directory.GetFiles(folder, "chunk_*.bin");
+
+        string[] files =
+            Directory.GetFiles(
+                folder,
+                "chunk_*.bin"
+            );
+
         float fileListMs =
             (Time.realtimeSinceStartup - fileListStart) * 1000f;
 
         Debug.Log(
-            "[LoadTiming] FileList folder=" + Path.GetFileName(folder) +
-            " files=" + files.Length +
-            " ms=" + fileListMs.ToString("F2")
+            "[LoadTiming] FileList folder=" +
+            Path.GetFileName(folder) +
+            " files=" +
+            files.Length +
+            " ms=" +
+            fileListMs.ToString("F2")
         );
 
         int loadedFileCount = 0;
@@ -1037,25 +1049,34 @@ public class SaveAndLoadManager : MonoBehaviour
         int loadedBlockCount = 0;
 
         Debug.Log(
-            "[LoadTrace] ChunkScan frame=" + Time.frameCount +
-            " folder=" + Path.GetFileName(folder) +
-            " files=" + files.Length
+            "[LoadTrace] ChunkScan frame=" +
+            Time.frameCount +
+            " folder=" +
+            Path.GetFileName(folder) +
+            " files=" +
+            files.Length
         );
 
         if (files.Length == 0)
         {
             Debug.LogWarning(
-                "[LoadTrace] NoChunkFiles folder=" + folder
+                "[LoadTrace] NoChunkFiles folder=" +
+                folder
             );
         }
 
-        float start = Time.realtimeSinceStartup;
-        bool loggedFirstFileTiming = false;
+        float start =
+            Time.realtimeSinceStartup;
+
+        bool firstFileTimingLogged = false;
 
         foreach (string file in files)
         {
             if (cancelLoading)
                 yield break;
+
+            float fileStart =
+                Time.realtimeSinceStartup;
 
             string fileName =
                 Path.GetFileNameWithoutExtension(file);
@@ -1066,20 +1087,37 @@ public class SaveAndLoadManager : MonoBehaviour
             if (parts.Length != 4)
             {
                 skippedFileCount++;
+
                 Debug.LogWarning(
-                    "[LoadTrace] SkipChunkName file=" + fileName
+                    "[LoadTrace] SkipChunkName file=" +
+                    fileName
                 );
+
                 continue;
             }
 
-            if (!int.TryParse(parts[1], out int chunkX) ||
-                !int.TryParse(parts[2], out int chunkY) ||
-                !int.TryParse(parts[3], out int chunkZ))
+            if (
+                !int.TryParse(
+                    parts[1],
+                    out int chunkX
+                ) ||
+                !int.TryParse(
+                    parts[2],
+                    out int chunkY
+                ) ||
+                !int.TryParse(
+                    parts[3],
+                    out int chunkZ
+                )
+            )
             {
                 skippedFileCount++;
+
                 Debug.LogWarning(
-                    "[LoadTrace] SkipChunkCoord file=" + fileName
+                    "[LoadTrace] SkipChunkCoord file=" +
+                    fileName
                 );
+
                 continue;
             }
 
@@ -1090,17 +1128,21 @@ public class SaveAndLoadManager : MonoBehaviour
                     chunkZ
                 );
 
-            float fileStart = Time.realtimeSinceStartup;
             float prepareMs = 0f;
-            int fileBlockCount = 0;
+            int count = 0;
 
-            using (BinaryReader reader =
-                new BinaryReader(
-                    File.Open(file, FileMode.Open)
-                ))
+            using (
+                BinaryReader reader =
+                    new BinaryReader(
+                        File.Open(
+                            file,
+                            FileMode.Open
+                        )
+                    )
+            )
             {
-                int count = reader.ReadInt32();
-                fileBlockCount = count;
+                count =
+                    reader.ReadInt32();
 
                 loadedFileCount++;
                 loadedBlockCount += count;
@@ -1108,72 +1150,137 @@ public class SaveAndLoadManager : MonoBehaviour
                 if (count <= 0)
                     emptyFileCount++;
 
-                float prepareStart = Time.realtimeSinceStartup;
+                float prepareStart =
+                    Time.realtimeSinceStartup;
 
-                Dictionary<Vector3Int, BlockInChunkData> blocks =
+                Dictionary<
+                    Vector3Int,
+                    BlockInChunkData
+                > blocks =
                     world.PrepareLoadChunk(
                         chunkPos,
                         count
                     );
 
                 prepareMs =
-                    (Time.realtimeSinceStartup - prepareStart) * 1000f;
+                    (
+                        Time.realtimeSinceStartup -
+                        prepareStart
+                    ) * 1000f;
 
                 for (int i = 0; i < count; i++)
                 {
                     if (cancelLoading)
                         yield break;
 
-                    int x = reader.ReadInt32();
-                    int y = reader.ReadInt32();
-                    int z = reader.ReadInt32();
+                    int x =
+                        reader.ReadInt32();
 
-                    float r = reader.ReadSingle();
-                    float g = reader.ReadSingle();
-                    float b = reader.ReadSingle();
-                    float a = reader.ReadSingle();
+                    int y =
+                        reader.ReadInt32();
+
+                    int z =
+                        reader.ReadInt32();
+
+                    float r =
+                        reader.ReadSingle();
+
+                    float g =
+                        reader.ReadSingle();
+
+                    float b =
+                        reader.ReadSingle();
+
+                    float a =
+                        reader.ReadSingle();
 
                     world.LoadPreparedChunkBlockData(
                         blocks,
                         chunkPos,
-                        new Vector3Int(x, y, z),
-                        new Color(r, g, b, a)
+                        new Vector3Int(
+                            x,
+                            y,
+                            z
+                        ),
+                        new Color(
+                            r,
+                            g,
+                            b,
+                            a
+                        )
                     );
                 }
             }
 
-            float fileMs =
-                (Time.realtimeSinceStartup - fileStart) * 1000f;
+            float fileLoadMs =
+                (
+                    Time.realtimeSinceStartup -
+                    fileStart
+                ) * 1000f;
 
-            if (!loggedFirstFileTiming || fileMs >= 50f || prepareMs >= 50f)
+            if (
+                !firstFileTimingLogged ||
+                fileLoadMs >= 50f
+            )
             {
                 Debug.Log(
-                    "[LoadTiming] File chunk=" + chunkPos +
-                    " blocks=" + fileBlockCount +
-                    " prepareMs=" + prepareMs.ToString("F2") +
-                    " fileLoadMs=" + fileMs.ToString("F2")
+                    "[LoadTiming] File chunk=" +
+                    chunkPos +
+                    " blocks=" +
+                    count +
+                    " prepareMs=" +
+                    prepareMs.ToString("F2") +
+                    " fileLoadMs=" +
+                    fileLoadMs.ToString("F2")
                 );
 
-                loggedFirstFileTiming = true;
+                firstFileTimingLogged = true;
             }
 
-            if ((Time.realtimeSinceStartup - start) * 1000f > 20f)
+            // Show this only when loading is actually taking a long time.
+            if (
+                !slowLoadMessageShown &&
+                Time.realtimeSinceStartup -
+                loadStartTime >= 3f
+            )
+            {
+                slowLoadMessageShown = true;
+
+                GameManager.Instance.UIManager.StartSceneUI
+                    .AddText("SlowWorldLoad");
+            }
+
+            if (
+                (Time.realtimeSinceStartup - start) *
+                1000f >
+                20f
+            )
             {
                 yield return null;
-                start = Time.realtimeSinceStartup;
+
+                start =
+                    Time.realtimeSinceStartup;
             }
         }
 
         Debug.Log(
-            "[LoadTrace] ChunkScanEnd frame=" + Time.frameCount +
-            " folder=" + Path.GetFileName(folder) +
-            " found=" + files.Length +
-            " loaded=" + loadedFileCount +
-            " skipped=" + skippedFileCount +
-            " empty=" + emptyFileCount +
-            " blocks=" + loadedBlockCount
+            "[LoadTrace] ChunkScanEnd frame=" +
+            Time.frameCount +
+            " folder=" +
+            Path.GetFileName(folder) +
+            " found=" +
+            files.Length +
+            " loaded=" +
+            loadedFileCount +
+            " skipped=" +
+            skippedFileCount +
+            " empty=" +
+            emptyFileCount +
+            " blocks=" +
+            loadedBlockCount
         );
     }
+
     public void CancelLoading()
     {
         if (!isLoading)
