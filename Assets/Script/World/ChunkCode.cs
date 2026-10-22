@@ -67,6 +67,31 @@ public class ChunkCode : MonoBehaviour
     MeshFilter CombinedWorldMeshFilter;
     MeshRenderer CombinedWorldMeshRenderer;
 
+    // Reusable temporary buffers to reduce GC/allocation spikes during mesh/collider rebuilds.
+    readonly List<Vector3> chunkRenderVerticesBuffer = new List<Vector3>();
+    readonly List<int> chunkRenderTrianglesBuffer = new List<int>();
+    readonly List<Color> chunkRenderColorsBuffer = new List<Color>();
+    RenderMaskCell[,] chunkRenderMaskBuffer;
+
+    readonly List<Vector3> chunkColliderVerticesBuffer = new List<Vector3>();
+    readonly List<int> chunkColliderTrianglesBuffer = new List<int>();
+    bool[,] chunkColliderMaskBuffer;
+
+    readonly Dictionary<int, HashSet<Vector2Int>>[] combinedColliderCoroutinePlanes =
+        CreateColliderPlaneBuffer();
+    readonly Stack<HashSet<Vector2Int>> combinedColliderCoroutineCellPool =
+        new Stack<HashSet<Vector2Int>>();
+    readonly List<Vector3> combinedColliderCoroutineVertices = new List<Vector3>();
+    readonly List<int> combinedColliderCoroutineTriangles = new List<int>();
+    bool combinedColliderCoroutineBufferInUse = false;
+
+    readonly Dictionary<int, HashSet<Vector2Int>>[] combinedColliderPlanes =
+        CreateColliderPlaneBuffer();
+    readonly Stack<HashSet<Vector2Int>> combinedColliderCellPool =
+        new Stack<HashSet<Vector2Int>>();
+    readonly List<Vector3> combinedColliderVertices = new List<Vector3>();
+    readonly List<int> combinedColliderTriangles = new List<int>();
+
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
@@ -83,15 +108,6 @@ public class ChunkCode : MonoBehaviour
 
     bool hasLoggedFirstBuildTiming = false;
 
-    List<Vector3> renderVerticesBuffer = new List<Vector3>();
-    List<int> renderTrianglesBuffer = new List<int>();
-    List<Color> renderColorsBuffer = new List<Color>();
-    RenderMaskCell[,] renderMaskBuffer;
-
-    List<Vector3> colliderVerticesBuffer = new List<Vector3>();
-    List<int> colliderTrianglesBuffer = new List<int>();
-    bool[,] colliderMaskBuffer;
-
     List<System.Action> colorChangeCompleteActions = new List<System.Action>();
 
     Vector3Int[] directions = new Vector3Int[]
@@ -103,6 +119,85 @@ public class ChunkCode : MonoBehaviour
     new Vector3Int(0,1,0),  // Top
     new Vector3Int(0,-1,0)  // Bottom
 };
+
+    static Dictionary<int, HashSet<Vector2Int>>[] CreateColliderPlaneBuffer()
+    {
+        Dictionary<int, HashSet<Vector2Int>>[] planes =
+            new Dictionary<int, HashSet<Vector2Int>>[6];
+
+        for (int face = 0; face < 6; face++)
+        {
+            planes[face] = new Dictionary<int, HashSet<Vector2Int>>();
+        }
+
+        return planes;
+    }
+
+    void ResetColliderPlaneBuffer(
+        Dictionary<int, HashSet<Vector2Int>>[] planes,
+        Stack<HashSet<Vector2Int>> cellPool
+    )
+    {
+        for (int face = 0; face < planes.Length; face++)
+        {
+            foreach (HashSet<Vector2Int> cells in planes[face].Values)
+            {
+                cells.Clear();
+                cellPool.Push(cells);
+            }
+
+            planes[face].Clear();
+        }
+    }
+
+    HashSet<Vector2Int> GetColliderPlaneCells(
+        Dictionary<int, HashSet<Vector2Int>>[] planes,
+        Stack<HashSet<Vector2Int>> cellPool,
+        int face,
+        int slice
+    )
+    {
+        if (planes[face].TryGetValue(slice, out HashSet<Vector2Int> cells))
+            return cells;
+
+        if (cellPool.Count > 0)
+        {
+            cells = cellPool.Pop();
+        }
+        else
+        {
+            cells = new HashSet<Vector2Int>();
+        }
+
+        planes[face].Add(slice, cells);
+        return cells;
+    }
+
+    RenderMaskCell[,] GetChunkRenderMaskBuffer()
+    {
+        if (chunkRenderMaskBuffer == null ||
+            chunkRenderMaskBuffer.GetLength(0) != ChunkSize ||
+            chunkRenderMaskBuffer.GetLength(1) != ChunkSize)
+        {
+            chunkRenderMaskBuffer =
+                new RenderMaskCell[ChunkSize, ChunkSize];
+        }
+
+        return chunkRenderMaskBuffer;
+    }
+
+    bool[,] GetChunkColliderMaskBuffer()
+    {
+        if (chunkColliderMaskBuffer == null ||
+            chunkColliderMaskBuffer.GetLength(0) != ChunkSize ||
+            chunkColliderMaskBuffer.GetLength(1) != ChunkSize)
+        {
+            chunkColliderMaskBuffer =
+                new bool[ChunkSize, ChunkSize];
+        }
+
+        return chunkColliderMaskBuffer;
+    }
 
     void EnsureChunksRoot()
     {
@@ -967,26 +1062,6 @@ public class ChunkCode : MonoBehaviour
         );
     }
 
-    void PrepareRenderBuildBuffers()
-    {
-        renderVerticesBuffer.Clear();
-        renderTrianglesBuffer.Clear();
-        renderColorsBuffer.Clear();
-
-        if (
-            renderMaskBuffer == null ||
-            renderMaskBuffer.GetLength(0) != ChunkSize ||
-            renderMaskBuffer.GetLength(1) != ChunkSize
-        )
-        {
-            renderMaskBuffer =
-                new RenderMaskCell[
-                    ChunkSize,
-                    ChunkSize
-                ];
-        }
-    }
-
     void BuildChunkRenderMesh(Vector3Int chunkCoord)
     {
         if (!Chunks.TryGetValue(
@@ -1007,19 +1082,15 @@ public class ChunkCode : MonoBehaviour
         }
 
 
-        PrepareRenderBuildBuffers();
+        List<Vector3> vertices = chunkRenderVerticesBuffer;
+        List<int> triangles = chunkRenderTrianglesBuffer;
+        List<Color> colors = chunkRenderColorsBuffer;
 
-        List<Vector3> vertices =
-            renderVerticesBuffer;
+        vertices.Clear();
+        triangles.Clear();
+        colors.Clear();
 
-        List<int> triangles =
-            renderTrianglesBuffer;
-
-        List<Color> colors =
-            renderColorsBuffer;
-
-        RenderMaskCell[,] mask =
-            renderMaskBuffer;
+        RenderMaskCell[,] mask = GetChunkRenderMaskBuffer();
 
 
         // =========================
@@ -1642,25 +1713,6 @@ public class ChunkCode : MonoBehaviour
         }
     }
 
-    void PrepareColliderBuildBuffers()
-    {
-        colliderVerticesBuffer.Clear();
-        colliderTrianglesBuffer.Clear();
-
-        if (
-            colliderMaskBuffer == null ||
-            colliderMaskBuffer.GetLength(0) != ChunkSize ||
-            colliderMaskBuffer.GetLength(1) != ChunkSize
-        )
-        {
-            colliderMaskBuffer =
-                new bool[
-                    ChunkSize,
-                    ChunkSize
-                ];
-        }
-    }
-
     void BuildChunkCollider(
     Vector3Int chunkCoord
 )
@@ -1683,17 +1735,13 @@ public class ChunkCode : MonoBehaviour
         }
 
 
-        PrepareColliderBuildBuffers();
+        List<Vector3> vertices = chunkColliderVerticesBuffer;
+        List<int> triangles = chunkColliderTrianglesBuffer;
 
-        List<Vector3> vertices =
-            colliderVerticesBuffer;
+        vertices.Clear();
+        triangles.Clear();
 
-        List<int> triangles =
-            colliderTrianglesBuffer;
-
-
-        bool[,] mask =
-            colliderMaskBuffer;
+        bool[,] mask = GetChunkColliderMaskBuffer();
 
 
         // 6방향 검사
@@ -2237,11 +2285,36 @@ public class ChunkCode : MonoBehaviour
         CombinedColliderObject.layer = gameObject.layer;
         CombinedColliderObject.tag = "World";
 
-        Dictionary<int, HashSet<Vector2Int>>[] planes =
-            new Dictionary<int, HashSet<Vector2Int>>[6];
+        bool useReusableColliderBuffers =
+            !combinedColliderCoroutineBufferInUse;
 
-        for (int face = 0; face < 6; face++)
-            planes[face] = new Dictionary<int, HashSet<Vector2Int>>();
+        Dictionary<int, HashSet<Vector2Int>>[] planes;
+        Stack<HashSet<Vector2Int>> cellPool;
+        List<Vector3> vertices;
+        List<int> triangles;
+
+        if (useReusableColliderBuffers)
+        {
+            combinedColliderCoroutineBufferInUse = true;
+
+            planes = combinedColliderCoroutinePlanes;
+            cellPool = combinedColliderCoroutineCellPool;
+            vertices = combinedColliderCoroutineVertices;
+            triangles = combinedColliderCoroutineTriangles;
+
+            ResetColliderPlaneBuffer(planes, cellPool);
+            vertices.Clear();
+            triangles.Clear();
+        }
+        else
+        {
+            // Same ChunkCode coroutine started again before the previous one finished:
+            // use temporary buffers so the two builds cannot overwrite each other.
+            planes = CreateColliderPlaneBuffer();
+            cellPool = new Stack<HashSet<Vector2Int>>();
+            vertices = new List<Vector3>();
+            triangles = new List<int>();
+        }
 
         float start = Time.realtimeSinceStartup;
 
@@ -2267,11 +2340,12 @@ public class ChunkCode : MonoBehaviour
                         out int v
                     );
 
-                    if (!planes[face].TryGetValue(slice, out HashSet<Vector2Int> cells))
-                    {
-                        cells = new HashSet<Vector2Int>();
-                        planes[face].Add(slice, cells);
-                    }
+                    HashSet<Vector2Int> cells = GetColliderPlaneCells(
+                        planes,
+                        cellPool,
+                        face,
+                        slice
+                    );
 
                     cells.Add(new Vector2Int(u, v));
                 }
@@ -2283,9 +2357,6 @@ public class ChunkCode : MonoBehaviour
                 }
             }
         }
-
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
 
         // Greedy Merge도 프레임 분할
         for (int face = 0; face < 6; face++)
@@ -2313,6 +2384,10 @@ public class ChunkCode : MonoBehaviour
         if (vertices.Count == 0)
         {
             CombinedColliderObject.SetActive(false);
+
+            if (useReusableColliderBuffers)
+                combinedColliderCoroutineBufferInUse = false;
+
             yield break;
         }
 
@@ -2330,6 +2405,9 @@ public class ChunkCode : MonoBehaviour
         // PhysX cooking 자체는 한 번에 실행되므로 앞 작업과 프레임을 분리해서 호출
         CombinedWorldCollider.sharedMesh = combinedMesh;
         CombinedColliderObject.SetActive(true);
+
+        if (useReusableColliderBuffers)
+            combinedColliderCoroutineBufferInUse = false;
     }
 
     IEnumerator MergeWorldColliderPlaneCoroutine(
@@ -2624,14 +2702,12 @@ public class ChunkCode : MonoBehaviour
         // =====================================
 
         Dictionary<int, HashSet<Vector2Int>>[] planes =
-            new Dictionary<int, HashSet<Vector2Int>>[6];
+            combinedColliderPlanes;
 
-
-        for (int face = 0; face < 6; face++)
-        {
-            planes[face] =
-                new Dictionary<int, HashSet<Vector2Int>>();
-        }
+        ResetColliderPlaneBuffer(
+            planes,
+            combinedColliderCellPool
+        );
 
 
         foreach (var chunk in BlocksinChunk.Values)
@@ -2663,20 +2739,12 @@ public class ChunkCode : MonoBehaviour
                     );
 
 
-                    if (!planes[face].TryGetValue(
-                        slice,
-                        out HashSet<Vector2Int> cells
-                    ))
-                    {
-                        cells =
-                            new HashSet<Vector2Int>();
-
-                        planes[face].Add(
-                            slice,
-                            cells
-                        );
-                    }
-
+                    HashSet<Vector2Int> cells = GetColliderPlaneCells(
+                        planes,
+                        combinedColliderCellPool,
+                        face,
+                        slice
+                    );
 
                     cells.Add(
                         new Vector2Int(u, v)
@@ -2690,11 +2758,11 @@ public class ChunkCode : MonoBehaviour
         // 월드 전체 Greedy Merge
         // =====================================
 
-        List<Vector3> vertices =
-            new List<Vector3>();
+        List<Vector3> vertices = combinedColliderVertices;
+        List<int> triangles = combinedColliderTriangles;
 
-        List<int> triangles =
-            new List<int>();
+        vertices.Clear();
+        triangles.Clear();
 
 
         for (int face = 0; face < 6; face++)
