@@ -88,6 +88,10 @@ public class ChunkCode : MonoBehaviour
     List<Color> renderColorsBuffer = new List<Color>();
     RenderMaskCell[,] renderMaskBuffer;
 
+    List<Vector3> colliderVerticesBuffer = new List<Vector3>();
+    List<int> colliderTrianglesBuffer = new List<int>();
+    bool[,] colliderMaskBuffer;
+
     List<System.Action> colorChangeCompleteActions = new List<System.Action>();
 
     Vector3Int[] directions = new Vector3Int[]
@@ -1638,6 +1642,25 @@ public class ChunkCode : MonoBehaviour
         }
     }
 
+    void PrepareColliderBuildBuffers()
+    {
+        colliderVerticesBuffer.Clear();
+        colliderTrianglesBuffer.Clear();
+
+        if (
+            colliderMaskBuffer == null ||
+            colliderMaskBuffer.GetLength(0) != ChunkSize ||
+            colliderMaskBuffer.GetLength(1) != ChunkSize
+        )
+        {
+            colliderMaskBuffer =
+                new bool[
+                    ChunkSize,
+                    ChunkSize
+                ];
+        }
+    }
+
     void BuildChunkCollider(
     Vector3Int chunkCoord
 )
@@ -1660,15 +1683,17 @@ public class ChunkCode : MonoBehaviour
         }
 
 
+        PrepareColliderBuildBuffers();
+
         List<Vector3> vertices =
-            new List<Vector3>();
+            colliderVerticesBuffer;
 
         List<int> triangles =
-            new List<int>();
+            colliderTrianglesBuffer;
 
 
         bool[,] mask =
-            new bool[ChunkSize, ChunkSize];
+            colliderMaskBuffer;
 
 
         // 6방향 검사

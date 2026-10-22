@@ -1241,7 +1241,7 @@ public class SaveAndLoadManager : MonoBehaviour
             if (
                 !slowLoadMessageShown &&
                 Time.realtimeSinceStartup -
-                loadStartTime >= 3f
+                loadStartTime >= 7f
             )
             {
                 slowLoadMessageShown = true;
