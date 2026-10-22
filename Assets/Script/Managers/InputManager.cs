@@ -100,7 +100,7 @@ public class InputManager : MonoBehaviour
 
                     if (GameManager.Instance.UIManager.isReady)
                     {
-                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//³ªÁß esc·Î º¯°æ
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//ï¿½ï¿½ï¿½ï¿½ escï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                         {
                             GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                             GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
@@ -119,10 +119,10 @@ public class InputManager : MonoBehaviour
 
                         if (Physics.Raycast(ray, out hit, 1000f, 1 << 6))
                         {
-                            // ¸ÂÀº ¹°Ã¼
+                            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
                             GameObject hitObject = hit.transform.gameObject;
 
-                            // ÅÂ±× È®ÀÎ
+                            // ï¿½Â±ï¿½ È®ï¿½ï¿½
                             if (hitObject.CompareTag("World"))
                             {
                                 ChunkCode chunk =
@@ -173,7 +173,7 @@ public class InputManager : MonoBehaviour
 
                     if (GameManager.Instance.UIManager.isReady)
                     {
-                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//³ªÁß esc·Î º¯°æ
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//ï¿½ï¿½ï¿½ï¿½ escï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                         {
                             GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                             GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
@@ -258,6 +258,14 @@ public class InputManager : MonoBehaviour
                     {
                         GameManager.Instance.UIManager.WhatMoving.LockMotion(true);
                         isLock = true;
+
+                        // ìˆ˜ì • ìž ê¸ˆ ì¤‘ì—ëŠ” ë§ˆìš°ìŠ¤ë¥¼ ë”°ë¼ë‹¤ë‹ˆëŠ” ë¯¸ë¦¬ë³´ê¸°ë§Œ ìˆ¨ê¸´ë‹¤.
+                        // ì„ íƒí•œ íŒŒê´´ ë²”ìœ„(ReadyToDestroyBlock)ëŠ” ê·¸ëŒ€ë¡œ ìœ ì§€í•œë‹¤.
+                        if (ReadyToBuildBlock != null)
+                        {
+                            ReadyToBuildBlock.SetActive(false);
+                        }
+
                         return;
                     }
                 }
@@ -366,14 +374,14 @@ public class InputManager : MonoBehaviour
 
                         float farthestValue = float.MinValue;
 
-                        // Ä«¸Þ¶ó ¹æÇâ
+                        // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
                         Vector3 camDir = _cam.transform.forward.normalized;
 
                         foreach (var chunk in _chunk.Chunks)
                         {
                             Vector3 worldPos = chunk.Value.transform.position;
 
-                            // ¹æÇâ ±âÁØ °Å¸® °è»ê
+                            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½
                             float dot = Vector3.Dot(worldPos, camDir);
 
                             if (dot > farthestValue)
@@ -1209,11 +1217,11 @@ public class InputManager : MonoBehaviour
 
         Transform cam = Camera.main.transform;
 
-        float baseDistance = 2f; // ÃÖ¼Ò °Å¸®
+        float baseDistance = 2f; // ï¿½Ö¼ï¿½ ï¿½Å¸ï¿½
 
         Vector3 targetPos = cam.position + cam.forward * (baseDistance);
 
-        // ÃÖÁ¾ À§Ä¡ °è»ê (ÇÑ ¹ø¸¸)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         Vector3 startPos = TargetGameObject.transform.position;
         Vector3 endPos = targetPos;
 
@@ -1231,7 +1239,7 @@ public class InputManager : MonoBehaviour
             yield return null;
         }
 
-        // ¿ÀÂ÷ º¸Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         SelectWorldPosition.transform.position = endPos;
         TargetGameObject.transform.SetParent(SelectWorldPosition.transform);
         TargetGameObject.transform.position = endPos;
@@ -1240,7 +1248,7 @@ public class InputManager : MonoBehaviour
         GameManager.Instance.ChangeFlow(_gameflow);
     }
 
-    /* IEnumerator BuildMoreBlocksOnce() ¿©·¯°³ ¼³Ä¡ ÄÚ·çÆ¾ ºÀÀÎ
+    /* IEnumerator BuildMoreBlocksOnce() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
     {
         SpawnNewBlock();
 
@@ -1265,8 +1273,8 @@ public class InputManager : MonoBehaviour
         Quaternion startRotationInDestroy = block._go.transform.localRotation;
 
         float duration = 0.3f;
-        float frequency = 7f;   // Èçµé¸®´Â ¼Óµµ
-        float angle = 25f;      // °í°³ ²ªÀÌ´Â °¢µµ
+        float frequency = 7f;   // ï¿½ï¿½é¸®ï¿½ï¿½ ï¿½Óµï¿½
+        float angle = 25f;      // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         float time = 0f;
 

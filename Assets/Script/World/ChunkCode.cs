@@ -67,6 +67,12 @@ public class ChunkCode : MonoBehaviour
     MeshFilter CombinedWorldMeshFilter;
     MeshRenderer CombinedWorldMeshRenderer;
 
+    // Reuse completed combined meshes instead of Destroy/new Mesh on every rebuild.
+    // A spare mesh is built while the currently assigned mesh stays visible/active,
+    // then the old assigned mesh is returned to the pool.
+    readonly Stack<Mesh> combinedColliderMeshPool = new Stack<Mesh>();
+    readonly Stack<Mesh> combinedRenderMeshPool = new Stack<Mesh>();
+
     // Reusable temporary buffers to reduce GC/allocation spikes during mesh/collider rebuilds.
     readonly List<Vector3> chunkRenderVerticesBuffer = new List<Vector3>();
     readonly List<int> chunkRenderTrianglesBuffer = new List<int>();
@@ -197,6 +203,146 @@ public class ChunkCode : MonoBehaviour
         }
 
         return chunkColliderMaskBuffer;
+    }
+
+    Mesh AcquireCombinedColliderMesh()
+    {
+        Mesh mesh = null;
+
+        while (combinedColliderMeshPool.Count > 0 && mesh == null)
+        {
+            mesh = combinedColliderMeshPool.Pop();
+        }
+
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+            mesh.name = "CombinedWorldGreedyCollider";
+        }
+        else
+        {
+            mesh.Clear();
+        }
+
+        mesh.indexFormat =
+            UnityEngine.Rendering.IndexFormat.UInt32;
+
+        return mesh;
+    }
+
+    void RecycleCombinedColliderMesh(Mesh mesh)
+    {
+        if (mesh == null)
+            return;
+
+        mesh.Clear();
+        combinedColliderMeshPool.Push(mesh);
+    }
+
+    void ClearCombinedColliderMeshAssignment()
+    {
+        if (CombinedWorldCollider == null)
+            return;
+
+        Mesh oldMesh = CombinedWorldCollider.sharedMesh;
+        CombinedWorldCollider.sharedMesh = null;
+
+        RecycleCombinedColliderMesh(oldMesh);
+    }
+
+    void AssignCombinedColliderMesh(Mesh mesh)
+    {
+        Mesh oldMesh =
+            CombinedWorldCollider != null
+                ? CombinedWorldCollider.sharedMesh
+                : null;
+
+        if (CombinedWorldCollider != null)
+        {
+            CombinedWorldCollider.sharedMesh = null;
+            CombinedWorldCollider.sharedMesh = mesh;
+        }
+
+        if (oldMesh != null && oldMesh != mesh)
+        {
+            RecycleCombinedColliderMesh(oldMesh);
+        }
+    }
+
+    Mesh AcquireCombinedRenderMesh()
+    {
+        Mesh mesh = null;
+
+        while (combinedRenderMeshPool.Count > 0 && mesh == null)
+        {
+            mesh = combinedRenderMeshPool.Pop();
+        }
+
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+            mesh.name = "CombinedWorldRenderMesh";
+        }
+        else
+        {
+            mesh.Clear();
+        }
+
+        mesh.indexFormat =
+            UnityEngine.Rendering.IndexFormat.UInt32;
+
+        return mesh;
+    }
+
+    void RecycleCombinedRenderMesh(Mesh mesh)
+    {
+        if (mesh == null)
+            return;
+
+        mesh.Clear();
+        combinedRenderMeshPool.Push(mesh);
+    }
+
+    void ClearCombinedRenderMeshAssignment()
+    {
+        if (CombinedWorldMeshFilter == null)
+            return;
+
+        Mesh oldMesh = CombinedWorldMeshFilter.sharedMesh;
+        CombinedWorldMeshFilter.sharedMesh = null;
+
+        RecycleCombinedRenderMesh(oldMesh);
+    }
+
+    void AssignCombinedRenderMesh(Mesh mesh)
+    {
+        Mesh oldMesh =
+            CombinedWorldMeshFilter != null
+                ? CombinedWorldMeshFilter.sharedMesh
+                : null;
+
+        if (CombinedWorldMeshFilter != null)
+        {
+            CombinedWorldMeshFilter.sharedMesh = mesh;
+        }
+
+        if (oldMesh != null && oldMesh != mesh)
+        {
+            RecycleCombinedRenderMesh(oldMesh);
+        }
+    }
+
+    void DestroyMeshPool(Stack<Mesh> pool)
+    {
+        while (pool.Count > 0)
+        {
+            Mesh mesh = pool.Pop();
+
+            if (mesh != null)
+            {
+                Destroy(mesh);
+            }
+        }
     }
 
     void EnsureChunksRoot()
@@ -426,6 +572,8 @@ public class ChunkCode : MonoBehaviour
                 Destroy(combinedMesh);
             }
         }
+
+        DestroyMeshPool(combinedRenderMeshPool);
 
 
         if (CombinedRenderObject != null)
@@ -1824,11 +1972,36 @@ public class ChunkCode : MonoBehaviour
         }
 
 
-        Mesh colliderMesh =
-            new Mesh();
+        MeshCollider mc =
+            chunkObject.GetComponent<MeshCollider>();
 
-        colliderMesh.name =
-            $"Collider_{chunkCoord}";
+
+        if (mc == null)
+        {
+            mc =
+                chunkObject.AddComponent<MeshCollider>();
+        }
+
+
+        Mesh colliderMesh =
+            mc.sharedMesh;
+
+        // Detach first so MeshCollider reliably recooks after the mesh is changed.
+        mc.sharedMesh = null;
+
+
+        if (colliderMesh == null)
+        {
+            colliderMesh =
+                new Mesh();
+
+            colliderMesh.name =
+                $"Collider_{chunkCoord}";
+        }
+        else
+        {
+            colliderMesh.Clear();
+        }
 
 
         colliderMesh.SetVertices(
@@ -1843,18 +2016,6 @@ public class ChunkCode : MonoBehaviour
         colliderMesh.RecalculateBounds();
 
 
-        MeshCollider mc =
-            chunkObject.GetComponent<MeshCollider>();
-
-
-        if (mc == null)
-        {
-            mc =
-                chunkObject.AddComponent<MeshCollider>();
-        }
-
-
-        mc.sharedMesh = null;
         mc.sharedMesh = colliderMesh;
     }
 
@@ -2375,14 +2536,9 @@ public class ChunkCode : MonoBehaviour
             }
         }
 
-        Mesh oldMesh = CombinedWorldCollider.sharedMesh;
-        CombinedWorldCollider.sharedMesh = null;
-
-        if (oldMesh != null)
-            Destroy(oldMesh);
-
         if (vertices.Count == 0)
         {
+            ClearCombinedColliderMeshAssignment();
             CombinedColliderObject.SetActive(false);
 
             if (useReusableColliderBuffers)
@@ -2391,9 +2547,7 @@ public class ChunkCode : MonoBehaviour
             yield break;
         }
 
-        Mesh combinedMesh = new Mesh();
-        combinedMesh.name = "CombinedWorldGreedyCollider";
-        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        Mesh combinedMesh = AcquireCombinedColliderMesh();
 
         combinedMesh.SetVertices(vertices);
         yield return null;
@@ -2403,7 +2557,7 @@ public class ChunkCode : MonoBehaviour
         yield return null;
 
         // PhysX cooking 자체는 한 번에 실행되므로 앞 작업과 프레임을 분리해서 호출
-        CombinedWorldCollider.sharedMesh = combinedMesh;
+        AssignCombinedColliderMesh(combinedMesh);
         CombinedColliderObject.SetActive(true);
 
         if (useReusableColliderBuffers)
@@ -2588,19 +2742,12 @@ public class ChunkCode : MonoBehaviour
 
         if (vertices.Count == 0)
         {
-            Mesh oldEmptyMesh = CombinedWorldMeshFilter.sharedMesh;
-            CombinedWorldMeshFilter.sharedMesh = null;
-
-            if (oldEmptyMesh != null)
-                Destroy(oldEmptyMesh);
-
+            ClearCombinedRenderMeshAssignment();
             CombinedRenderObject.SetActive(false);
             yield break;
         }
 
-        Mesh combinedMesh = new Mesh();
-        combinedMesh.name = "CombinedWorldRenderMesh";
-        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        Mesh combinedMesh = AcquireCombinedRenderMesh();
 
         combinedMesh.SetVertices(vertices);
         yield return null;
@@ -2613,13 +2760,7 @@ public class ChunkCode : MonoBehaviour
         combinedMesh.RecalculateBounds();
         yield return null;
 
-        Mesh previousMesh = CombinedWorldMeshFilter.sharedMesh;
-        CombinedWorldMeshFilter.sharedMesh = null;
-
-        if (previousMesh != null)
-            Destroy(previousMesh);
-
-        CombinedWorldMeshFilter.sharedMesh = combinedMesh;
+        AssignCombinedRenderMesh(combinedMesh);
         CombinedWorldMeshRenderer.sharedMaterial =
             GameManager.Instance.MaterialManager.MainMaterial;
 
@@ -2788,25 +2929,9 @@ public class ChunkCode : MonoBehaviour
         }
 
 
-        // =====================================
-        // 기존 Combined Mesh 제거
-        // =====================================
-
-        Mesh oldMesh =
-            CombinedWorldCollider.sharedMesh;
-
-        CombinedWorldCollider.sharedMesh =
-            null;
-
-
-        if (oldMesh != null)
-        {
-            Destroy(oldMesh);
-        }
-
-
         if (vertices.Count == 0)
         {
+            ClearCombinedColliderMeshAssignment();
             CombinedColliderObject.SetActive(false);
 
             return;
@@ -2814,18 +2939,11 @@ public class ChunkCode : MonoBehaviour
 
 
         // =====================================
-        // 새 Combined Collider Mesh
+        // Reuse Combined Collider Mesh
         // =====================================
 
         Mesh combinedMesh =
-            new Mesh();
-
-        combinedMesh.name =
-            "CombinedWorldGreedyCollider";
-
-
-        combinedMesh.indexFormat =
-            UnityEngine.Rendering.IndexFormat.UInt32;
+            AcquireCombinedColliderMesh();
 
 
         combinedMesh.SetVertices(
@@ -2840,8 +2958,7 @@ public class ChunkCode : MonoBehaviour
         combinedMesh.RecalculateBounds();
 
 
-        CombinedWorldCollider.sharedMesh =
-            combinedMesh;
+        AssignCombinedColliderMesh(combinedMesh);
 
 
         CombinedColliderObject.SetActive(true);
@@ -2969,19 +3086,7 @@ public class ChunkCode : MonoBehaviour
 
         if (combines.Count == 0)
         {
-            Mesh oldMesh =
-                CombinedWorldMeshFilter.sharedMesh;
-
-            CombinedWorldMeshFilter.sharedMesh =
-                null;
-
-
-            if (oldMesh != null)
-            {
-                Destroy(oldMesh);
-            }
-
-
+            ClearCombinedRenderMeshAssignment();
             CombinedRenderObject.SetActive(false);
 
             return;
@@ -2989,18 +3094,11 @@ public class ChunkCode : MonoBehaviour
 
 
         // =========================
-        // 통합 Mesh 생성
+        // Reuse Combined Render Mesh
         // =========================
 
         Mesh combinedMesh =
-            new Mesh();
-
-        combinedMesh.name =
-            "CombinedWorldRenderMesh";
-
-
-        combinedMesh.indexFormat =
-            UnityEngine.Rendering.IndexFormat.UInt32;
+            AcquireCombinedRenderMesh();
 
 
         combinedMesh.CombineMeshes(
@@ -3015,28 +3113,10 @@ public class ChunkCode : MonoBehaviour
 
 
         // =========================
-        // 기존 통합 Mesh 제거
+        // Reused Mesh 적용
         // =========================
 
-        Mesh previousMesh =
-            CombinedWorldMeshFilter.sharedMesh;
-
-        CombinedWorldMeshFilter.sharedMesh =
-            null;
-
-
-        if (previousMesh != null)
-        {
-            Destroy(previousMesh);
-        }
-
-
-        // =========================
-        // 새 Mesh 적용
-        // =========================
-
-        CombinedWorldMeshFilter.sharedMesh =
-            combinedMesh;
+        AssignCombinedRenderMesh(combinedMesh);
 
 
         CombinedWorldMeshRenderer.sharedMaterial =
