@@ -44,6 +44,139 @@ public class GameManager : MonoBehaviour
 
     public string NowWorldSaveFolder = null;
 
+    Coroutine playerPosTraceCoroutine;
+
+    public void DebugPlayerPosTrace(string stage)
+    {
+        Transform mainTransform =
+            MainCamera != null ? MainCamera.transform : null;
+
+        GameObject subObject =
+            MainCamera != null ? MainCamera.SubCamera : null;
+
+        Camera mainCameraComponent =
+            MainCamera != null ? MainCamera.GetComponent<Camera>() : null;
+
+        Camera subCameraComponent =
+            subObject != null ? subObject.GetComponent<Camera>() : null;
+
+        string mainInfo = "null";
+        string subInfo = "null";
+
+        if (mainTransform != null)
+        {
+            mainInfo =
+                "pos=" + mainTransform.position.ToString("F3") +
+                " rot=" + mainTransform.eulerAngles.ToString("F2") +
+                " active=" + mainTransform.gameObject.activeInHierarchy +
+                " cameraEnabled=" +
+                (mainCameraComponent != null && mainCameraComponent.enabled);
+        }
+
+        if (subObject != null)
+        {
+            Transform subTransform = subObject.transform;
+
+            subInfo =
+                "pos=" + subTransform.position.ToString("F3") +
+                " localPos=" + subTransform.localPosition.ToString("F3") +
+                " rot=" + subTransform.eulerAngles.ToString("F2") +
+                " localRot=" + subTransform.localEulerAngles.ToString("F2") +
+                " activeSelf=" + subObject.activeSelf +
+                " activeHierarchy=" + subObject.activeInHierarchy +
+                " cameraEnabled=" +
+                (subCameraComponent != null && subCameraComponent.enabled);
+        }
+
+        Camera taggedMainCamera = Camera.main;
+        string taggedMainName =
+            taggedMainCamera != null ? taggedMainCamera.gameObject.name : "null";
+
+        Debug.Log(
+            "[PlayerPosTrace] stage=" + stage +
+            " frame=" + Time.frameCount +
+            " time=" + Time.realtimeSinceStartup.ToString("F3") +
+            " flow=" + flow +
+            " Main{" + mainInfo + "}" +
+            " Sub{" + subInfo + "}" +
+            " Camera.main=" + taggedMainName
+        );
+    }
+
+    public void StartPlayerPosDebugWatch(float duration = 6f)
+    {
+        if (playerPosTraceCoroutine != null)
+            return;
+
+        playerPosTraceCoroutine =
+            StartCoroutine(PlayerPosDebugWatch(duration));
+    }
+
+    IEnumerator PlayerPosDebugWatch(float duration)
+    {
+        if (MainCamera == null)
+        {
+            playerPosTraceCoroutine = null;
+            yield break;
+        }
+
+        float startTime = Time.realtimeSinceStartup;
+
+        Vector3 lastMainPos = MainCamera.transform.position;
+        Quaternion lastMainRot = MainCamera.transform.rotation;
+
+        bool lastSubActive =
+            MainCamera.SubCamera != null &&
+            MainCamera.SubCamera.activeInHierarchy;
+
+        DebugPlayerPosTrace("Watch.Begin");
+
+        while (Time.realtimeSinceStartup - startTime < duration)
+        {
+            yield return null;
+
+            if (MainCamera == null)
+                break;
+
+            Vector3 nowMainPos = MainCamera.transform.position;
+            Quaternion nowMainRot = MainCamera.transform.rotation;
+
+            bool nowSubActive =
+                MainCamera.SubCamera != null &&
+                MainCamera.SubCamera.activeInHierarchy;
+
+            float positionDelta =
+                Vector3.Distance(lastMainPos, nowMainPos);
+
+            float rotationDelta =
+                Quaternion.Angle(lastMainRot, nowMainRot);
+
+            if (
+                positionDelta > 0.0001f ||
+                nowSubActive != lastSubActive
+            )
+            {
+                Debug.Log(
+                    "[PlayerPosTrace] Watch.Change" +
+                    " frame=" + Time.frameCount +
+                    " posDelta=" + positionDelta.ToString("F4") +
+                    " rotDelta=" + rotationDelta.ToString("F3") +
+                    " subActiveChanged=" +
+                    (nowSubActive != lastSubActive)
+                );
+
+                DebugPlayerPosTrace("Watch.Change.Detail");
+
+                lastMainPos = nowMainPos;
+                lastMainRot = nowMainRot;
+                lastSubActive = nowSubActive;
+            }
+        }
+
+        DebugPlayerPosTrace("Watch.End");
+        playerPosTraceCoroutine = null;
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -82,6 +215,10 @@ public class GameManager : MonoBehaviour
     {
         if (_flow == flow) return;
 
+        DebugPlayerPosTrace(
+            "ChangeFlow.Before." + flow + "To" + _flow
+        );
+
         flow = _flow;
         if (flow == GameFlow.Start)
         {
@@ -99,6 +236,8 @@ public class GameManager : MonoBehaviour
             MainCamera.SubCamera.GetComponent<Camera>().cullingMask = 1 << 7;
         }
 
+        DebugPlayerPosTrace("ChangeFlow.AfterSceneSetup." + flow);
+
         switch (flow)
         {
             case GameFlow.Start:
@@ -115,7 +254,10 @@ public class GameManager : MonoBehaviour
             case GameFlow.WatchAllWorld:
                 InputManager.nowMovingThing = CoinType.Player;
 
+                DebugPlayerPosTrace("WatchAllWorld.BeforeSubCameraOff");
                 MainCamera.SubCamera.gameObject.SetActive(false);
+                DebugPlayerPosTrace("WatchAllWorld.AfterSubCameraOff");
+
                 BuildManager.maxFrameTime = 10f;
                 Cursor.lockState = CursorLockMode.Locked;
                 CursorMover?.ChangeCursorState(cursorstate.Off);
@@ -183,15 +325,26 @@ public class GameManager : MonoBehaviour
                 AddInTimeSave(SaveSomeNowWorld);
                 break;
         }
+
+        DebugPlayerPosTrace("ChangeFlow.End." + flow);
     }
 
     public void StartGame()
     {
+        StartPlayerPosDebugWatch(6f);
+
+        DebugPlayerPosTrace("StartGame.BeforeTryCheckrot");
         MainCamera.TryCheckrot();
+        DebugPlayerPosTrace("StartGame.AfterTryCheckrot");
+
         UIManager.Onit();
+        DebugPlayerPosTrace("StartGame.AfterUIOnit");
 
         CursorMover?.MouseSpriteSetting(true);
+
+        DebugPlayerPosTrace("StartGame.BeforeWatchAllWorld");
         ChangeFlow(GameFlow.WatchAllWorld);
+        DebugPlayerPosTrace("StartGame.AfterWatchAllWorld");
     }
 
     public void SaveNowWorld()

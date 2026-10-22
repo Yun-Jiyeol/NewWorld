@@ -168,6 +168,13 @@ public class MainCamera : MonoBehaviour
     {
         PlayerBeforePos = gameObject.transform.position;
         PlayerBeforeRot = gameObject.transform.rotation;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.DebugPlayerPosTrace(
+                "MainCamera.SavePos"
+            );
+        }
     }
 
     public void LookAt(Transform targetobject, float dur = 0.5f)
@@ -179,6 +186,13 @@ public class MainCamera : MonoBehaviour
     IEnumerator RotateTo(Transform targetobject, float duration)
     {
         isRotating = true;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.DebugPlayerPosTrace(
+                "MainCamera.RotateTo.Begin"
+            );
+        }
 
         Vector3 targetPos = GetCameraPosition(targetobject, gameObject.GetComponent<Camera>());
 
@@ -208,6 +222,13 @@ public class MainCamera : MonoBehaviour
         cam.rotation = targetRot;
 
         TryCheckrot();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.DebugPlayerPosTrace(
+                "MainCamera.RotateTo.End"
+            );
+        }
 
         isRotating = false;
     }

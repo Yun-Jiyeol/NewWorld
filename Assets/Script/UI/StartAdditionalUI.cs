@@ -231,6 +231,9 @@ public class StartAdditionalUI : MonoBehaviour
 
     void StartMove()
     {
+        GameManager.Instance.StartPlayerPosDebugWatch(6f);
+        GameManager.Instance.DebugPlayerPosTrace("StartAdditionalUI.StartMove");
+
         GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
 
         UpSide.DOScale(new Vector2(2f, 2f), 2f);
@@ -247,12 +250,24 @@ public class StartAdditionalUI : MonoBehaviour
 
     void OnStartGame()
     {
+        GameManager.Instance.DebugPlayerPosTrace(
+            "StartAdditionalUI.BeforeStartGame"
+        );
+
         GameManager.Instance.StartGame();
+
+        GameManager.Instance.DebugPlayerPosTrace(
+            "StartAdditionalUI.AfterStartGame"
+        );
 
         UpSide.DOScale(new Vector2(1f, 1f), 0f);
         MainPos.DOAnchorPos(new Vector2(0, 0), 0f);
         NoiseImage.DOColor(new Color(1, 1, 1,1), 0f);
         OutSideImage.DOColor(new Color(1, 1, 1, 1), 0f);
+
+        GameManager.Instance.DebugPlayerPosTrace(
+            "StartAdditionalUI.AfterUIReset"
+        );
     }
 
     public void SpawnLoadUI()

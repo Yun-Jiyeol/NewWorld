@@ -22,6 +22,7 @@ public class InputManager : MonoBehaviour
     public GameObject TargetGameObject = null;
     float TargetMoveSensitive = 0f;
     float PlayerMoveSpeed = 0f;
+    float nextPlayerMoveTraceTime = 0f;
     float accelate = 5f;
 
     [Header("Sensitivity")]
@@ -738,7 +739,9 @@ public class InputManager : MonoBehaviour
 
     public void PlayerMove()
     {
+        Vector3 beforePos = _cam.position;
         Vector3 move = Vector3.zero;
+
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PFrontMove])) move += _cam.forward;
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PBackMove])) move -= _cam.forward;
         if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.PRightMove])) move += _cam.right;
@@ -750,6 +753,25 @@ public class InputManager : MonoBehaviour
             PlayerMoveSpeed = Mathf.Clamp(PlayerMoveSpeed, 0, PlayerMoveSpeed);
 
             _cam.position += move.normalized * PlayerMoveSpeed * playerMoveSensitivity * Time.deltaTime;
+
+            if (
+                Vector3.Distance(beforePos, _cam.position) > 0.0001f &&
+                Time.realtimeSinceStartup >= nextPlayerMoveTraceTime
+            )
+            {
+                nextPlayerMoveTraceTime =
+                    Time.realtimeSinceStartup + 0.25f;
+
+                Debug.Log(
+                    "[PlayerPosTrace] source=InputManager.PlayerMove" +
+                    " frame=" + Time.frameCount +
+                    " flow=" + GameManager.Instance.flow +
+                    " before=" + beforePos.ToString("F3") +
+                    " after=" + _cam.position.ToString("F3") +
+                    " move=" + move.normalized.ToString("F3") +
+                    " speed=" + PlayerMoveSpeed.ToString("F3")
+                );
+            }
         }
         else
         {
