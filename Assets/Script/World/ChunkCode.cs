@@ -98,6 +98,26 @@ public class ChunkCode : MonoBehaviour
     readonly List<Vector3> combinedColliderVertices = new List<Vector3>();
     readonly List<int> combinedColliderTriangles = new List<int>();
 
+    // Reusable buffers for Combined World Render coroutine.
+    // Mesh.GetVertices/GetTriangles/GetColors/GetNormals fills these Lists without
+    // allocating a new managed array every rebuild once capacity is large enough.
+    readonly List<Vector3> combinedRenderCoroutineVertices = new List<Vector3>();
+    readonly List<int> combinedRenderCoroutineTriangles = new List<int>();
+    readonly List<Color> combinedRenderCoroutineColors = new List<Color>();
+    readonly List<Vector3> combinedRenderCoroutineNormals = new List<Vector3>();
+
+    readonly List<Vector3> combinedRenderSourceVertices = new List<Vector3>();
+    readonly List<int> combinedRenderSourceTriangles = new List<int>();
+    readonly List<int> combinedRenderSourceSubMeshTriangles = new List<int>();
+    readonly List<Color> combinedRenderSourceColors = new List<Color>();
+    readonly List<Vector3> combinedRenderSourceNormals = new List<Vector3>();
+
+    bool combinedRenderCoroutineBufferInUse = false;
+
+    // Mesh.CombineMeshes requires an array. Keep one exact-sized array and only
+    // resize it when the number of valid chunk meshes changes.
+    CombineInstance[] combinedRenderCombineBuffer = Array.Empty<CombineInstance>();
+
     public Dictionary<Vector3Int, GameObject> Chunks; //어느 좌표에 있는 청크가 무슨 게임 오브젝트인지
     public Dictionary<Vector3Int, Dictionary<Vector3Int, BlockInChunkData>> BlocksinChunk; //어느 좌표에 있는 청크인지 + 그 안에 있는 블럭들
     int ChunkSize = 8;
@@ -342,6 +362,58 @@ public class ChunkCode : MonoBehaviour
             {
                 Destroy(mesh);
             }
+        }
+    }
+
+    void FillAllMeshTriangles(
+        Mesh mesh,
+        List<int> destination,
+        List<int> subMeshBuffer
+    )
+    {
+        destination.Clear();
+
+        int subMeshCount = mesh.subMeshCount;
+
+        for (int subMesh = 0; subMesh < subMeshCount; subMesh++)
+        {
+            subMeshBuffer.Clear();
+            mesh.GetTriangles(subMeshBuffer, subMesh);
+            destination.AddRange(subMeshBuffer);
+        }
+    }
+
+    bool TryGetChunkRenderMesh(
+        GameObject chunk,
+        out Mesh chunkMesh
+    )
+    {
+        chunkMesh = null;
+
+        if (chunk == null)
+            return false;
+
+        MeshFilter chunkMeshFilter =
+            chunk.GetComponent<MeshFilter>();
+
+        if (chunkMeshFilter == null)
+            return false;
+
+        chunkMesh = chunkMeshFilter.sharedMesh;
+
+        if (chunkMesh == null || chunkMesh.vertexCount == 0)
+            return false;
+
+        return true;
+    }
+
+    void EnsureCombinedRenderCombineBuffer(int requiredCount)
+    {
+        if (combinedRenderCombineBuffer == null ||
+            combinedRenderCombineBuffer.Length != requiredCount)
+        {
+            combinedRenderCombineBuffer =
+                new CombineInstance[requiredCount];
         }
     }
 
@@ -2675,30 +2747,85 @@ public class ChunkCode : MonoBehaviour
         CombinedRenderObject.layer = gameObject.layer;
         CombinedRenderObject.tag = "World";
 
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        List<Color> colors = new List<Color>();
-        List<Vector3> normals = new List<Vector3>();
+        bool useSharedBuffers = !combinedRenderCoroutineBufferInUse;
+
+        List<Vector3> vertices =
+            useSharedBuffers
+                ? combinedRenderCoroutineVertices
+                : new List<Vector3>();
+
+        List<int> triangles =
+            useSharedBuffers
+                ? combinedRenderCoroutineTriangles
+                : new List<int>();
+
+        List<Color> colors =
+            useSharedBuffers
+                ? combinedRenderCoroutineColors
+                : new List<Color>();
+
+        List<Vector3> normals =
+            useSharedBuffers
+                ? combinedRenderCoroutineNormals
+                : new List<Vector3>();
+
+        List<Vector3> sourceVertices =
+            useSharedBuffers
+                ? combinedRenderSourceVertices
+                : new List<Vector3>();
+
+        List<int> sourceTriangles =
+            useSharedBuffers
+                ? combinedRenderSourceTriangles
+                : new List<int>();
+
+        List<int> sourceSubMeshTriangles =
+            useSharedBuffers
+                ? combinedRenderSourceSubMeshTriangles
+                : new List<int>();
+
+        List<Color> sourceColors =
+            useSharedBuffers
+                ? combinedRenderSourceColors
+                : new List<Color>();
+
+        List<Vector3> sourceNormals =
+            useSharedBuffers
+                ? combinedRenderSourceNormals
+                : new List<Vector3>();
+
+        if (useSharedBuffers)
+            combinedRenderCoroutineBufferInUse = true;
+
+        vertices.Clear();
+        triangles.Clear();
+        colors.Clear();
+        normals.Clear();
+        sourceVertices.Clear();
+        sourceTriangles.Clear();
+        sourceSubMeshTriangles.Clear();
+        sourceColors.Clear();
+        sourceNormals.Clear();
 
         float start = Time.realtimeSinceStartup;
 
         foreach (GameObject chunk in Chunks.Values)
         {
-            if (chunk == null)
+            if (!TryGetChunkRenderMesh(chunk, out Mesh mesh))
                 continue;
 
-            MeshFilter meshFilter = chunk.GetComponent<MeshFilter>();
-            if (meshFilter == null || meshFilter.sharedMesh == null)
-                continue;
+            sourceVertices.Clear();
+            sourceColors.Clear();
+            sourceNormals.Clear();
 
-            Mesh mesh = meshFilter.sharedMesh;
-            if (mesh.vertexCount == 0)
-                continue;
-
-            Vector3[] sourceVertices = mesh.vertices;
-            int[] sourceTriangles = mesh.triangles;
-            Color[] sourceColors = mesh.colors;
-            Vector3[] sourceNormals = mesh.normals;
+            mesh.GetVertices(sourceVertices);
+            FillAllMeshTriangles(
+                mesh,
+                sourceTriangles,
+                sourceSubMeshTriangles
+            );
+            mesh.GetColors(sourceColors);
+            mesh.GetNormals(sourceNormals);
 
             Matrix4x4 matrix =
                 CombinedRenderObject.transform.worldToLocalMatrix *
@@ -2707,19 +2834,35 @@ public class ChunkCode : MonoBehaviour
             Matrix4x4 normalMatrix = matrix.inverse.transpose;
             int vertexOffset = vertices.Count;
 
-            for (int i = 0; i < sourceVertices.Length; i++)
-            {
-                vertices.Add(matrix.MultiplyPoint3x4(sourceVertices[i]));
+            bool hasColors =
+                sourceColors.Count == sourceVertices.Count;
 
-                if (sourceColors != null && sourceColors.Length == sourceVertices.Length)
+            bool hasNormals =
+                sourceNormals.Count == sourceVertices.Count;
+
+            for (int i = 0; i < sourceVertices.Count; i++)
+            {
+                vertices.Add(
+                    matrix.MultiplyPoint3x4(sourceVertices[i])
+                );
+
+                if (hasColors)
                     colors.Add(sourceColors[i]);
                 else
                     colors.Add(Color.white);
 
-                if (sourceNormals != null && sourceNormals.Length == sourceVertices.Length)
-                    normals.Add(normalMatrix.MultiplyVector(sourceNormals[i]).normalized);
+                if (hasNormals)
+                {
+                    normals.Add(
+                        normalMatrix
+                            .MultiplyVector(sourceNormals[i])
+                            .normalized
+                    );
+                }
                 else
+                {
                     normals.Add(Vector3.zero);
+                }
 
                 if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
                 {
@@ -2728,9 +2871,11 @@ public class ChunkCode : MonoBehaviour
                 }
             }
 
-            for (int i = 0; i < sourceTriangles.Length; i++)
+            for (int i = 0; i < sourceTriangles.Count; i++)
             {
-                triangles.Add(vertexOffset + sourceTriangles[i]);
+                triangles.Add(
+                    vertexOffset + sourceTriangles[i]
+                );
 
                 if ((Time.realtimeSinceStartup - start) * 1000f >= combineFrameTime)
                 {
@@ -2744,6 +2889,10 @@ public class ChunkCode : MonoBehaviour
         {
             ClearCombinedRenderMeshAssignment();
             CombinedRenderObject.SetActive(false);
+
+            if (useSharedBuffers)
+                combinedRenderCoroutineBufferInUse = false;
+
             yield break;
         }
 
@@ -2765,6 +2914,9 @@ public class ChunkCode : MonoBehaviour
             GameManager.Instance.MaterialManager.MainMaterial;
 
         CombinedRenderObject.SetActive(true);
+
+        if (useSharedBuffers)
+            combinedRenderCoroutineBufferInUse = false;
     }
 
     IEnumerator UseCombinedWorldRendererCoroutine()
@@ -3030,66 +3182,59 @@ public class ChunkCode : MonoBehaviour
 
 
         // =========================
-        // Chunk Render Mesh 수집
+        // 유효 Chunk Render Mesh 개수 확인
         // =========================
 
-        List<CombineInstance> combines =
-            new List<CombineInstance>();
-
+        int combineCount = 0;
 
         foreach (GameObject chunk in Chunks.Values)
         {
-            if (chunk == null)
-                continue;
-
-
-            MeshFilter chunkMeshFilter =
-                chunk.GetComponent<MeshFilter>();
-
-            if (chunkMeshFilter == null)
-                continue;
-
-
-            Mesh chunkMesh =
-                chunkMeshFilter.sharedMesh;
-
-            if (chunkMesh == null)
-                continue;
-
-            if (chunkMesh.vertexCount == 0)
-                continue;
-
-
-            CombineInstance combine =
-                new CombineInstance();
-
-            combine.mesh =
-                chunkMesh;
-
-
-            // Chunk Local 좌표
-            // ↓
-            // CombinedWorldRenderer Local 좌표
-            combine.transform =
-                CombinedRenderObject.transform.worldToLocalMatrix
-                *
-                chunk.transform.localToWorldMatrix;
-
-
-            combines.Add(combine);
+            if (TryGetChunkRenderMesh(chunk, out _))
+                combineCount++;
         }
 
 
-        // =========================
-        // 그릴 것이 없음
-        // =========================
-
-        if (combines.Count == 0)
+        if (combineCount == 0)
         {
             ClearCombinedRenderMeshAssignment();
             CombinedRenderObject.SetActive(false);
 
             return;
+        }
+
+
+        // CombineMeshes는 배열을 요구하므로 같은 개수일 때는
+        // 이전 배열을 그대로 재사용한다.
+        EnsureCombinedRenderCombineBuffer(combineCount);
+
+        int combineIndex = 0;
+        Matrix4x4 worldToCombined =
+            CombinedRenderObject.transform.worldToLocalMatrix;
+
+        foreach (GameObject chunk in Chunks.Values)
+        {
+            if (!TryGetChunkRenderMesh(
+                chunk,
+                out Mesh chunkMesh
+            ))
+            {
+                continue;
+            }
+
+            CombineInstance combine =
+                combinedRenderCombineBuffer[combineIndex];
+
+            combine.mesh = chunkMesh;
+            combine.subMeshIndex = 0;
+
+            combine.transform =
+                worldToCombined *
+                chunk.transform.localToWorldMatrix;
+
+            combinedRenderCombineBuffer[combineIndex] =
+                combine;
+
+            combineIndex++;
         }
 
 
@@ -3102,7 +3247,7 @@ public class ChunkCode : MonoBehaviour
 
 
         combinedMesh.CombineMeshes(
-            combines.ToArray(),
+            combinedRenderCombineBuffer,
 
             true,   // 모든 SubMesh 하나로
             true    // Transform 적용
