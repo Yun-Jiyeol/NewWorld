@@ -1,0 +1,28 @@
+newmtl BulbGlass
+Ka 0.8 0.8 0.9
+Kd 0.92 0.92 1.0
+Ks 0.4 0.4 0.5
+Ns 80
+d 0.55
+illum 2
+
+newmtl BulbBody
+Ka 0.6 0.6 0.6
+Kd 0.85 0.85 0.85
+Ks 0.2 0.2 0.2
+Ns 30
+illum 2
+
+newmtl Metal
+Ka 0.3 0.3 0.3
+Kd 0.62 0.62 0.62
+Ks 0.75 0.75 0.75
+Ns 120
+illum 2
+
+newmtl Shade
+Ka 0.55 0.55 0.55
+Kd 0.92 0.92 0.92
+Ks 0.18 0.18 0.18
+Ns 25
+illum 2
