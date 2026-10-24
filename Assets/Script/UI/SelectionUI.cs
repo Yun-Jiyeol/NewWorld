@@ -54,6 +54,8 @@ public class SelectionUI : MonoBehaviour
     public SoundData PopUpUI;
     public SoundData PopInUI;
 
+    public CanControl CanControl;
+
     public void Onit()
     {
         thistransform = gameObject.GetComponent<RectTransform>();
