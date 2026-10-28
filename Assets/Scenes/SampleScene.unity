@@ -69484,7 +69484,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   KeyExPrefab: {fileID: 412898107104791482, guid: c0a6da4d2f43f434bbb9838af69ecbda, type: 3}
-  States: []
+  RangeSprite: {fileID: -1466679096, guid: ab690205bd2f9644fbd4af9a24ad7768, type: 3}
+  Mouse0Sprite: {fileID: -728098034, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse1Sprite: {fileID: 717588431, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse2Sprite: {fileID: -1748526293, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse3Sprite: {fileID: 0}
+  Mouse4Sprite: {fileID: 0}
+  Mouse5Sprite: {fileID: 0}
+  Mouse6Sprite: {fileID: 0}
+  MouseSpriteWidth: 25
+  MouseSpriteHeight: 30
+  States:
+  - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
   MaxKeyExCount: 3

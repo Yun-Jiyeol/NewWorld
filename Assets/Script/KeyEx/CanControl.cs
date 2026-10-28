@@ -33,6 +33,20 @@ public class CanControl : MonoBehaviour
     [Tooltip("Mouse6 대체 Sprite")]
     public Sprite Mouse6Sprite;
 
+    [Header("Range Sprite Size")]
+    [Tooltip("Range 표시용 ~ Sprite의 가로 크기")]
+    public float RangeSpriteWidth = 20f;
+
+    [Tooltip("Range 표시용 ~ Sprite의 세로 크기")]
+    public float RangeSpriteHeight = 10f;
+
+    [Header("Mouse Sprite Size")]
+    [Tooltip("마우스 클릭 Sprite의 가로 크기")]
+    public float MouseSpriteWidth = 20f;
+
+    [Tooltip("마우스 클릭 Sprite의 세로 크기. 0 이하이면 현재 템플릿 높이 유지")]
+    public float MouseSpriteHeight = 0f;
+
     [Header("State ScriptableObjects")]
     [Tooltip("위에서부터 검사해서 가장 먼저 맞는 상태 하나를 사용")]
     public List<CanControlStateData> States =

@@ -210,6 +210,7 @@ MonoBehaviour:
   ExplainText: {fileID: 5735563624873053650}
   KeyTemplate: {fileID: 5735563624407664377}
   SpriteTemplate: {fileID: 8092986143938071719}
+  Separator: {fileID: 5735563622996290122}
 --- !u!114 &587691134308626166
 MonoBehaviour:
   m_ObjectHideFlags: 0

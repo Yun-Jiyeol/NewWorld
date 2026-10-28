@@ -15,6 +15,9 @@ public class KeyEx : MonoBehaviour
     [Tooltip("마우스 / ~ 같은 Sprite 표시용 원본")]
     public Image SpriteTemplate;
 
+    [Tooltip("설명 뒤에 붙는 ':' 이미지")]
+    public RectTransform Separator;
+
     private readonly List<GameObject> keyPool =
         new List<GameObject>();
 
@@ -35,6 +38,9 @@ public class KeyEx : MonoBehaviour
         public bool IsSprite;
         public string Text;
         public Sprite Sprite;
+        public bool OverrideSpriteSize;
+        public float Width;
+        public float Height;
     }
 
     private struct ResolvedInput
@@ -44,6 +50,9 @@ public class KeyEx : MonoBehaviour
         public bool UseSprite;
         public string Text;
         public Sprite Sprite;
+        public bool OverrideSpriteSize;
+        public float Width;
+        public float Height;
     }
 
     private void Awake()
@@ -106,7 +115,12 @@ public class KeyEx : MonoBehaviour
                 visualTokens[i];
 
             if (token.IsSprite)
-                AddSprite(token.Sprite);
+                AddSprite(
+                    token.Sprite,
+                    token.OverrideSpriteSize,
+                    token.Width,
+                    token.Height
+                );
             else
                 AddKey(token.Text);
         }
@@ -243,7 +257,12 @@ public class KeyEx : MonoBehaviour
                 {
                     IsSprite = true,
                     Sprite =
-                        canControl.RangeSprite
+                        canControl.RangeSprite,
+                    OverrideSpriteSize = true,
+                    Width =
+                        canControl.RangeSpriteWidth,
+                    Height =
+                        canControl.RangeSpriteHeight
                 }
             );
         }
@@ -296,6 +315,11 @@ public class KeyEx : MonoBehaviour
             result.UseSprite = true;
             result.Sprite =
                 mouseSprite;
+            result.OverrideSpriteSize = true;
+            result.Width =
+                canControl.MouseSpriteWidth;
+            result.Height =
+                canControl.MouseSpriteHeight;
 
             return result;
         }
@@ -349,7 +373,11 @@ public class KeyEx : MonoBehaviour
                 new VisualToken
                 {
                     IsSprite = true,
-                    Sprite = input.Sprite
+                    Sprite = input.Sprite,
+                    OverrideSpriteSize =
+                        input.OverrideSpriteSize,
+                    Width = input.Width,
+                    Height = input.Height
                 }
             );
         }
@@ -389,7 +417,10 @@ public class KeyEx : MonoBehaviour
     }
 
     private void AddSprite(
-        Sprite sprite)
+        Sprite sprite,
+        bool overrideSize,
+        float width,
+        float height)
     {
         if (sprite == null)
             return;
@@ -401,6 +432,37 @@ public class KeyEx : MonoBehaviour
             return;
 
         image.sprite = sprite;
+
+        RectTransform rect =
+            image.rectTransform;
+
+        if (rect != null)
+        {
+            Vector2 size =
+                rect.sizeDelta;
+
+            if (overrideSize)
+            {
+                if (width > 0f)
+                    size.x = width;
+
+                if (height > 0f)
+                    size.y = height;
+            }
+            else
+            {
+                // 템플릿 기본 크기로 되돌림
+                if (SpriteTemplate != null)
+                {
+                    size =
+                        SpriteTemplate.rectTransform
+                            .sizeDelta;
+                }
+            }
+
+            rect.sizeDelta = size;
+        }
+
         image.gameObject.SetActive(true);
     }
 
@@ -423,7 +485,7 @@ public class KeyEx : MonoBehaviour
 
             newKey.SetActive(false);
 
-            MoveBeforeExplain(
+            MoveBeforeSeparator(
                 newKey.transform
             );
 
@@ -458,7 +520,7 @@ public class KeyEx : MonoBehaviour
             newImage.gameObject
                 .SetActive(false);
 
-            MoveBeforeExplain(
+            MoveBeforeSeparator(
                 newImage.transform
             );
 
@@ -475,15 +537,22 @@ public class KeyEx : MonoBehaviour
         return result;
     }
 
-    private void MoveBeforeExplain(
+    private void MoveBeforeSeparator(
         Transform target)
     {
-        if (ExplainText == null)
+        if (Separator == null)
             return;
 
+        // HorizontalLayoutGroup의 Reverse Arrangement 때문에
+        // Hierarchy에서는 입력을 ':' 보다 앞에 둔다.
+        //
+        // Hierarchy:
+        // GeneratedInput -> : -> Explaintext
+        //
+        // 실제 화면:
+        // Explaintext -> : -> GeneratedInput
         target.SetSiblingIndex(
-            ExplainText.transform
-                .GetSiblingIndex()
+            Separator.GetSiblingIndex()
         );
     }
 

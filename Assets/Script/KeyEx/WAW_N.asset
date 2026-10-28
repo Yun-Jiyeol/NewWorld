@@ -14,14 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Flows: 01000000
   UIs: 
-  MoveTypes: 00000000
+  MoveTypes: 000000000100000002000000
   Rows:
-  - ExplainText: {fileID: 0}
-    UseShift: 0
-    ShiftText: 
+  - ExplainText: {fileID: 11400000, guid: 1c17f60a972147e4fbf0754435fd1758, type: 2}
     InputType: 0
-    Keys: []
-    RangeStart: 
-    RangeEnd: 
-    RangeSprite: {fileID: 0}
-    InputSprite: {fileID: 0}
+    Keys: 0b000000
+    RangeStart: 0
+    RangeEnd: 0
