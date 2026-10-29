@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a5088e2e4fa1b4d8cdb7b9010fca23, type: 3}
+  m_Name: WorldMoveCC
+  m_EditorClassIdentifier: 
+  Flows: 
+  UIs: 
+  MoveTypes: 01000000
+  Rows:
+  - ExplainText: {fileID: 11400000, guid: 11345f980c2602147b03517e91aeecbf, type: 2}
+    InputType: 0
+    Keys: 05000000060000000700000008000000090000000a000000
+    RangeStart: 0
+    RangeEnd: 0
+  - ExplainText: {fileID: 11400000, guid: 8d73487748d908f4ea80b6bd51998077, type: 2}
+    InputType: 0
+    Keys: 04000000
+    RangeStart: 0
+    RangeEnd: 0
+  - ExplainText: {fileID: 11400000, guid: 631c377b319bef747a64ba87984e9aa4, type: 2}
+    InputType: 0
+    Keys: 2a000000
+    RangeStart: 0
+    RangeEnd: 0

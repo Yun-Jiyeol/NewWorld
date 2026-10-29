@@ -69492,10 +69492,15 @@ MonoBehaviour:
   Mouse4Sprite: {fileID: 0}
   Mouse5Sprite: {fileID: 0}
   Mouse6Sprite: {fileID: 0}
+  RangeSpriteWidth: 20
+  RangeSpriteHeight: 10
   MouseSpriteWidth: 25
   MouseSpriteHeight: 30
   States:
   - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
+  - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
+  - {fileID: 11400000, guid: 7db6c9adf2cab4d4f8e997fc18979c46, type: 2}
+  - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
   MaxKeyExCount: 3

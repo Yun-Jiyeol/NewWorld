@@ -305,16 +305,16 @@ public class KeyEx : MonoBehaviour
         result.NeedShift =
             keyboard.shiftClick;
 
-        Sprite mouseSprite =
-            canControl.GetMouseSprite(
-                keyboard.key
+        Sprite inputSprite =
+            canControl.GetInputSprite(
+                keyboard
             );
 
-        if (mouseSprite != null)
+        if (inputSprite != null)
         {
             result.UseSprite = true;
             result.Sprite =
-                mouseSprite;
+                inputSprite;
             result.OverrideSpriteSize = true;
             result.Width =
                 canControl.MouseSpriteWidth;
@@ -325,10 +325,13 @@ public class KeyEx : MonoBehaviour
         }
 
         // Shift는 따로 표시하므로
-        // 실제 키 문자만 KeyManager에서 가져온다.
+        // 실제 입력 이름만 KeyManager에서 가져온다.
+        // MouseWheel도 inputType을 유지해야 표시 가능.
         Keyboards displayKeyboard =
             new Keyboards()
             {
+                inputType =
+                    keyboard.inputType,
                 key = keyboard.key,
                 shiftClick = false
             };

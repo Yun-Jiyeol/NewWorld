@@ -2,9 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum KeyInputType
+{
+    Key,
+    MouseWheel
+}
+
 [System.Serializable]
 public class Keyboards
 {
+    public KeyInputType inputType = KeyInputType.Key;
+
     public KeyCode key;
 
     public bool shiftClick = false;
@@ -68,7 +76,11 @@ public enum KeyNameSaves
     TurnnJustZ,
 
     // 카메라 회전
-    CameraTurn
+    CameraTurn,
+
+    // 월드 확대 / 축소
+    // 기존 저장 enum 번호가 밀리지 않도록 항상 맨 뒤에 유지
+    WorldScale
 }
 
 public class KeyManager : MonoBehaviour
@@ -130,80 +142,96 @@ public class KeyManager : MonoBehaviour
         { KeyNameSaves.forthload, new Keyboards() { key = KeyCode.Alpha4 } },
         { KeyNameSaves.fifthload, new Keyboards() { key = KeyCode.Alpha5 } },
         { KeyNameSaves.sixthload, new Keyboards() { key = KeyCode.Alpha6 } },
+
+        // OnWorldScale
+        { KeyNameSaves.WorldScale, new Keyboards() { inputType = KeyInputType.MouseWheel } },
     };
 
-    public bool isGetKeyDown(Keyboards _chooseKey)
+    bool CanUseInput(Keyboards keyboard)
     {
-        if (_chooseKey.shiftClick)
+        if (keyboard == null)
+            return false;
+
+        if (keyboard.shiftClick)
         {
             if (!Input.GetKey(KeyCode.LeftShift))
-            {
                 return false;
-            }
         }
         else
         {
+            // 기존 동작 유지:
+            // Shift가 눌린 동안에는 shiftClick=false 입력을 막는다.
             if (Input.GetKey(KeyCode.LeftShift))
-            {
                 return false;
-            }
         }
 
-        if (Input.GetKeyDown(_chooseKey.key))
+        return true;
+    }
+
+    public float GetInputValue(Keyboards keyboard)
+    {
+        if (!CanUseInput(keyboard))
+            return 0f;
+
+        switch (keyboard.inputType)
         {
-            return true;
+            case KeyInputType.MouseWheel:
+                // + : Wheel Up
+                // - : Wheel Down
+                return Input.GetAxis("Mouse ScrollWheel");
+
+            default:
+                return Input.GetKey(keyboard.key) ? 1f : 0f;
         }
-        return false;
+    }
+
+    public bool isGetKeyDown(Keyboards _chooseKey)
+    {
+        if (!CanUseInput(_chooseKey))
+            return false;
+
+        switch (_chooseKey.inputType)
+        {
+            case KeyInputType.MouseWheel:
+                return Mathf.Abs(
+                    Input.GetAxis("Mouse ScrollWheel")
+                ) > 0f;
+
+            default:
+                return Input.GetKeyDown(_chooseKey.key);
+        }
     }
 
     public bool isGetKeyUp(Keyboards _chooseKey)
     {
-        if (_chooseKey.shiftClick)
-        {
-            if (!Input.GetKey(KeyCode.LeftShift))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                return false;
-            }
-        }
+        if (!CanUseInput(_chooseKey))
+            return false;
 
-        if (Input.GetKeyUp(_chooseKey.key))
+        switch (_chooseKey.inputType)
         {
-            return true;
-        }
+            // 마우스 휠은 "놓는 순간"이라는 개념이 없으므로
+            // GetKeyUp은 사용하지 않는다.
+            case KeyInputType.MouseWheel:
+                return false;
 
-        return false;
+            default:
+                return Input.GetKeyUp(_chooseKey.key);
+        }
     }
 
     public bool isGetKey(Keyboards _chooseKey)
     {
-        if (_chooseKey.shiftClick)
+        if (_chooseKey == null)
+            return false;
+
+        if (_chooseKey.inputType == KeyInputType.MouseWheel)
         {
-            if (!Input.GetKey(KeyCode.LeftShift))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                return false;
-            }
+            return Mathf.Abs(
+                GetInputValue(_chooseKey)
+            ) > 0f;
         }
 
-        if (Input.GetKey(_chooseKey.key))
-        {
-            return true;
-        }
-
-        return false;
+        return GetInputValue(_chooseKey) > 0f;
     }
 
     public string GetKeyFromKeyCode(Keyboards keyboard)
@@ -215,6 +243,16 @@ public class KeyManager : MonoBehaviour
         if (keyboard.shiftClick)
         {
             output += GetShiftText(nowLanguage);
+        }
+
+        if (keyboard.inputType == KeyInputType.MouseWheel)
+        {
+            return output + GetLanguageText(
+                nowLanguage,
+                "마우스 휠",
+                "Mouse Wheel",
+                "0x57484C"
+            );
         }
 
         KeyCode key = keyboard.key;

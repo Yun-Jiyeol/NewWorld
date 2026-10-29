@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CanControl : MonoBehaviour
 {
@@ -33,6 +34,9 @@ public class CanControl : MonoBehaviour
     [Tooltip("Mouse6 대체 Sprite")]
     public Sprite Mouse6Sprite;
 
+    [Tooltip("마우스 휠 스크롤 입력 대체 Sprite. 비어 있으면 텍스트로 표시")]
+    public Sprite MouseWheelSprite;
+
     [Header("Range Sprite Size")]
     [Tooltip("Range 표시용 ~ Sprite의 가로 크기")]
     public float RangeSpriteWidth = 20f;
@@ -48,16 +52,13 @@ public class CanControl : MonoBehaviour
     public float MouseSpriteHeight = 0f;
 
     [Header("State ScriptableObjects")]
-    [Tooltip("위에서부터 검사해서 가장 먼저 맞는 상태 하나를 사용")]
+    [Tooltip("위에서부터 검사하고, 조건이 맞는 모든 State의 Rows를 합쳐서 표시")]
     public List<CanControlStateData> States =
         new List<CanControlStateData>();
 
     [Header("Size")]
     public float OneKeyHeight = 30f;
     public float ChangeHeightTime = 0.2f;
-
-    [Header("Limit")]
-    public int MaxKeyExCount = 3;
 
     private RectTransform thisRect;
 
@@ -154,108 +155,12 @@ public class CanControl : MonoBehaviour
                     .GetLanguage();
         }
 
-        CanControlStateData state =
-            FindState(
+        int activeCount =
+            ShowMatchingStates(
                 nowFlow,
                 nowUI,
                 nowMoveType
             );
-
-        if (state == null)
-        {
-            HideUnusedKeyEx(0);
-            ChangeHeight(0);
-            return;
-        }
-
-        ShowState(state);
-    }
-
-    private CanControlStateData FindState(
-        GameFlow flow,
-        SelectionUIenum ui,
-        CoinType moveType)
-    {
-        if (States == null)
-            return null;
-
-        for (int i = 0;
-             i < States.Count;
-             i++)
-        {
-            CanControlStateData state =
-                States[i];
-
-            if (state == null)
-                continue;
-
-            if (state.IsMatch(
-                flow,
-                ui,
-                moveType))
-            {
-                return state;
-            }
-        }
-
-        return null;
-    }
-
-    private void ShowState(
-        CanControlStateData state)
-    {
-        if (state.Rows == null)
-        {
-            HideUnusedKeyEx(0);
-            ChangeHeight(0);
-            return;
-        }
-
-        int rowCount =
-            Mathf.Min(
-                state.Rows.Count,
-                Mathf.Max(
-                    0,
-                    MaxKeyExCount
-                )
-            );
-
-        int activeCount = 0;
-
-        for (int i = 0;
-             i < rowCount;
-             i++)
-        {
-            CanControlRowData row =
-                state.Rows[i];
-
-            if (row == null)
-                continue;
-
-            KeyEx keyEx =
-                GetKeyEx(activeCount);
-
-            if (keyEx == null)
-                continue;
-
-            keyEx.gameObject
-                .SetActive(true);
-
-            keyEx.transform
-                .SetSiblingIndex(
-                    activeCount
-                );
-
-            keyEx.Setting(
-                row,
-                GetTranslatedText(
-                    row.ExplainText
-                ),
-                this
-            );
-
-            activeCount++;
-        }
 
         HideUnusedKeyEx(
             activeCount
@@ -264,6 +169,81 @@ public class CanControl : MonoBehaviour
         ChangeHeight(
             activeCount
         );
+    }
+
+    private int ShowMatchingStates(
+        GameFlow flow,
+        SelectionUIenum ui,
+        CoinType moveType)
+    {
+        if (States == null)
+            return 0;
+
+        int activeCount = 0;
+
+        // States의 위에서부터 순서대로 검사.
+        // 조건이 맞는 State를 하나만 고르는 것이 아니라
+        // 맞는 State의 Rows를 전부 이어서 표시한다.
+        for (int stateIndex = 0;
+             stateIndex < States.Count;
+             stateIndex++)
+        {
+            CanControlStateData state =
+                States[stateIndex];
+
+            if (state == null)
+                continue;
+
+            if (!state.IsMatch(
+                flow,
+                ui,
+                moveType))
+            {
+                continue;
+            }
+
+            if (state.Rows == null)
+                continue;
+
+            for (int rowIndex = 0;
+                 rowIndex < state.Rows.Count;
+                 rowIndex++)
+            {
+                CanControlRowData row =
+                    state.Rows[rowIndex];
+
+                if (row == null)
+                    continue;
+
+                KeyEx keyEx =
+                    GetKeyEx(
+                        activeCount
+                    );
+
+                if (keyEx == null)
+                    continue;
+
+                keyEx.gameObject
+                    .SetActive(true);
+
+                keyEx.transform
+                    .SetSiblingIndex(
+                        activeCount
+                    );
+
+                keyEx.Setting(
+                    row,
+                    GetTranslatedText(
+                        row.ExplainText
+                    ),
+                    this
+                );
+
+                activeCount++;
+            }
+        }
+
+        return activeCount;
     }
 
     private KeyEx GetKeyEx(
@@ -321,6 +301,23 @@ public class CanControl : MonoBehaviour
         }
     }
 
+    public Sprite GetInputSprite(
+        Keyboards keyboard)
+    {
+        if (keyboard == null)
+            return null;
+
+        switch (keyboard.inputType)
+        {
+            case KeyInputType.MouseWheel:
+                return MouseWheelSprite;
+        }
+
+        return GetMouseSprite(
+            keyboard.key
+        );
+    }
+
     public Sprite GetMouseSprite(
         KeyCode key)
     {
@@ -372,6 +369,14 @@ public class CanControl : MonoBehaviour
     {
         if (GameManager.Instance == null ||
             GameManager.Instance.InputManager == null)
+        {
+            return CoinType.None;
+        }
+
+        // 마우스가 UI 위에 있으면 실제 조작 상태는 유지하되,
+        // CanControl 표시에서는 None으로 처리한다.
+        if (EventSystem.current != null &&
+            EventSystem.current.IsPointerOverGameObject())
         {
             return CoinType.None;
         }

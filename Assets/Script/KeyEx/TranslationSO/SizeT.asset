@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
+  m_Name: SizeT
+  m_EditorClassIdentifier: 
+  Strings:
+    Com: 0x53495A45
+    Kor: "\uD06C\uAE30"
+    Eng: Size
+    Chs: "\u5927\u5C0F"
+    Cht: "\u5927\u5C0F"
+    Jpn: "\u30B5\u30A4\u30BA"

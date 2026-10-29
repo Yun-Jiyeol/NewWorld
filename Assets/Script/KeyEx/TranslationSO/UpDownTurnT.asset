@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a41715c3a4b3ae45a68a3d75b71a383, type: 3}
-  m_Name: Select
+  m_Name: UpDownTurnT
   m_EditorClassIdentifier: 
   Strings:
-    Com: 0x53454C
-    Kor: "\uC120\uD0DD"
-    Eng: Select
-    Chs: "\u9009\u62E9"
-    Cht: "\u9078\u64C7"
-    Jpn: "\u9078\u629e"
+    Com: 0x56524F54
+    Kor: "\uC0C1\uD558\uD68C\uC804"
+    Eng: Vertical Rotation
+    Chs: "\u4E0A\u4E0B\u65CB\u8F6C"
+    Cht: "\u4E0A\u4E0B\u65CB\u8F49"
+    Jpn: "\u4E0A\u4E0B\u56DE\u8EE2"

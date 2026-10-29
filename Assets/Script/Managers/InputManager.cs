@@ -100,7 +100,7 @@ public class InputManager : MonoBehaviour
 
                     if (GameManager.Instance.UIManager.isReady)
                     {
-                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//���� esc�� ����
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
                         {
                             GameManager.Instance.UIManager.SelectionUI.PopInSettingPanel();
                             GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
@@ -119,10 +119,10 @@ public class InputManager : MonoBehaviour
 
                         if (Physics.Raycast(ray, out hit, 1000f, 1 << 6))
                         {
-                            // ���� ��ü
+                            // 맞은 물체
                             GameObject hitObject = hit.transform.gameObject;
 
-                            // �±� Ȯ��
+                            // 태그 확인
                             if (hitObject.CompareTag("World"))
                             {
                                 ChunkCode chunk =
@@ -173,7 +173,7 @@ public class InputManager : MonoBehaviour
 
                     if (GameManager.Instance.UIManager.isReady)
                     {
-                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//���� esc�� ����
+                        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))//나중 esc로 변경
                         {
                             GameManager.Instance.UIManager.SelectionUI.nowUIenum = SelectionUIenum.MainLight;
                             GameManager.Instance.UIManager.SelectionUI.PopUpSettingPanel();
@@ -258,14 +258,6 @@ public class InputManager : MonoBehaviour
                     {
                         GameManager.Instance.UIManager.WhatMoving.LockMotion(true);
                         isLock = true;
-
-                        // 수정 잠금 중에는 마우스를 따라다니는 미리보기만 숨긴다.
-                        // 선택한 파괴 범위(ReadyToDestroyBlock)는 그대로 유지한다.
-                        if (ReadyToBuildBlock != null)
-                        {
-                            ReadyToBuildBlock.SetActive(false);
-                        }
-
                         return;
                     }
                 }
@@ -374,14 +366,14 @@ public class InputManager : MonoBehaviour
 
                         float farthestValue = float.MinValue;
 
-                        // ī�޶� ����
+                        // 카메라 방향
                         Vector3 camDir = _cam.transform.forward.normalized;
 
                         foreach (var chunk in _chunk.Chunks)
                         {
                             Vector3 worldPos = chunk.Value.transform.position;
 
-                            // ���� ���� �Ÿ� ���
+                            // 방향 기준 거리 계산
                             float dot = Vector3.Dot(worldPos, camDir);
 
                             if (dot > farthestValue)
@@ -789,13 +781,31 @@ public class InputManager : MonoBehaviour
 
     public void TargetScale(GameObject _target)
     {
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (Mathf.Abs(scroll) != 0)
-        {
-            Vector3 scale = _target.transform.localScale;
-            scale += Vector3.one * scroll * scaleSpeed * objectScaleSensitivity;
+        if (_target == null)
+            return;
 
-            _target.transform.localScale = Vector3.one * scale.x;
+        // 하나의 WorldScale 입력에서
+        // Wheel Up은 +, Wheel Down은 - 값으로 가져온다.
+        float scaleInput =
+            _keyManager.GetInputValue(
+                _keyManager.KeyboardDictionary[
+                    KeyNameSaves.WorldScale
+                ]
+            );
+
+        if (Mathf.Abs(scaleInput) > 0f)
+        {
+            Vector3 scale =
+                _target.transform.localScale;
+
+            scale +=
+                Vector3.one *
+                scaleInput *
+                scaleSpeed *
+                objectScaleSensitivity;
+
+            _target.transform.localScale =
+                Vector3.one * scale.x;
         }
     }
 
@@ -1101,71 +1111,87 @@ public class InputManager : MonoBehaviour
 
         rotateTimer = 0f;
 
-        float rotationStep = objectRotationSensitivity;
+        if (_target == null ||
+            Camera.main == null)
+        {
+            return;
+        }
 
-        // X
+        float rotationStep =
+            objectRotationSensitivity;
+
+        Transform cam =
+            Camera.main.transform;
+
+        // 카메라 기준 X축
         if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnXPlus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnXPlus
+            ]))
         {
             _target.transform.Rotate(
+                cam.right,
                 rotationStep,
-                0f,
-                0f,
-                Space.Self
+                Space.World
             );
         }
         else if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnXMinus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnXMinus
+            ]))
         {
             _target.transform.Rotate(
+                cam.right,
                 -rotationStep,
-                0f,
-                0f,
-                Space.Self
+                Space.World
             );
         }
 
-        // Y
+        // 카메라 기준 Y축
         if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnYPlus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnYPlus
+            ]))
         {
             _target.transform.Rotate(
-                0f,
+                cam.up,
                 rotationStep,
-                0f,
-                Space.Self
+                Space.World
             );
         }
         else if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnYMinus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnYMinus
+            ]))
         {
             _target.transform.Rotate(
-                0f,
+                cam.up,
                 -rotationStep,
-                0f,
-                Space.Self
+                Space.World
             );
         }
 
-        // Z
+        // 카메라 기준 Z축
         if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnZPlus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnZPlus
+            ]))
         {
             _target.transform.Rotate(
-                0f,
-                0f,
+                cam.forward,
                 rotationStep,
-                Space.Self
+                Space.World
             );
         }
         else if (_keyManager.isGetKey(
-            _keyManager.KeyboardDictionary[KeyNameSaves.TurnZMinus]))
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.TurnZMinus
+            ]))
         {
             _target.transform.Rotate(
-                0f,
-                0f,
+                cam.forward,
                 -rotationStep,
-                Space.Self
+                Space.World
             );
         }
     }
@@ -1217,11 +1243,11 @@ public class InputManager : MonoBehaviour
 
         Transform cam = Camera.main.transform;
 
-        float baseDistance = 2f; // �ּ� �Ÿ�
+        float baseDistance = 2f; // 최소 거리
 
         Vector3 targetPos = cam.position + cam.forward * (baseDistance);
 
-        // ���� ��ġ ��� (�� ����)
+        // 최종 위치 계산 (한 번만)
         Vector3 startPos = TargetGameObject.transform.position;
         Vector3 endPos = targetPos;
 
@@ -1239,7 +1265,7 @@ public class InputManager : MonoBehaviour
             yield return null;
         }
 
-        // ���� ����
+        // 오차 보정
         SelectWorldPosition.transform.position = endPos;
         TargetGameObject.transform.SetParent(SelectWorldPosition.transform);
         TargetGameObject.transform.position = endPos;
@@ -1248,7 +1274,7 @@ public class InputManager : MonoBehaviour
         GameManager.Instance.ChangeFlow(_gameflow);
     }
 
-    /* IEnumerator BuildMoreBlocksOnce() ������ ��ġ �ڷ�ƾ ����
+    /* IEnumerator BuildMoreBlocksOnce() 여러개 설치 코루틴 봉인
     {
         SpawnNewBlock();
 
@@ -1273,8 +1299,8 @@ public class InputManager : MonoBehaviour
         Quaternion startRotationInDestroy = block._go.transform.localRotation;
 
         float duration = 0.3f;
-        float frequency = 7f;   // ��鸮�� �ӵ�
-        float angle = 25f;      // ���� ���̴� ����
+        float frequency = 7f;   // 흔들리는 속도
+        float angle = 25f;      // 고개 꺾이는 각도
 
         float time = 0f;
 

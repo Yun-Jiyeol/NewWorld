@@ -24,9 +24,7 @@ public class CanControlRowData
         new List<KeyNameSaves>();
 
     [Header("Range")]
-    [Tooltip("예: firstsave ~ sixthsave")]
     public KeyNameSaves RangeStart;
-
     public KeyNameSaves RangeEnd;
 }
 
@@ -50,7 +48,6 @@ public class CanControlStateData : ScriptableObject
         new List<CoinType>();
 
     [Header("KeyEx Rows - Max 3")]
-    [Tooltip("이 상태에서 표시할 KeyEx. 최대 3줄")]
     public List<CanControlRowData> Rows =
         new List<CanControlRowData>();
 
