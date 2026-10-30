@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CanControl : MonoBehaviour
 {
@@ -381,10 +382,28 @@ public class CanControl : MonoBehaviour
             return CoinType.None;
         }
 
-        return
+        InputManager inputManager =
             GameManager.Instance
-                .InputManager
-                .nowMovingThing;
+                .InputManager;
+
+        // 실제 조작 모드(nowMovingThing)는 유지하되,
+        // UI 위에 마우스가 있을 때 CanControl 표시만 None으로 취급한다.
+        // 이렇게 해야 UI에서 빠져나왔을 때 World / Player 모드가 그대로 복원된다.
+        if (EventSystem.current != null &&
+            EventSystem.current
+                .IsPointerOverGameObject())
+        {
+            return CoinType.None;
+        }
+
+        // 프로젝트에서 별도로 관리하는 UI 입력 차단 상태도 동일하게 처리.
+        if (inputManager.isTouchingUI ||
+            inputManager.isSettingUI)
+        {
+            return CoinType.None;
+        }
+
+        return inputManager.nowMovingThing;
     }
 
     private string GetTranslatedText(

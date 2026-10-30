@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -553,7 +553,7 @@ public class InputManager : MonoBehaviour
         BeforeDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
         AfterDestroyBlockPos = null;
 
-        SetBuildColorFromDestroySelectedBlock(BeforeDestroyBlockPos.Value);
+        GameManager.Instance.SoundManager.PlayEffect(ColorSelectSound);
 
         ShowDestroyRangeViewOnly();
     }
@@ -580,7 +580,7 @@ public class InputManager : MonoBehaviour
             return;
         }
 
-        SetBuildColorFromDestroySelectedBlock(AfterDestroyBlockPos.Value);
+        GameManager.Instance.SoundManager.PlayEffect(ColorSelectSound);
 
         Vector3 A = BeforeDestroyBlockPos.Value;
         Vector3 B = AfterDestroyBlockPos.Value;
