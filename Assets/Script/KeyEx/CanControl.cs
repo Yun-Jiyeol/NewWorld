@@ -1,7 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class CanControl : MonoBehaviour
 {
@@ -50,6 +49,15 @@ public class CanControl : MonoBehaviour
 
     [Tooltip("마우스 클릭 Sprite의 세로 크기. 0 이하이면 현재 템플릿 높이 유지")]
     public float MouseSpriteHeight = 0f;
+
+    [Header("Shift Input Color")]
+    [Tooltip("shiftClick=true인 실제 키(예: 저장용 1~6)의 배경 Image에 적용할 색")]
+    public Color ShiftKeyImageColor =
+        new Color(0.45f, 0.45f, 0.45f, 1f);
+
+    [Tooltip("shiftClick=true인 실제 키(예: 저장용 1~6)의 TextMeshProUGUI에 적용할 색")]
+    public Color ShiftKeyTextColor =
+        new Color(0.7f, 0.7f, 0.7f, 1f);
 
     [Header("State ScriptableObjects")]
     [Tooltip("위에서부터 검사하고, 조건이 맞는 모든 State의 Rows를 합쳐서 표시")]
@@ -369,14 +377,6 @@ public class CanControl : MonoBehaviour
     {
         if (GameManager.Instance == null ||
             GameManager.Instance.InputManager == null)
-        {
-            return CoinType.None;
-        }
-
-        // 마우스가 UI 위에 있으면 실제 조작 상태는 유지하되,
-        // CanControl 표시에서는 None으로 처리한다.
-        if (EventSystem.current != null &&
-            EventSystem.current.IsPointerOverGameObject())
         {
             return CoinType.None;
         }

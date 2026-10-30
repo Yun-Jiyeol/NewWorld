@@ -69492,6 +69492,7 @@ MonoBehaviour:
   Mouse4Sprite: {fileID: 0}
   Mouse5Sprite: {fileID: 0}
   Mouse6Sprite: {fileID: 0}
+  MouseWheelSprite: {fileID: 0}
   RangeSpriteWidth: 20
   RangeSpriteHeight: 10
   MouseSpriteWidth: 25
@@ -69501,9 +69502,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
   - {fileID: 11400000, guid: 7db6c9adf2cab4d4f8e997fc18979c46, type: 2}
   - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
+  - {fileID: 11400000, guid: 9b768cac8cfbfde4db3d4dd64ff2093c, type: 2}
+  - {fileID: 11400000, guid: 1f7e587aa28b7c847af89a2bfe5e2ffd, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
-  MaxKeyExCount: 3
 --- !u!114 &4663189002087909281
 MonoBehaviour:
   m_ObjectHideFlags: 0

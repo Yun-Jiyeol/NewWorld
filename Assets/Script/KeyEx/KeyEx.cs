@@ -30,12 +30,18 @@ public class KeyEx : MonoBehaviour
     private readonly List<ResolvedInput> resolvedInputs =
         new List<ResolvedInput>();
 
+    // 화면에 보여야 하는 논리 순서대로 저장:
+    // Key1, ~, Key6 ...
+    private readonly List<Transform> activeVisuals =
+        new List<Transform>();
+
     private int useKeyCount = 0;
     private int useSpriteCount = 0;
 
     private struct VisualToken
     {
         public bool IsSprite;
+        public bool IsShift;
         public string Text;
         public Sprite Sprite;
         public bool OverrideSpriteSize;
@@ -57,6 +63,12 @@ public class KeyEx : MonoBehaviour
 
     private void Awake()
     {
+        // 이 UI는 표시 전용이므로
+        // Image / TextMeshProUGUI가 Raycast를 막지 않게 한다.
+        DisableRaycastTargets(
+            gameObject
+        );
+
         if (KeyTemplate != null)
             KeyTemplate.SetActive(false);
 
@@ -106,24 +118,38 @@ public class KeyEx : MonoBehaviour
             );
         }
 
-        // HorizontalLayoutGroup Reverse Arrangement 기준.
-        for (int i = visualTokens.Count - 1;
-             i >= 0;
-             i--)
+        // 토큰은 실제로 보일 순서 그대로 생성한다.
+        for (int i = 0;
+             i < visualTokens.Count;
+             i++)
         {
             VisualToken token =
                 visualTokens[i];
 
             if (token.IsSprite)
+            {
                 AddSprite(
                     token.Sprite,
                     token.OverrideSpriteSize,
                     token.Width,
-                    token.Height
+                    token.Height,
+                    token.IsShift,
+                    canControl
                 );
+            }
             else
-                AddKey(token.Text);
+            {
+                AddKey(
+                    token.Text,
+                    token.IsShift,
+                    canControl
+                );
+            }
         }
+
+        // 최종 화면 순서를 강제로 고정:
+        // 설명 -> : -> 입력1 -> ~ -> 입력2 ...
+        ApplyVisualOrder();
     }
 
     private void BuildKeys(
@@ -155,43 +181,12 @@ public class KeyEx : MonoBehaviour
         if (resolvedInputs.Count == 0)
             return;
 
-        bool sameShift = true;
-        bool firstShift =
-            resolvedInputs[0].NeedShift;
-
-        for (int i = 1;
-             i < resolvedInputs.Count;
-             i++)
-        {
-            if (resolvedInputs[i].NeedShift !=
-                firstShift)
-            {
-                sameShift = false;
-                break;
-            }
-        }
-
-        // 전부 Shift 필요면 Shift를 한 번만.
-        if (sameShift &&
-            firstShift)
-        {
-            AddShiftToken(
-                keyManager
-            );
-        }
-
+        // Shift는 별도 버튼으로 만들지 않는다.
+        // 각 실제 입력의 NeedShift를 그대로 색상 처리에 사용한다.
         for (int i = 0;
              i < resolvedInputs.Count;
              i++)
         {
-            if (!sameShift &&
-                resolvedInputs[i].NeedShift)
-            {
-                AddShiftToken(
-                    keyManager
-                );
-            }
-
             AddResolvedToken(
                 resolvedInputs[i]
             );
@@ -221,30 +216,8 @@ public class KeyEx : MonoBehaviour
             !end.Valid)
             return;
 
-        bool sameShift =
-            start.Valid &&
-            end.Valid &&
-            start.NeedShift ==
-            end.NeedShift;
-
-        if (sameShift &&
-            start.NeedShift)
-        {
-            AddShiftToken(
-                keyManager
-            );
-        }
-
         if (start.Valid)
         {
-            if (!sameShift &&
-                start.NeedShift)
-            {
-                AddShiftToken(
-                    keyManager
-                );
-            }
-
             AddResolvedToken(start);
         }
 
@@ -256,6 +229,9 @@ public class KeyEx : MonoBehaviour
                 new VisualToken
                 {
                     IsSprite = true,
+                    IsShift =
+                        start.NeedShift ||
+                        end.NeedShift,
                     Sprite =
                         canControl.RangeSprite,
                     OverrideSpriteSize = true,
@@ -269,14 +245,6 @@ public class KeyEx : MonoBehaviour
 
         if (end.Valid)
         {
-            if (!sameShift &&
-                end.NeedShift)
-            {
-                AddShiftToken(
-                    keyManager
-                );
-            }
-
             AddResolvedToken(end);
         }
     }
@@ -344,29 +312,6 @@ public class KeyEx : MonoBehaviour
         return result;
     }
 
-    private void AddShiftToken(
-        KeyManager keyManager)
-    {
-        Keyboards shiftKeyboard =
-            new Keyboards()
-            {
-                key = KeyCode.LeftShift,
-                shiftClick = false
-            };
-
-        visualTokens.Add(
-            new VisualToken
-            {
-                IsSprite = false,
-                Text =
-                    keyManager
-                        .GetKeyFromKeyCode(
-                            shiftKeyboard
-                        )
-            }
-        );
-    }
-
     private void AddResolvedToken(
         ResolvedInput input)
     {
@@ -376,6 +321,7 @@ public class KeyEx : MonoBehaviour
                 new VisualToken
                 {
                     IsSprite = true,
+                    IsShift = input.NeedShift,
                     Sprite = input.Sprite,
                     OverrideSpriteSize =
                         input.OverrideSpriteSize,
@@ -390,6 +336,7 @@ public class KeyEx : MonoBehaviour
                 new VisualToken
                 {
                     IsSprite = false,
+                    IsShift = input.NeedShift,
                     Text = input.Text
                 }
             );
@@ -397,7 +344,9 @@ public class KeyEx : MonoBehaviour
     }
 
     private void AddKey(
-        string value)
+        string value,
+        bool isShift,
+        CanControl canControl)
     {
         if (string.IsNullOrEmpty(value))
             return;
@@ -408,6 +357,13 @@ public class KeyEx : MonoBehaviour
         if (key == null)
             return;
 
+        DisableRaycastTargets(
+            key
+        );
+
+        Image keyImage =
+            key.GetComponent<Image>();
+
         TextMeshProUGUI text =
             key.GetComponentInChildren<
                 TextMeshProUGUI
@@ -416,14 +372,45 @@ public class KeyEx : MonoBehaviour
         if (text != null)
             text.text = value;
 
+        if (isShift &&
+            canControl != null)
+        {
+            if (keyImage != null)
+            {
+                keyImage.color =
+                    canControl
+                        .ShiftKeyImageColor;
+            }
+
+            if (text != null)
+            {
+                text.color =
+                    canControl
+                        .ShiftKeyTextColor;
+            }
+        }
+        else
+        {
+            RestoreNormalKeyColors(
+                keyImage,
+                text
+            );
+        }
+
         key.SetActive(true);
+
+        activeVisuals.Add(
+            key.transform
+        );
     }
 
     private void AddSprite(
         Sprite sprite,
         bool overrideSize,
         float width,
-        float height)
+        float height,
+        bool isShift,
+        CanControl canControl)
     {
         if (sprite == null)
             return;
@@ -434,7 +421,23 @@ public class KeyEx : MonoBehaviour
         if (image == null)
             return;
 
+        image.raycastTarget = false;
         image.sprite = sprite;
+
+        // Shift 입력용 Sprite(특히 Range의 ~)도
+        // Shift 키와 같은 어두운 Image 색을 사용한다.
+        if (isShift &&
+            canControl != null)
+        {
+            image.color =
+                canControl.ShiftKeyImageColor;
+        }
+        else if (SpriteTemplate != null)
+        {
+            // Pool 재사용 시 이전 Shift 색이 남지 않도록 복구.
+            image.color =
+                SpriteTemplate.color;
+        }
 
         RectTransform rect =
             image.rectTransform;
@@ -467,6 +470,10 @@ public class KeyEx : MonoBehaviour
         }
 
         image.gameObject.SetActive(true);
+
+        activeVisuals.Add(
+            image.transform
+        );
     }
 
     private GameObject GetKey()
@@ -487,10 +494,6 @@ public class KeyEx : MonoBehaviour
                 "GeneratedKey";
 
             newKey.SetActive(false);
-
-            MoveBeforeSeparator(
-                newKey.transform
-            );
 
             keyPool.Add(newKey);
         }
@@ -523,10 +526,6 @@ public class KeyEx : MonoBehaviour
             newImage.gameObject
                 .SetActive(false);
 
-            MoveBeforeSeparator(
-                newImage.transform
-            );
-
             spritePool.Add(
                 newImage
             );
@@ -540,23 +539,121 @@ public class KeyEx : MonoBehaviour
         return result;
     }
 
-    private void MoveBeforeSeparator(
-        Transform target)
+    private void ApplyVisualOrder()
     {
-        if (Separator == null)
+        if (ExplainText == null ||
+            Separator == null)
             return;
 
-        // HorizontalLayoutGroup의 Reverse Arrangement 때문에
-        // Hierarchy에서는 입력을 ':' 보다 앞에 둔다.
-        //
-        // Hierarchy:
-        // GeneratedInput -> : -> Explaintext
-        //
-        // 실제 화면:
-        // Explaintext -> : -> GeneratedInput
-        target.SetSiblingIndex(
-            Separator.GetSiblingIndex()
-        );
+        HorizontalLayoutGroup layout =
+            GetComponent<
+                HorizontalLayoutGroup
+            >();
+
+        bool reverse =
+            layout != null &&
+            layout.reverseArrangement;
+
+        if (reverse)
+        {
+            // Reverse Arrangement일 때 Hierarchy는
+            // 화면에서 보일 순서의 반대로 둬야 한다.
+            //
+            // Hierarchy:
+            // 입력N ... ~ 입력1 : 설명
+            //
+            // 화면:
+            // 설명 : 입력1 ~ ... 입력N
+            for (int i =
+                     activeVisuals.Count - 1;
+                 i >= 0;
+                 i--)
+            {
+                if (activeVisuals[i] != null)
+                    activeVisuals[i]
+                        .SetAsLastSibling();
+            }
+
+            Separator.SetAsLastSibling();
+            ExplainText.transform
+                .SetAsLastSibling();
+        }
+        else
+        {
+            // Reverse Arrangement가 꺼져 있어도
+            // 같은 화면 순서를 유지한다.
+            ExplainText.transform
+                .SetAsLastSibling();
+
+            Separator.SetAsLastSibling();
+
+            for (int i = 0;
+                 i < activeVisuals.Count;
+                 i++)
+            {
+                if (activeVisuals[i] != null)
+                    activeVisuals[i]
+                        .SetAsLastSibling();
+            }
+        }
+
+        LayoutRebuilder
+            .ForceRebuildLayoutImmediate(
+                (RectTransform)transform
+            );
+    }
+
+    private void RestoreNormalKeyColors(
+        Image keyImage,
+        TextMeshProUGUI text)
+    {
+        if (KeyTemplate == null)
+            return;
+
+        Image templateImage =
+            KeyTemplate.GetComponent<Image>();
+
+        TextMeshProUGUI templateText =
+            KeyTemplate.GetComponentInChildren<
+                TextMeshProUGUI
+            >(true);
+
+        if (keyImage != null &&
+            templateImage != null)
+        {
+            keyImage.color =
+                templateImage.color;
+        }
+
+        if (text != null &&
+            templateText != null)
+        {
+            text.color =
+                templateText.color;
+        }
+    }
+
+    private void DisableRaycastTargets(
+        GameObject root)
+    {
+        if (root == null)
+            return;
+
+        Graphic[] graphics =
+            root.GetComponentsInChildren<
+                Graphic
+            >(true);
+
+        for (int i = 0;
+             i < graphics.Length;
+             i++)
+        {
+            if (graphics[i] != null)
+            {
+                graphics[i]
+                    .raycastTarget = false;
+            }
+        }
     }
 
     public void ResetKey()
@@ -591,5 +688,6 @@ public class KeyEx : MonoBehaviour
         useSpriteCount = 0;
         visualTokens.Clear();
         resolvedInputs.Clear();
+        activeVisuals.Clear();
     }
 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Flows: 
   UIs: 
-  MoveTypes: 01000000
+  MoveTypes: 03000000
   Rows:
   - ExplainText: {fileID: 11400000, guid: 11345f980c2602147b03517e91aeecbf, type: 2}
     InputType: 0
@@ -24,10 +24,5 @@ MonoBehaviour:
   - ExplainText: {fileID: 11400000, guid: 8d73487748d908f4ea80b6bd51998077, type: 2}
     InputType: 0
     Keys: 04000000
-    RangeStart: 0
-    RangeEnd: 0
-  - ExplainText: {fileID: 11400000, guid: 631c377b319bef747a64ba87984e9aa4, type: 2}
-    InputType: 0
-    Keys: 2a000000
     RangeStart: 0
     RangeEnd: 0
