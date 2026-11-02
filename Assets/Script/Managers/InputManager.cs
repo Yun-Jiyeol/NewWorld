@@ -260,7 +260,6 @@ public class InputManager : MonoBehaviour
                 else if (nowMovingThing == CoinType.Player)
                 {
                     PlayerMove();
-                    GameManager.Instance.MainCamera.CameraTurn();
                 }
 
                 if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.LockSelectionKey]))
@@ -344,6 +343,16 @@ public class InputManager : MonoBehaviour
                 break;
 
             case GameFlow.PutWorldInSpace:
+                // SelectBtn을 UI 위에서 떼더라도 KeyUp이 early-return에 먹혀
+                // stopCamera=true가 다음 조작까지 남지 않도록 먼저 복구한다.
+                if (_keyManager.isGetKeyUp(
+                    _keyManager.KeyboardDictionary[
+                        KeyNameSaves.SelectBtn
+                    ]))
+                {
+                    GameManager.Instance.MainCamera.stopCamera = false;
+                }
+
                 if (EventSystem.current.IsPointerOverGameObject())
                 {
                     GameManager.Instance.UIManager.WhatMoving.ChangeMoveType(CoinType.None);
@@ -364,12 +373,19 @@ public class InputManager : MonoBehaviour
                 }
                 else if (nowMovingThing == CoinType.Player)
                 {
-                    PlayerMove();
-                    GameManager.Instance.MainCamera.CameraTurn();
-                }
+                    // Player 모드에서는 stopCamera를 이전 프레임의 KeyDown/KeyUp
+                    // 이벤트에 의존시키지 않고 현재 SelectBtn 상태로 매 프레임 동기화한다.
+                    bool selectHeld =
+                        _keyManager.isGetKey(
+                            _keyManager.KeyboardDictionary[
+                                KeyNameSaves.SelectBtn
+                            ]);
 
-                if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn])) GameManager.Instance.MainCamera.stopCamera = true;
-                if (_keyManager.isGetKeyUp(_keyManager.KeyboardDictionary[KeyNameSaves.SelectBtn])) GameManager.Instance.MainCamera.stopCamera = false;
+                    GameManager.Instance.MainCamera.stopCamera =
+                        selectHeld;
+
+                    PlayerMove();
+                }
                 if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.ChooseBtn]))
                 {   
                     Ray ray = _cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -713,13 +729,22 @@ public class InputManager : MonoBehaviour
             {
                 GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Off);
                 Cursor.lockState = CursorLockMode.Locked;
+
                 GameManager.Instance.MainCamera.TryCheckrot();
+                GameManager.Instance.MainCamera.stopCamera = false;
+                GameManager.Instance.MainCamera.IgnoreMouseInputForFrames(2);
+
                 nowMovingThing = CoinType.Player;
             }
             else if (nowMovingThing == CoinType.Player)
             {
                 GameManager.Instance.CursorMover.ChangeCursorState(cursorstate.Follow);
                 Cursor.lockState = CursorLockMode.Confined;
+
+                // World 조작으로 나갈 때는 플레이어 카메라를 명시적으로 정지.
+                // 다음 Player 진입 시 위 분기에서 반드시 false로 복구된다.
+                GameManager.Instance.MainCamera.stopCamera = true;
+
                 nowMovingThing = CoinType.World;
             }
         }
@@ -727,6 +752,14 @@ public class InputManager : MonoBehaviour
 
     public void WhenComeintoWatchOneWorld()
     {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.MainCamera != null)
+        {
+            // WatchOneWorld는 World 모드로 시작한다.
+            // 이전 PutWorldInSpace의 stopCamera 상태가 남지 않도록 기준 상태를 명시한다.
+            GameManager.Instance.MainCamera.stopCamera = true;
+        }
+
         // 이전 World에서 만들어진 범위 프리뷰가 남아 있으면
         // 새 World의 로컬 좌표와 섞이지 않도록 완전히 제거한다.
         if (ReadyToDestroyBlock != null)

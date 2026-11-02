@@ -30654,6 +30654,7 @@ MonoBehaviour:
   stopCamera: 1
   PlayerBeforePos: {x: 0, y: 0, z: 0}
   PlayerBeforeRot: {x: 0, y: 0, z: 0, w: 0}
+  ignoreMouseFramesAfterLock: 2
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37919,6 +37920,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetGameObject: {fileID: 0}
+  maxPlayerMoveSpeed: 0
+  maxObjectMoveSpeed: 0
+  minWorldScale: 0.01
   playerMoveSensitivity: 1
   objectMoveSensitivity: 1
   objectRotationSensitivity: 1
@@ -69507,6 +69511,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9b768cac8cfbfde4db3d4dd64ff2093c, type: 2}
   - {fileID: 11400000, guid: 1f7e587aa28b7c847af89a2bfe5e2ffd, type: 2}
   - {fileID: 11400000, guid: d042e11d916343e9a1afd38a46fce723, type: 2}
+  - {fileID: 11400000, guid: 57fe053bc2d74309a23f2a17f05afe74, type: 2}
+  - {fileID: 11400000, guid: 7355ca6202a344edad321867f77e2a84, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
 --- !u!114 &4663189002087909281

@@ -63,6 +63,10 @@ public class MainCamera : MonoBehaviour
     private CursorLockMode lastCursorLockState;
     private bool cursorLockStateInitialized = false;
 
+    [Header("Camera Turn Debug")]
+    [SerializeField] private bool logCameraTurnState = true;
+    private string lastCameraTurnState = "";
+
     private void Start()
     {
         _keyManager = GameManager.Instance.KeyManager;
@@ -73,12 +77,27 @@ public class MainCamera : MonoBehaviour
 
     void Update()
     {
-        if(GameManager.Instance.flow == GameFlow.WatchOneWorld
-            || GameManager.Instance.flow == GameFlow.None
-            || GameManager.Instance.flow == GameFlow.Start
-            || GameManager.Instance.flow == GameFlow.MakeOneWorld
-            || GameManager.Instance.flow == GameFlow.SelectOneWorld
-            || GameManager.Instance.flow == GameFlow.PutWorldInSpace) return;
+        if (GameManager.Instance == null ||
+            GameManager.Instance.InputManager == null)
+        {
+            TraceCameraTurnState("BLOCK_NO_MANAGER");
+            return;
+        }
+
+        // 플레이어 이동 코인이 활성화되어 있고
+        // 마우스가 잠긴 플레이 상태일 때는 Flow와 관계없이
+        // 플레이어 시점을 마우스로 회전시킨다.
+        if (GameManager.Instance.InputManager.nowMovingThing != CoinType.Player)
+        {
+            TraceCameraTurnState("BLOCK_NOT_PLAYER");
+            return;
+        }
+
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            TraceCameraTurnState("BLOCK_CURSOR_NOT_LOCKED");
+            return;
+        }
 
         CameraTurn();
     }
@@ -86,13 +105,24 @@ public class MainCamera : MonoBehaviour
     public void CameraTurn()
     {
         if (stopCamera)
+        {
+            TraceCameraTurnState("BLOCK_STOP_CAMERA");
             return;
+        }
 
         if (isRotating)
+        {
+            TraceCameraTurnState("BLOCK_LOOKAT_ROTATING");
             return;
+        }
 
         if (ShouldIgnoreMouseInput())
+        {
+            TraceCameraTurnState("BLOCK_MOUSE_GUARD");
             return;
+        }
+
+        TraceCameraTurnState("ACTIVE");
 
         if (_keyManager.isGetKeyDown(
             _keyManager.KeyboardDictionary[
@@ -104,6 +134,52 @@ public class MainCamera : MonoBehaviour
         }
 
         CameraMouseTurn();
+    }
+
+    void TraceCameraTurnState(string state)
+    {
+        if (!logCameraTurnState)
+            return;
+
+        if (lastCameraTurnState == state)
+            return;
+
+        lastCameraTurnState = state;
+
+        string flow =
+            GameManager.Instance != null
+                ? GameManager.Instance.flow.ToString()
+                : "null";
+
+        string moveType =
+            GameManager.Instance != null &&
+            GameManager.Instance.InputManager != null
+                ? GameManager.Instance.InputManager.nowMovingThing.ToString()
+                : "null";
+
+        bool touchingUI =
+            GameManager.Instance != null &&
+            GameManager.Instance.InputManager != null &&
+            GameManager.Instance.InputManager.isTouchingUI;
+
+        bool settingUI =
+            GameManager.Instance != null &&
+            GameManager.Instance.InputManager != null &&
+            GameManager.Instance.InputManager.isSettingUI;
+
+        Debug.Log(
+            "[CameraTurnState]" +
+            " state=" + state +
+            " frame=" + Time.frameCount +
+            " flow=" + flow +
+            " moveType=" + moveType +
+            " cursor=" + Cursor.lockState +
+            " stopCamera=" + stopCamera +
+            " lookAtRotating=" + isRotating +
+            " ignoreFrames=" + ignoreMouseInputFrames +
+            " touchingUI=" + touchingUI +
+            " settingUI=" + settingUI
+        );
     }
 
     bool ShouldIgnoreMouseInput()
