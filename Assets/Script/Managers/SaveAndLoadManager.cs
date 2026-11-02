@@ -712,8 +712,20 @@ public class SaveAndLoadManager : MonoBehaviour
             }
         }
 
+        currentSavingWorld = null;
         isSaving = false;
         GameManager.Instance.UIManager.SavingEffectUI.EndSaving();
+    }
+
+    public IEnumerator WaitForPendingWorldSaves()
+    {
+        // SaveWorldData starts SaveWorker as a coroutine, so allow it to enter first.
+        yield return null;
+
+        while (isSaving || saveQueue.Count > 0)
+        {
+            yield return null;
+        }
     }
 
     IEnumerator SaveWorldCoroutine(ChunkCode _world)

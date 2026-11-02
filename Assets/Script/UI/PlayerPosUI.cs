@@ -104,6 +104,14 @@ public class PlayerPosUI : BasicUI
 
         if (LastLook != _give)
         {
+            if (LastLook == null &&
+                GameManager.Instance != null &&
+                GameManager.Instance.MainCamera != null)
+            {
+                GameManager.Instance.MainCamera
+                    .CaptureEditReturnPose();
+            }
+
             LastLook = _give;
 
             foreach (GameObject weu in worldexuis)
@@ -139,4 +147,18 @@ public class PlayerPosUI : BasicUI
             GameFlow.SelectOneWorld
         );
     }
+    private void OnDisable()
+    {
+        if (GameManager.Instance == null ||
+            GameManager.Instance.MainCamera == null)
+        {
+            return;
+        }
+
+        if (GameManager.Instance.flow == GameFlow.WatchAllWorld)
+        {
+            GameManager.Instance.MainCamera.ClearEditReturnPose();
+        }
+    }
+
 }

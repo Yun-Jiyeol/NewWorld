@@ -50,6 +50,10 @@ public class MainCamera : MonoBehaviour
     public Vector3 PlayerBeforePos;
     public Quaternion PlayerBeforeRot;
 
+    private Vector3 editReturnPosition;
+    private Quaternion editReturnRotation = Quaternion.identity;
+    private bool hasEditReturnPose = false;
+
     KeyManager _keyManager;
 
     [Header("Mouse Input Guard")]
@@ -241,6 +245,46 @@ public class MainCamera : MonoBehaviour
                 "MainCamera.SavePos"
             );
         }
+    }
+
+    public void CaptureEditReturnPose()
+    {
+        if (hasEditReturnPose)
+            return;
+
+        editReturnPosition = transform.position;
+        editReturnRotation = transform.rotation;
+        hasEditReturnPose = true;
+    }
+
+    public bool RestoreEditReturnPose()
+    {
+        if (!hasEditReturnPose)
+            return false;
+
+        transform.position = editReturnPosition;
+        transform.rotation = editReturnRotation;
+
+        TryCheckrot();
+        hasEditReturnPose = false;
+        return true;
+    }
+
+    public void ClearEditReturnPose()
+    {
+        hasEditReturnPose = false;
+    }
+
+    public void ResetForStartScreen()
+    {
+        StopAllCoroutines();
+        transform.DOKill();
+
+        isRotating = false;
+        stopCamera = true;
+
+        TryCheckrot();
+        IgnoreMouseInputForFrames(2);
     }
 
     public void LookAt(Transform targetobject, float dur = 0.5f)

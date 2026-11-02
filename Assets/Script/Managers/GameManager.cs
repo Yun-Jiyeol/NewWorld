@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     public string NowWorldSaveFolder = null;
 
     Coroutine playerPosTraceCoroutine;
+    bool isReturningToStart = false;
 
     public void DebugPlayerPosTrace(string stage)
     {
@@ -220,6 +221,21 @@ public class GameManager : MonoBehaviour
             "ChangeFlow.Before." + flow + "To" + _flow
         );
 
+        if (MainCamera != null &&
+            flow == GameFlow.WatchAllWorld &&
+            (_flow == GameFlow.SelectOneWorld ||
+             _flow == GameFlow.MakeOneWorld))
+        {
+            MainCamera.CaptureEditReturnPose();
+        }
+
+        if (MainCamera != null &&
+            _flow == GameFlow.WatchAllWorld &&
+            flow != GameFlow.WatchAllWorld)
+        {
+            MainCamera.ClearEditReturnPose();
+        }
+
         flow = _flow;
         if (flow == GameFlow.Start)
         {
@@ -245,9 +261,67 @@ public class GameManager : MonoBehaviour
                 BuildManager.maxFrameTime = 5f;
                 Cursor.lockState = CursorLockMode.Confined;
 
+                if (UIManager != null &&
+                    UIManager.WorldSeenUI != null)
+                {
+                    UIManager.WorldSeenUI.ResetForStartScreen();
+                }
+
+                MainCamera.stopCamera = true;
+                MainCamera.ClearEditReturnPose();
+                MainCamera.IgnoreMouseInputForFrames(2);
+
+                Camera mainCameraComponent =
+                    MainCamera.GetComponent<Camera>();
+
+                if (mainCameraComponent != null)
+                {
+                    mainCameraComponent.cullingMask &= ~(1 << 7);
+                }
+
                 MainCamera.SubCamera.gameObject.SetActive(true);
+
+                Camera subCameraComponent =
+                    MainCamera.SubCamera.GetComponent<Camera>();
+
+                if (subCameraComponent != null)
+                {
+                    subCameraComponent.cullingMask = ~0;
+                }
+
+                CameraShaderPutter subCameraShader =
+                    MainCamera.SubCamera.GetComponent<CameraShaderPutter>();
+
+                if (subCameraShader != null)
+                {
+                    subCameraShader.isUsingEffect = true;
+                }
+
+                if (LightManager != null)
+                {
+                    if (LightManager.MainLight != null)
+                    {
+                        Light mainLight =
+                            LightManager.MainLight.GetComponent<Light>();
+
+                        if (mainLight != null)
+                            mainLight.cullingMask = ~0;
+                    }
+
+                    if (LightManager.SubLight != null)
+                        LightManager.SubLight.SetActive(false);
+                }
+
                 CursorMover?.ChangeCursorState(cursorstate.Follow);
                 CursorMover?.MouseSpriteSetting(false);
+
+                if (UIManager != null)
+                {
+                    UIManager.isReady = false;
+
+                    if (UIManager.Compass != null)
+                        UIManager.Compass.SetActive(false);
+                }
 
                 RemoveInTimeSave();
                 break;
@@ -396,7 +470,48 @@ public class GameManager : MonoBehaviour
 
     public void GoToStartPage()
     {
-        SaveAndLoadManager.SaveAll();
+        if (isReturningToStart)
+            return;
+
+        StartCoroutine(ReturnToStartPageCoroutine());
+    }
+
+    IEnumerator ReturnToStartPageCoroutine()
+    {
+        isReturningToStart = true;
+        RemoveInTimeSave();
+
+        bool wasEditingWorld =
+            InputManager != null &&
+            InputManager.IsWorldEditActive();
+
+        if (wasEditingWorld)
+        {
+            yield return StartCoroutine(
+                InputManager.FinalizeWorldBeforeReturnToStart()
+            );
+        }
+        else if (InputManager != null)
+        {
+            InputManager.ResetForStartScreenState();
+        }
+
+        if (wasEditingWorld && MainCamera != null)
+        {
+            MainCamera.RestoreEditReturnPose();
+        }
+
+        if (SaveAndLoadManager != null)
+        {
+            SaveAndLoadManager.SaveAll();
+        }
+
+        if (MainCamera != null)
+        {
+            MainCamera.ResetForStartScreen();
+        }
+
         ChangeFlow(GameFlow.Start);
+        isReturningToStart = false;
     }
 }

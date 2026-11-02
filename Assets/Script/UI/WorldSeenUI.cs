@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -72,6 +72,41 @@ public class WorldSeenUI : MonoBehaviour
         }
     }
 
+
+    public void ResetForStartScreen()
+    {
+        if (NowCorountine != null)
+        {
+            StopCoroutine(NowCorountine);
+            NowCorountine = null;
+        }
+
+        if (BGImage == null && BG != null)
+            BGImage = BG.GetComponent<Image>();
+
+        if (SelectWorldImage == null && SelectWorld != null)
+            SelectWorldImage = SelectWorld.GetComponent<RawImage>();
+
+        if (BGImage != null)
+        {
+            BGImage.DOKill();
+            BGImage.color = new Color(0f, 0f, 0f, 0f);
+        }
+
+        if (SelectWorldImage != null)
+        {
+            SelectWorldImage.DOKill();
+            SelectWorldImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
+        if (BG != null)
+            BG.SetActive(false);
+
+        if (SelectWorld != null)
+            SelectWorld.SetActive(false);
+
+        gameObject.SetActive(false);
+    }
     public void offScreenDirect()
     {
         GameManager.Instance.MainCamera.SubCamera.SetActive(false);

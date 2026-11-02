@@ -3719,12 +3719,35 @@ public class ChunkCode : MonoBehaviour
         meshGen.Build(GetVisibleFaces(pos, data));
     }
 
+    Coroutine changeEveryThingCoroutine;
+
     public void StartChangeEveryThingSmooth(float duration, 
         bool changescale, float _scale, 
         bool changeposition, Vector3 _position, 
         bool changerotation, Quaternion _rotation)
     {
-        StartCoroutine(ChangeEveryThingSmooth(duration, changescale, _scale, changeposition, _position, changerotation, _rotation));
+        StopChangeEveryThingSmooth();
+
+        changeEveryThingCoroutine = StartCoroutine(
+            ChangeEveryThingSmooth(
+                duration,
+                changescale,
+                _scale,
+                changeposition,
+                _position,
+                changerotation,
+                _rotation
+            )
+        );
+    }
+
+    public void StopChangeEveryThingSmooth()
+    {
+        if (changeEveryThingCoroutine == null)
+            return;
+
+        StopCoroutine(changeEveryThingCoroutine);
+        changeEveryThingCoroutine = null;
     }
 
     IEnumerator ChangeEveryThingSmooth(float duration,
@@ -3751,6 +3774,8 @@ public class ChunkCode : MonoBehaviour
             if (changerotation) transform.localRotation = Quaternion.Lerp(startRotation, endRotation, time / duration);
             yield return null;
         }
+
+        changeEveryThingCoroutine = null;
     }
 
     public Light ChangeLightPower()

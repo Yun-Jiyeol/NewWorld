@@ -149,6 +149,9 @@ public class InputManager : MonoBehaviour
                                     chunk.gameObject;
 
                                 _cam.GetComponent<MainCamera>()
+                                    .CaptureEditReturnPose();
+
+                                _cam.GetComponent<MainCamera>()
                                     .LookAt(TargetGameObject.transform);
 
                                 GameManager.Instance.ChangeFlow(
@@ -212,6 +215,9 @@ public class InputManager : MonoBehaviour
 
                             TargetGameObject =
                                 chunk.gameObject;
+
+                            _cam.GetComponent<MainCamera>()
+                                .CaptureEditReturnPose();
 
                             _cam.GetComponent<MainCamera>()
                                 .LookAt(TargetGameObject.transform);
@@ -459,6 +465,217 @@ public class InputManager : MonoBehaviour
                     ReadyToBuildBlock.SetActive(false);
                 }
                 break;
+        }
+    }
+
+    public bool IsWorldEditActive()
+    {
+        if (GameManager.Instance == null)
+            return false;
+
+        GameFlow currentFlow = GameManager.Instance.flow;
+
+        if (currentFlow == GameFlow.SelectOneWorld ||
+            currentFlow == GameFlow.WatchOneWorld ||
+            currentFlow == GameFlow.MakeOneWorld ||
+            currentFlow == GameFlow.PutWorldInSpace ||
+            (currentFlow == GameFlow.None && TargetGameObject != null))
+        {
+            return true;
+        }
+
+        if (TargetGameObject == null ||
+            GameManager.Instance.WorldManager == null)
+        {
+            return false;
+        }
+
+        Transform installedParent =
+            GameManager.Instance.WorldManager.SpawnedWorlds;
+
+        return
+            TargetGameObject.layer == 7 ||
+            (installedParent != null &&
+             TargetGameObject.transform.parent != installedParent);
+    }
+
+    public IEnumerator FinalizeWorldBeforeReturnToStart()
+    {
+        CancelInvoke(nameof(ChangeToPutWorldInSpace));
+        isSettingUI = true;
+
+        GameObject target = TargetGameObject;
+        GameFlow currentFlow =
+            GameManager.Instance != null
+            ? GameManager.Instance.flow
+            : GameFlow.None;
+
+        ClearEditPreviewObjects();
+
+        if (target != null)
+        {
+            ChunkCode chunk = target.GetComponent<ChunkCode>();
+
+            if (chunk != null)
+            {
+                while (chunk.LoadState == WorldLoadState.Loading)
+                {
+                    yield return null;
+                }
+
+                chunk.StopChangeEveryThingSmooth();
+            }
+
+            if (GameManager.Instance != null &&
+                GameManager.Instance.WorldManager != null &&
+                GameManager.Instance.WorldManager.SpawnedWorlds != null)
+            {
+                target.transform.SetParent(
+                    GameManager.Instance.WorldManager.SpawnedWorlds,
+                    true
+                );
+            }
+
+            if (chunk != null)
+            {
+                bool needsInstall =
+                    currentFlow == GameFlow.WatchOneWorld ||
+                    currentFlow == GameFlow.MakeOneWorld ||
+                    currentFlow == GameFlow.PutWorldInSpace ||
+                    currentFlow == GameFlow.None;
+
+                if (needsInstall)
+                {
+                    yield return StartCoroutine(
+                        chunk.PutThisWorldCoroutine()
+                    );
+                }
+
+                chunk.ChangeWorldLayer(6);
+
+                if (GameManager.Instance != null &&
+                    GameManager.Instance.SaveAndLoadManager != null)
+                {
+                    GameManager.Instance.SaveAndLoadManager
+                        .SaveWorldData(chunk);
+
+                    yield return StartCoroutine(
+                        GameManager.Instance.SaveAndLoadManager
+                            .WaitForPendingWorldSaves()
+                    );
+                }
+            }
+        }
+
+        TargetGameObject = null;
+        ResetForStartScreenState();
+    }
+
+    void ClearEditPreviewObjects()
+    {
+        if (ReadyToBuildBlock != null)
+        {
+            Destroy(ReadyToBuildBlock);
+            ReadyToBuildBlock = null;
+        }
+
+        if (ReadyToDestroyBlock != null)
+        {
+            Destroy(ReadyToDestroyBlock);
+            ReadyToDestroyBlock = null;
+        }
+
+        BeforeDestroyBlockPos = null;
+        AfterDestroyBlockPos = null;
+        rotationLockAxis = RotationLockAxis.None;
+        hasBeforeZMouseDir = false;
+        HideRotationGuideCircle();
+    }
+
+    public void ResetForStartScreenState()
+    {
+        CancelInvoke(nameof(ChangeToPutWorldInSpace));
+        ClearEditPreviewObjects();
+
+        TargetMoveSensitive = 0f;
+        PlayerMoveSpeed = 0f;
+        isSomethingHit = false;
+        OnRaycast = new RaycastHit();
+
+        isTouchingUI = false;
+        isSettingUI = false;
+        isLock = false;
+        isRotating = false;
+        isRotated = false;
+        showpreviewblock = true;
+
+        nowMovingThing = CoinType.None;
+        TargetGameObject = null;
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.WorldManager != null)
+        {
+            Transform installedParent =
+                GameManager.Instance.WorldManager.SpawnedWorlds;
+
+            List<GameObject> worlds =
+                GameManager.Instance.WorldManager.Worlds;
+
+            if (worlds != null)
+            {
+                for (int i = 0; i < worlds.Count; i++)
+                {
+                    GameObject world = worlds[i];
+
+                    if (world == null)
+                        continue;
+
+                    if (installedParent != null &&
+                        world.transform.parent != installedParent)
+                    {
+                        world.transform.SetParent(installedParent, true);
+                    }
+
+                    ChunkCode worldChunk =
+                        world.GetComponent<ChunkCode>();
+
+                    if (worldChunk != null)
+                        worldChunk.ChangeWorldLayer(6);
+                }
+            }
+        }
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.UIManager == null)
+        {
+            return;
+        }
+
+        if (GameManager.Instance.UIManager.WhatMoving != null)
+        {
+            GameManager.Instance.UIManager.WhatMoving.LockMotion(false);
+            GameManager.Instance.UIManager.WhatMoving
+                .ChangeMoveType(CoinType.None);
+        }
+
+        if (GameManager.Instance.UIManager.SelectionUI != null)
+        {
+            GameManager.Instance.UIManager.SelectionUI.nowUIenum =
+                SelectionUIenum.None;
+
+            GameManager.Instance.UIManager.SelectionUI
+                .DestroyAllAdditionalUi();
+        }
+
+        if (GameManager.Instance.UIManager.ParetteUI != null)
+        {
+            GameManager.Instance.UIManager.ParetteUI
+                .DestroyAllAdditionalUi();
+        }
+
+        if (GameManager.Instance.UIManager.WorldSeenUI != null)
+        {
+            GameManager.Instance.UIManager.WorldSeenUI.OffScreen();
         }
     }
 
