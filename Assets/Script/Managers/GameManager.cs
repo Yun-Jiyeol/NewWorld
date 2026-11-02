@@ -153,6 +153,7 @@ public class GameManager : MonoBehaviour
 
             if (
                 positionDelta > 0.0001f ||
+                rotationDelta > 0.01f ||
                 nowSubActive != lastSubActive
             )
             {
@@ -377,6 +378,10 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         SaveAndLoadManager.SaveAll();
+
+        if (OnStartOrStopManager != null)
+            OnStartOrStopManager.DelectActions();
+
         Exit();
     }
 

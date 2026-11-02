@@ -918,7 +918,7 @@ public class ChunkCode : MonoBehaviour
             mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
 
             block.transform.localScale = Vector3.one;
-            block.transform.rotation = new Quaternion(0, 0, 0, 0);
+            block.transform.rotation = Quaternion.identity;
 
             block.GetComponent<Renderer>().material.color = value._color;
             block.tag = "Block";
@@ -987,7 +987,7 @@ public class ChunkCode : MonoBehaviour
             case GameFlow.MakeOneWorld:
                 findselect();
                 StartChangeEveryThingSmooth(0.5f, false, 0, true, Camera.main.transform.position + Camera.main.transform.forward * (Mathf.Max(maxX - minX, maxY - minY, maxZ - minZ) + 20f),
-                    false, new Quaternion(0, 0, 0, 0));
+                    false, Quaternion.identity);
                 break;
 
             case GameFlow.SelectOneWorld:

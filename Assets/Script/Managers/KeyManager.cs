@@ -152,16 +152,19 @@ public class KeyManager : MonoBehaviour
         if (keyboard == null)
             return false;
 
+        bool isShiftPressed =
+            Input.GetKey(KeyCode.LeftShift) ||
+            Input.GetKey(KeyCode.RightShift);
+
         if (keyboard.shiftClick)
         {
-            if (!Input.GetKey(KeyCode.LeftShift))
+            if (!isShiftPressed)
                 return false;
         }
         else
         {
-            // 기존 동작 유지:
-            // Shift가 눌린 동안에는 shiftClick=false 입력을 막는다.
-            if (Input.GetKey(KeyCode.LeftShift))
+            // Shift 조합과 일반 입력이 동시에 실행되지 않도록 막는다.
+            if (isShiftPressed)
                 return false;
         }
 

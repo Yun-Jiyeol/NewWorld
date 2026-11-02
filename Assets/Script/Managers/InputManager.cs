@@ -25,6 +25,16 @@ public class InputManager : MonoBehaviour
     float nextPlayerMoveTraceTime = 0f;
     float accelate = 5f;
 
+    [Header("Move Speed Limit")]
+    [Tooltip("0 이하면 제한 없음")]
+    [SerializeField] private float maxPlayerMoveSpeed = 0f;
+
+    [Tooltip("0 이하면 제한 없음")]
+    [SerializeField] private float maxObjectMoveSpeed = 0f;
+
+    [Header("World Scale Limit")]
+    [SerializeField] private float minWorldScale = 0.01f;
+
     [Header("Sensitivity")]
     [SerializeField] private float playerMoveSensitivity = 1f;
     [SerializeField] private float objectMoveSensitivity = 1f;
@@ -500,7 +510,14 @@ public class InputManager : MonoBehaviour
 
     public void WhenComeintoWatchOneWorld()
     {
-        ReadyToDestroyBlock = null;
+        // 이전 World에서 만들어진 범위 프리뷰가 남아 있으면
+        // 새 World의 로컬 좌표와 섞이지 않도록 완전히 제거한다.
+        if (ReadyToDestroyBlock != null)
+        {
+            Destroy(ReadyToDestroyBlock);
+            ReadyToDestroyBlock = null;
+        }
+
         BeforeDestroyBlockPos = null;
         AfterDestroyBlockPos = null;
     }
@@ -535,20 +552,41 @@ public class InputManager : MonoBehaviour
 
     void SettingDestroyRange()
     {
+        if (ReadyToBuildBlock == null || TargetGameObject == null)
+            return;
+
         if (ReadyToDestroyBlock == null)
         {
-            ReadyToDestroyBlock = Instantiate(ReadyToBuildBlock);
-            ReadyToDestroyBlock.transform.SetParent(
-                ReadyToBuildBlock.transform.parent,
-                true
+            // 범위 프리뷰는 TargetGameObject의 로컬 그리드에 맞춰야 한다.
+            // worldPositionStays=false로 생성해 월드 회전/위치가 섞이지 않게 한다.
+            ReadyToDestroyBlock = Instantiate(
+                ReadyToBuildBlock,
+                TargetGameObject.transform,
+                false
             );
-            ReadyToDestroyBlock.GetComponent<SampleBlcok>().SetColor(new Color(0.8f,0,0,0.7f));
+
+            ReadyToDestroyBlock
+                .GetComponent<SampleBlcok>()
+                .SetColor(new Color(0.8f, 0f, 0f, 0.7f));
+
             ReadyToDestroyBlock.layer = 7;
         }
+        else if (ReadyToDestroyBlock.transform.parent != TargetGameObject.transform)
+        {
+            // 혹시 Target World가 바뀐 상태에서 재사용되더라도
+            // 항상 현재 World의 로컬 좌표계를 사용한다.
+            ReadyToDestroyBlock.transform.SetParent(
+                TargetGameObject.transform,
+                false
+            );
+        }
+
         ReadyToDestroyBlock.SetActive(true);
-        ReadyToDestroyBlock.transform.position = ReadyToBuildBlock.transform.position;
-        ReadyToDestroyBlock.transform.localScale = ReadyToBuildBlock.transform.localScale;
-        ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
+        ReadyToDestroyBlock.transform.localPosition =
+            ReadyToBuildBlock.transform.localPosition;
+        ReadyToDestroyBlock.transform.localScale =
+            ReadyToBuildBlock.transform.localScale;
+        ReadyToDestroyBlock.transform.localRotation = Quaternion.identity;
 
         BeforeDestroyBlockPos = ReadyToBuildBlock.transform.localPosition;
         AfterDestroyBlockPos = null;
@@ -593,9 +631,17 @@ public class InputManager : MonoBehaviour
 
         size += Vector3.one * 1.05f;
 
+        if (ReadyToDestroyBlock.transform.parent != TargetGameObject.transform)
+        {
+            ReadyToDestroyBlock.transform.SetParent(
+                TargetGameObject.transform,
+                false
+            );
+        }
+
         ReadyToDestroyBlock.transform.localPosition = center;
         ReadyToDestroyBlock.transform.localScale = size;
-        ReadyToDestroyBlock.transform.rotation = ReadyToBuildBlock.transform.rotation;
+        ReadyToDestroyBlock.transform.localRotation = Quaternion.identity;
 
         ShowDestroyRangeViewOnly();
     }
@@ -662,10 +708,13 @@ public class InputManager : MonoBehaviour
         if (ReadyToBuildBlock == null)
         {
             ReadyToBuildBlock = new GameObject();
-            ReadyToBuildBlock.transform.SetParent(TargetGameObject.transform);
+            ReadyToBuildBlock.transform.SetParent(
+                TargetGameObject.transform,
+                false
+            );
 
             ReadyToBuildBlock.transform.localScale = Vector3.one * 1.03f;
-            ReadyToBuildBlock.transform.rotation = new Quaternion(0, 0, 0, 0);
+            ReadyToBuildBlock.transform.localRotation = Quaternion.identity;
             ReadyToBuildBlock.layer = 7;
 
             MeshFilter mf = ReadyToBuildBlock.AddComponent<MeshFilter>();
@@ -675,6 +724,16 @@ public class InputManager : MonoBehaviour
             mr.sharedMaterials = GameManager.Instance.BuildManager.ChooseBlock.GetComponent<MeshRenderer>().sharedMaterials;
 
             ReadyToBuildBlock.AddComponent<SampleBlcok>().SetColor(new Color(0f, 0, 0, 0.7f));
+        }
+        else if (ReadyToBuildBlock.transform.parent != TargetGameObject.transform)
+        {
+            ReadyToBuildBlock.transform.SetParent(
+                TargetGameObject.transform,
+                false
+            );
+
+            ReadyToBuildBlock.transform.localRotation = Quaternion.identity;
+            ReadyToBuildBlock.transform.localScale = Vector3.one * 1.03f;
         }
         if (showpreviewblock) ReadyToBuildBlock.SetActive(true);
 
@@ -703,16 +762,24 @@ public class InputManager : MonoBehaviour
 
     void LoadColor()
     {
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.firstload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[0]);
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.secondload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[1]);
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.thirdload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[2]);
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.forthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[3]);
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.fifthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[4]);
-        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.sixthload])) GameManager.Instance.BuildManager.SetColor(GameManager.Instance.BuildManager.SaveColors[5]);
+        BuildManager buildManager =
+            GameManager.Instance.BuildManager;
+
+        buildManager.CheckSave();
+
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.firstload])) buildManager.SetColor(buildManager.SaveColors[0]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.secondload])) buildManager.SetColor(buildManager.SaveColors[1]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.thirdload])) buildManager.SetColor(buildManager.SaveColors[2]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.forthload])) buildManager.SetColor(buildManager.SaveColors[3]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.fifthload])) buildManager.SetColor(buildManager.SaveColors[4]);
+        if (_keyManager.isGetKeyDown(_keyManager.KeyboardDictionary[KeyNameSaves.sixthload])) buildManager.SetColor(buildManager.SaveColors[5]);
     }
 
     public void TargetMove(GameObject _target, bool isMoveSide = true)
     {
+        if (_target == null)
+            return;
+
         Vector3 move = Vector3.zero;
         if (isMoveSide)
         {
@@ -727,7 +794,15 @@ public class InputManager : MonoBehaviour
         if (move != Vector3.zero)
         {
             TargetMoveSensitive += accelate * Time.deltaTime;
-            TargetMoveSensitive = Mathf.Clamp(TargetMoveSensitive, 0, TargetMoveSensitive);
+
+            if (maxObjectMoveSpeed > 0f)
+            {
+                TargetMoveSensitive =
+                    Mathf.Min(
+                        TargetMoveSensitive,
+                        maxObjectMoveSpeed
+                    );
+            }
 
             _target.transform.position += move.normalized * TargetMoveSensitive * objectMoveSensitivity * Time.deltaTime;
         }
@@ -750,7 +825,15 @@ public class InputManager : MonoBehaviour
         if (move != Vector3.zero)
         {
             PlayerMoveSpeed += accelate * Time.deltaTime;
-            PlayerMoveSpeed = Mathf.Clamp(PlayerMoveSpeed, 0, PlayerMoveSpeed);
+
+            if (maxPlayerMoveSpeed > 0f)
+            {
+                PlayerMoveSpeed =
+                    Mathf.Min(
+                        PlayerMoveSpeed,
+                        maxPlayerMoveSpeed
+                    );
+            }
 
             _cam.position += move.normalized * PlayerMoveSpeed * playerMoveSensitivity * Time.deltaTime;
 
@@ -795,17 +878,20 @@ public class InputManager : MonoBehaviour
 
         if (Mathf.Abs(scaleInput) > 0f)
         {
-            Vector3 scale =
-                _target.transform.localScale;
-
-            scale +=
-                Vector3.one *
+            float nextScale =
+                _target.transform.localScale.x +
                 scaleInput *
                 scaleSpeed *
                 objectScaleSensitivity;
 
+            nextScale =
+                Mathf.Max(
+                    Mathf.Max(0.0001f, minWorldScale),
+                    nextScale
+                );
+
             _target.transform.localScale =
-                Vector3.one * scale.x;
+                Vector3.one * nextScale;
         }
     }
 

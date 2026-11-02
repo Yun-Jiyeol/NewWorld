@@ -148,7 +148,21 @@ public class BuildManager : MonoBehaviour
 
     public void CheckSave()
     {
-        if (SaveColors.Count == 0) for (int i = 0; i < savecolornum; i++) SaveColors.Add(new Color(255, 255, 255));
+        if (SaveColors == null)
+            SaveColors = new List<Color>();
+
+        while (SaveColors.Count < savecolornum)
+        {
+            SaveColors.Add(new Color(255f, 255f, 255f, 1f));
+        }
+
+        if (SaveColors.Count > savecolornum)
+        {
+            SaveColors.RemoveRange(
+                savecolornum,
+                SaveColors.Count - savecolornum
+            );
+        }
     }
 
     public void OnPaletteColorChanged()

@@ -26,6 +26,7 @@ public class MakeNewWorld : NeedToDoOnit
 
     string SettingName = "NewWorld";
     string time;
+    bool isCreatingSave = false;
 
     public RectTransform MainUI;
 
@@ -107,14 +108,41 @@ public class MakeNewWorld : NeedToDoOnit
 
     public void MakeWorld()
     {
+        SaveAndLoadManager saveManager =
+            GameManager.Instance.SaveAndLoadManager;
+
+        if (isCreatingSave ||
+            saveManager == null ||
+            saveManager.IsCreatingNewSave)
+        {
+            return;
+        }
+
         if (SettingName == "")
         {
             SettingName = "NewWorld";
         }
-        string SaveName = SettingName + '_' + time + '_' + spritenum + '_' + OutPutNum;
+
+        string SaveName =
+            SettingName + '_' +
+            time + '_' +
+            spritenum + '_' +
+            OutPutNum;
+
+        // Manager가 실제 생성을 받아들였을 때만
+        // UI 애니메이션/중복 클릭 잠금을 시작한다.
+        saveManager.CreateNewSaveWithDefaultWorld(
+            SaveName,
+            OutPutNum
+        );
+
+        if (!saveManager.IsCreatingNewSave)
+            return;
+
+        isCreatingSave = true;
+
         GameManager.Instance.UIManager.StartSceneUI.AddText("DoneTape");
         MakeTapingAnimation();
-        GameManager.Instance.SaveAndLoadManager.CreateNewSaveWithDefaultWorld(SaveName, OutPutNum);
     }
 
     public void DeclineMakeWorld()

@@ -77,7 +77,7 @@ public class PlayerPosUI : BasicUI
             float t = time / duration;
 
             Cam.rotation = Quaternion.Slerp(StartRot, TargetRot, t);
-            Cam.position = Vector3.Slerp(StartPos, TargetPos, t);
+            Cam.position = Vector3.Lerp(StartPos, TargetPos, t);
 
             yield return null;
         }

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,57 +11,211 @@ public class WorldSaveFile : MonoBehaviour
     public Image Shadow;
 
     public bool isCheck = false;
- 
+    public bool IsInitialized => tapeSave != null;
+
     public void Onit(string _name)
     {
         Name = _name;
-        string[] parts = Name.Split('_');
-        GameObject _tape = Instantiate(GameManager.Instance.MaterialManager.Tapes[int.Parse(parts[3])], gameObject.transform);
-        tapeSave = _tape.GetComponent<TapeSave>();
 
-        tapeSave.WorldName.text = parts[0];
+        string saveName;
+        string saveTime;
+        int iconIndex;
+        int tapeIndex;
 
-        tapeSave.WorldMakeYear.text = parts[1].Substring(0, 4) + '.';
-        tapeSave.WorldMakeMonth.text = parts[1].Substring(4, 2) + '.';
-        tapeSave.WorldMakeDay.text = parts[1].Substring(6, 2);
+        if (!TryReadSaveInfo(
+            Name,
+            false,
+            out saveName,
+            out saveTime,
+            out iconIndex,
+            out tapeIndex))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
 
-        tapeSave.WorldNum.text = (char)('A' + int.Parse(parts[2])) 
-            + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
+        GameObject _tape =
+            Instantiate(
+                GameManager.Instance.MaterialManager.Tapes[tapeIndex],
+                gameObject.transform
+            );
 
-        tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
-        if(tapeSave.Check != null)
-            tapeSave.Check.GetComponent<Image>().sprite = tapeSave.WorldIcon.sprite;
+        tapeSave =
+            _tape.GetComponent<TapeSave>();
+
+        if (tapeSave == null)
+        {
+            Destroy(_tape);
+            return;
+        }
+
+        SettingTapeText(
+            saveName,
+            saveTime,
+            iconIndex
+        );
+
+        if (tapeSave.Check != null)
+        {
+            tapeSave.Check.GetComponent<Image>().sprite =
+                tapeSave.WorldIcon.sprite;
+        }
 
         UnCheck();
+
         if (GameManager.Instance.NowWorldSaveFolder == Name)
         {
             OnCheck();
-        } 
+        }
     }
 
     public int TapeInOnit(string _name)
     {
         Name = _name;
-        string[] parts = Name.Split('_');
-        GameObject _tape = Instantiate(GameManager.Instance.MaterialManager.InsertTapes[int.Parse(parts[3])], gameObject.transform);
-        tapeSave = _tape.GetComponent<TapeSave>();
 
-        tapeSave.WorldName.text = parts[0];
+        string saveName;
+        string saveTime;
+        int iconIndex;
+        int tapeIndex;
 
-        tapeSave.WorldMakeYear.text = parts[1].Substring(0, 4) + '.';
-        tapeSave.WorldMakeMonth.text = parts[1].Substring(4, 2) + '.';
-        tapeSave.WorldMakeDay.text = parts[1].Substring(6, 2);
+        if (!TryReadSaveInfo(
+            Name,
+            true,
+            out saveName,
+            out saveTime,
+            out iconIndex,
+            out tapeIndex))
+        {
+            gameObject.SetActive(false);
+            return -1;
+        }
 
-        tapeSave.WorldNum.text = (char)('A' + int.Parse(parts[2]))
-            + parts[1].Substring(12, 1) + parts[1].Substring(10, 1) + parts[1].Substring(8, 1);
+        GameObject _tape =
+            Instantiate(
+                GameManager.Instance.MaterialManager.InsertTapes[tapeIndex],
+                gameObject.transform
+            );
 
-        tapeSave.WorldIcon.sprite = GameManager.Instance.UIManager.WorldUIIcons.WorldUIIconsSetting[int.Parse(parts[2])];
+        tapeSave =
+            _tape.GetComponent<TapeSave>();
 
-        return int.Parse(parts[3]);
+        if (tapeSave == null)
+        {
+            Destroy(_tape);
+            return -1;
+        }
+
+        SettingTapeText(
+            saveName,
+            saveTime,
+            iconIndex
+        );
+
+        return tapeIndex;
+    }
+
+    bool TryReadSaveInfo(
+        string folderName,
+        bool useInsertTape,
+        out string saveName,
+        out string saveTime,
+        out int iconIndex,
+        out int tapeIndex)
+    {
+        if (!SaveAndLoadManager.TryParseSaveFolderName(
+            folderName,
+            out saveName,
+            out saveTime,
+            out iconIndex,
+            out tapeIndex))
+        {
+            Debug.LogWarning(
+                "[SaveUI] 올바르지 않은 세이브 폴더 이름입니다: " +
+                folderName
+            );
+            return false;
+        }
+
+        MaterialManager materialManager =
+            GameManager.Instance.MaterialManager;
+
+        if (materialManager == null)
+            return false;
+
+        List<GameObject> tapeList =
+            useInsertTape
+            ? materialManager.InsertTapes
+            : materialManager.Tapes;
+
+        if (tapeList == null)
+            return false;
+
+        int tapeCount = tapeList.Count;
+
+        if (tapeIndex < 0 ||
+            tapeIndex >= tapeCount)
+        {
+            Debug.LogWarning(
+                "[SaveUI] Tape index가 범위를 벗어났습니다: " +
+                tapeIndex
+            );
+            return false;
+        }
+
+        if (GameManager.Instance.UIManager == null ||
+            GameManager.Instance.UIManager.WorldUIIcons == null ||
+            GameManager.Instance.UIManager.WorldUIIcons
+                .WorldUIIconsSetting == null ||
+            iconIndex < 0 ||
+            iconIndex >=
+                GameManager.Instance.UIManager.WorldUIIcons
+                    .WorldUIIconsSetting.Count)
+        {
+            Debug.LogWarning(
+                "[SaveUI] World icon index가 범위를 벗어났습니다: " +
+                iconIndex
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    void SettingTapeText(
+        string saveName,
+        string saveTime,
+        int iconIndex)
+    {
+        if (tapeSave == null)
+            return;
+
+        tapeSave.WorldName.text = saveName;
+
+        tapeSave.WorldMakeYear.text =
+            saveTime.Substring(0, 4) + '.';
+
+        tapeSave.WorldMakeMonth.text =
+            saveTime.Substring(4, 2) + '.';
+
+        tapeSave.WorldMakeDay.text =
+            saveTime.Substring(6, 2);
+
+        tapeSave.WorldNum.text =
+            (char)('A' + iconIndex) +
+            saveTime.Substring(12, 1) +
+            saveTime.Substring(10, 1) +
+            saveTime.Substring(8, 1);
+
+        tapeSave.WorldIcon.sprite =
+            GameManager.Instance.UIManager.WorldUIIcons
+                .WorldUIIconsSetting[iconIndex];
     }
 
     public void ClickWorld()
     {
+        if (tapeSave == null)
+            return;
+
         if (isCheck)
         {
             UnCheck();
@@ -70,21 +225,43 @@ public class WorldSaveFile : MonoBehaviour
             OnCheck();
         }
 
-        GameManager.Instance.UIManager.StartAdditionalUI.NowUI.GetComponent<LoadWorldUI>().CheckAllWorlds(this);
+        if (GameManager.Instance.UIManager.StartAdditionalUI.NowUI != null)
+        {
+            LoadWorldUI loadWorldUI =
+                GameManager.Instance.UIManager.StartAdditionalUI
+                    .NowUI
+                    .GetComponent<LoadWorldUI>();
+
+            if (loadWorldUI != null)
+                loadWorldUI.CheckAllWorlds(this);
+        }
     }
 
     public void UnCheck()
     {
         isCheck = false;
-        tapeSave.Check.SetActive(false);
+
+        if (tapeSave != null &&
+            tapeSave.Check != null)
+        {
+            tapeSave.Check.SetActive(false);
+        }
     }
 
     public void OnCheck()
     {
-        isCheck = true;
-        tapeSave.Check.SetActive(true);
+        if (tapeSave == null)
+            return;
 
-        GameManager.Instance.SoundManager.PlayEffect(CassetteLiftClackSoundFactory.CreateCassetteLiftClack_05_ClearCassetteClack());
+        isCheck = true;
+
+        if (tapeSave.Check != null)
+            tapeSave.Check.SetActive(true);
+
+        GameManager.Instance.SoundManager.PlayEffect(
+            CassetteLiftClackSoundFactory
+                .CreateCassetteLiftClack_05_ClearCassetteClack()
+        );
     }
 
     public string GetName()

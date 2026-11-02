@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -202,6 +201,92 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public bool IsLoading => isLoading;
     public bool IsSaving => isSaving;
+    public bool IsCreatingNewSave => isCreatingNewSave;
+
+    bool isCreatingNewSave = false;
+
+    Vector3 defaultPlayerPosition = Vector3.zero;
+    Quaternion defaultPlayerRotation = Quaternion.identity;
+    bool hasDefaultPlayerTransform = false;
+
+    public static bool HasActiveSaveFolder =>
+        GameManager.Instance != null &&
+        !string.IsNullOrWhiteSpace(
+            GameManager.Instance.NowWorldSaveFolder
+        );
+
+    public static bool TryParseSaveFolderName(
+        string folderName,
+        out string saveName,
+        out string saveTime,
+        out int iconIndex,
+        out int tapeIndex)
+    {
+        saveName = "";
+        saveTime = "";
+        iconIndex = -1;
+        tapeIndex = -1;
+
+        if (string.IsNullOrWhiteSpace(folderName))
+            return false;
+
+        string[] parts =
+            folderName.Split('_');
+
+        // 이름에 '_'가 포함된 예전 세이브도 허용하고,
+        // 뒤의 3개 항목을 시간 / 아이콘 / 테이프 번호로 해석한다.
+        if (parts.Length < 4)
+            return false;
+
+        int last = parts.Length - 1;
+
+        saveTime = parts[last - 2];
+
+        if (saveTime.Length != 14)
+            return false;
+
+        long timeNumber;
+
+        if (!long.TryParse(saveTime, out timeNumber))
+            return false;
+
+        if (!int.TryParse(parts[last - 1], out iconIndex) ||
+            iconIndex < 0)
+        {
+            return false;
+        }
+
+        if (!int.TryParse(parts[last], out tapeIndex) ||
+            tapeIndex < 0)
+        {
+            return false;
+        }
+
+        saveName =
+            string.Join(
+                "_",
+                parts.Take(parts.Length - 3).ToArray()
+            );
+
+        return !string.IsNullOrWhiteSpace(saveName);
+    }
+
+    public static bool IsValidSaveFolderName(
+        string folderName)
+    {
+        string saveName;
+        string saveTime;
+        int iconIndex;
+        int tapeIndex;
+
+        return TryParseSaveFolderName(
+            folderName,
+            out saveName,
+            out saveTime,
+            out iconIndex,
+            out tapeIndex
+        );
+    }
 
     public static void EnsureSaveFolder(string _saveFolderName)
     {
@@ -211,16 +296,32 @@ public class SaveAndLoadManager : MonoBehaviour
             Debug.Log($"[Save] 폴더 생성: {SaveFolder}");
         }
 
-        if (!string.IsNullOrEmpty(_saveFolderName))
+        if (string.IsNullOrWhiteSpace(_saveFolderName))
+            return;
+
+        if (!IsValidSaveFolderName(_saveFolderName))
         {
-            string _worldSaveFolder = System.IO.Path.Combine(SaveFolder, _saveFolderName);
-            string _worldPlayerSetting = System.IO.Path.Combine(_worldSaveFolder, "WorldPlayerSetting");
-
-            Directory.CreateDirectory(_worldSaveFolder);
-            Directory.CreateDirectory(_worldPlayerSetting);
-
-            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+            Debug.LogWarning(
+                "[Save] 올바르지 않은 세이브 폴더 이름입니다: " +
+                _saveFolderName
+            );
+            return;
         }
+
+        string _worldSaveFolder =
+            System.IO.Path.Combine(
+                SaveFolder,
+                _saveFolderName
+            );
+
+        string _worldPlayerSetting =
+            System.IO.Path.Combine(
+                _worldSaveFolder,
+                "WorldPlayerSetting"
+            );
+
+        Directory.CreateDirectory(_worldSaveFolder);
+        Directory.CreateDirectory(_worldPlayerSetting);
     }
 
     public static void EnsureSaveFolder()
@@ -231,20 +332,75 @@ public class SaveAndLoadManager : MonoBehaviour
             Debug.Log($"[Save] 폴더 생성: {SaveFolder}");
         }
 
-        if(GameManager.Instance.NowWorldSaveFolder != null)
+        if (!HasActiveSaveFolder)
+            return;
+
+        if (!IsValidSaveFolderName(
+            GameManager.Instance.NowWorldSaveFolder))
         {
-            Directory.CreateDirectory(WorldSaveFolder);
-            Directory.CreateDirectory(WorldPlayerSetting);
-            GameManager.Instance.MainCamera.GetComponent<CameraShaderPutter>().ResetMaterial();
+            Debug.LogWarning(
+                "[Save] 현재 세이브 폴더 이름이 올바르지 않습니다: " +
+                GameManager.Instance.NowWorldSaveFolder
+            );
+            return;
         }
+
+        Directory.CreateDirectory(WorldSaveFolder);
+        Directory.CreateDirectory(WorldPlayerSetting);
     }
 
     private void Start()
     {
+        CaptureDefaultPlayerTransform();
+
         if (Directory.Exists(PlayerSettingFolder))
         {
             LoadStartFile(PlayerSettingFolder);
         }
+    }
+
+    void CaptureDefaultPlayerTransform()
+    {
+        if (GameManager.Instance == null ||
+            GameManager.Instance.MainCamera == null)
+        {
+            return;
+        }
+
+        Transform player =
+            GameManager.Instance.MainCamera.transform;
+
+        defaultPlayerPosition = player.position;
+        defaultPlayerRotation = player.rotation;
+        hasDefaultPlayerTransform = true;
+    }
+
+    void RestoreDefaultPlayerTransform()
+    {
+        if (GameManager.Instance == null ||
+            GameManager.Instance.MainCamera == null)
+        {
+            return;
+        }
+
+        if (!hasDefaultPlayerTransform)
+            CaptureDefaultPlayerTransform();
+
+        Transform player =
+            GameManager.Instance.MainCamera.transform;
+
+        player.position =
+            hasDefaultPlayerTransform
+            ? defaultPlayerPosition
+            : Vector3.zero;
+
+        player.rotation =
+            hasDefaultPlayerTransform
+            ? defaultPlayerRotation
+            : Quaternion.identity;
+
+        GameManager.Instance.MainCamera.TryCheckrot();
+        GameManager.Instance.MainCamera.SavePos();
     }
 
     public void CancelLoadWorldFolder()
@@ -257,6 +413,33 @@ public class SaveAndLoadManager : MonoBehaviour
         // 이미 로드 중이라면 중복 로드 금지
         if (isLoading)
             return;
+
+        if (!HasActiveSaveFolder)
+        {
+            Debug.LogWarning(
+                "[Load] 선택된 세이브 폴더가 없습니다."
+            );
+            return;
+        }
+
+        if (!IsValidSaveFolderName(
+            GameManager.Instance.NowWorldSaveFolder))
+        {
+            Debug.LogWarning(
+                "[Load] 올바르지 않은 세이브 폴더 이름입니다: " +
+                GameManager.Instance.NowWorldSaveFolder
+            );
+            return;
+        }
+
+        if (!Directory.Exists(WorldSaveFolder))
+        {
+            Debug.LogWarning(
+                "[Load] 세이브 폴더가 존재하지 않습니다: " +
+                WorldSaveFolder
+            );
+            return;
+        }
 
         loadWorldFolderCoroutine =
             StartCoroutine(LoadWorldFolderCoroutine());
@@ -287,6 +470,9 @@ public class SaveAndLoadManager : MonoBehaviour
         GameManager.Instance.UIManager.StartAdditionalUI
             .ChangeCreationState(CreateState.Setting);
 
+        // 이전 세이브의 Runtime 데이터가 새 세이브에 섞이지 않도록
+        // 먼저 런타임 상태를 초기화한다.
+        ResetWorldPlayerRuntime();
 
         if (
             Directory.Exists(WorldPlayerSetting) &&
@@ -297,9 +483,7 @@ public class SaveAndLoadManager : MonoBehaviour
         }
         else
         {
-            GameManager.Instance.MainCamera
-                .GetComponent<CameraShaderPutter>()
-                .ResetMaterial();
+            RestoreDefaultPlayerTransform();
         }
 
 
@@ -462,6 +646,9 @@ public class SaveAndLoadManager : MonoBehaviour
         if (_world == null)
             return;
 
+        if (!HasActiveSaveFolder)
+            return;
+
         if (deletedWorlds.Contains(_world.Savedtime))
             return;
 
@@ -540,6 +727,12 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void SaveWorldInfo(ChunkCode world)
     {
+        if (world == null ||
+            !HasActiveSaveFolder)
+        {
+            return;
+        }
+
         string folder = GetWorldFolder(world.Savedtime);
 
         if (!Directory.Exists(folder))
@@ -773,6 +966,9 @@ public class SaveAndLoadManager : MonoBehaviour
         if (_world == null)
             return;
 
+        if (!HasActiveSaveFolder)
+            return;
+
         EnsureSaveFolder();
 
         string worldID = _world.Savedtime;
@@ -837,7 +1033,20 @@ public class SaveAndLoadManager : MonoBehaviour
             return;
         }
 
-        string folder = Path.Combine(SaveFolder, saveFolderName);
+        if (!IsValidSaveFolderName(saveFolderName))
+        {
+            Debug.LogWarning(
+                "[Save] 올바르지 않은 세이브 폴더는 삭제하지 않습니다: " +
+                saveFolderName
+            );
+            return;
+        }
+
+        string folder =
+            Path.Combine(
+                SaveFolder,
+                saveFolderName
+            );
 
         if (!Directory.Exists(folder))
         {
@@ -856,20 +1065,24 @@ public class SaveAndLoadManager : MonoBehaviour
             yield break;
 
 
-        string json =
-            File.ReadAllText(
-                Path.Combine(
-                    folder,
-                    "world.json"
-                )
+        string worldInfoPath =
+            Path.Combine(
+                folder,
+                "world.json"
             );
 
+        WorldSaveData worldsave;
 
-        WorldSaveData worldsave =
-            JsonUtility.FromJson<WorldSaveData>(
-                json
+        if (!TryReadJson(
+            worldInfoPath,
+            out worldsave))
+        {
+            Debug.LogWarning(
+                "[Load] world.json을 읽지 못해 World 로드를 건너뜁니다: " +
+                worldInfoPath
             );
-
+            yield break;
+        }
 
         if (cancelLoading)
             yield break;
@@ -892,25 +1105,38 @@ public class SaveAndLoadManager : MonoBehaviour
         );
 
 
-        world.transform.position =
+        Vector3 loadedWorldPosition =
             new Vector3(
                 worldsave.x,
                 worldsave.y,
                 worldsave.z
             );
 
+        world.transform.position =
+            IsFiniteVector3(loadedWorldPosition)
+            ? loadedWorldPosition
+            : Vector3.zero;
+
+        Quaternion loadedWorldRotation;
 
         world.transform.rotation =
-            new Quaternion(
+            TryCreateValidQuaternion(
                 worldsave.xrot,
                 worldsave.yrot,
                 worldsave.zrot,
-                worldsave.wrot
-            );
+                worldsave.wrot,
+                out loadedWorldRotation)
+            ? loadedWorldRotation
+            : Quaternion.identity;
 
+        float loadedWorldScale =
+            IsFinite(worldsave.size) &&
+            worldsave.size > 0.0001f
+            ? worldsave.size
+            : 1f;
 
         world.transform.localScale =
-            Vector3.one * worldsave.size;
+            Vector3.one * loadedWorldScale;
 
 
         ChunkCode worldCode =
@@ -931,51 +1157,61 @@ public class SaveAndLoadManager : MonoBehaviour
         // Light 복원
         // =====================================================
 
-        if (worldsave.isLightBlock)
+        if (worldsave.isLightBlock &&
+            worldsave.lightblock != null)
         {
             Light _light =
                 worldCode.ChangeLightPower();
 
+            if (_light != null)
+            {
+                Vector3 loadedLightPosition =
+                    new Vector3(
+                        worldsave.lightblock.x,
+                        worldsave.lightblock.y,
+                        worldsave.lightblock.z
+                    );
 
-            _light.gameObject.transform.position =
-                new Vector3(
-                    worldsave.lightblock.x,
-                    worldsave.lightblock.y,
-                    worldsave.lightblock.z
-                );
+                if (IsFiniteVector3(loadedLightPosition))
+                {
+                    _light.gameObject.transform.position =
+                        loadedLightPosition;
+                }
 
+                Quaternion loadedLightRotation;
 
-            _light.gameObject.transform.rotation =
-                new Quaternion(
+                if (TryCreateValidQuaternion(
                     worldsave.lightblock.xrot,
                     worldsave.lightblock.yrot,
                     worldsave.lightblock.zrot,
-                    worldsave.lightblock.wrot
-                );
+                    worldsave.lightblock.wrot,
+                    out loadedLightRotation))
+                {
+                    _light.gameObject.transform.rotation =
+                        loadedLightRotation;
+                }
 
+                _light.color =
+                    new Color(
+                        worldsave.lightblock.r,
+                        worldsave.lightblock.g,
+                        worldsave.lightblock.b
+                    );
 
-            _light.color =
-                new Color(
-                    worldsave.lightblock.r,
-                    worldsave.lightblock.g,
-                    worldsave.lightblock.b
-                );
+                _light.type =
+                    worldsave.lightblock.type == 1
+                    ? LightType.Spot
+                    : LightType.Point;
 
+                _light.spotAngle =
+                    worldsave.lightblock.SpotAngle;
 
-            _light.type =
-                worldsave.lightblock.type == 1
-                ? LightType.Spot
-                : LightType.Point;
+                _light.range =
+                    worldsave.lightblock.Range;
 
-
-            _light.spotAngle =
-                worldsave.lightblock.SpotAngle;
-
-            _light.range =
-                worldsave.lightblock.Range;
-
-            _light.intensity =
-                worldsave.lightblock.Intensive;
+                _light.intensity =
+                    worldsave.lightblock.Intensive;
+            }
         }
 
 
@@ -1293,6 +1529,19 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void SaveAll()
     {
+        if (!HasActiveSaveFolder)
+            return;
+
+        if (!IsValidSaveFolderName(
+            GameManager.Instance.NowWorldSaveFolder))
+        {
+            Debug.LogWarning(
+                "[Save] 올바르지 않은 현재 세이브 폴더입니다: " +
+                GameManager.Instance.NowWorldSaveFolder
+            );
+            return;
+        }
+
         PlayerPosSave();
         SaveMainLight();
         SaveBlockColors();
@@ -1302,7 +1551,16 @@ public class SaveAndLoadManager : MonoBehaviour
 
     string TryMakeDataFolder()
     {
-        string path = WorldPlayerSetting;   
+        if (!HasActiveSaveFolder)
+            return null;
+
+        if (!IsValidSaveFolderName(
+            GameManager.Instance.NowWorldSaveFolder))
+        {
+            return null;
+        }
+
+        string path = WorldPlayerSetting;
         Directory.CreateDirectory(path);
         return path;
     }
@@ -1310,7 +1568,14 @@ public class SaveAndLoadManager : MonoBehaviour
     public void PlayerPosSave()
     {
         string _path = TryMakeDataFolder();
+
+        if (string.IsNullOrEmpty(_path))
+            return;
+
         _path = Path.Combine(_path, "PlayerPos.json");
+
+        if (GameManager.Instance.MainCamera == null)
+            return;
 
         Transform Player = GameManager.Instance.MainCamera.gameObject.transform;
 
@@ -1332,10 +1597,26 @@ public class SaveAndLoadManager : MonoBehaviour
     public void SaveMainLight()
     {
         string _path = TryMakeDataFolder();
+
+        if (string.IsNullOrEmpty(_path))
+            return;
+
         _path = Path.Combine(_path, "MainLight.json");
 
-        GameObject MainLight = GameManager.Instance.LightManager.MainLight;
-        Light _mainlight = MainLight.GetComponent<Light>();
+        if (GameManager.Instance.LightManager == null ||
+            GameManager.Instance.LightManager.MainLight == null)
+        {
+            return;
+        }
+
+        GameObject MainLight =
+            GameManager.Instance.LightManager.MainLight;
+
+        Light _mainlight =
+            MainLight.GetComponent<Light>();
+
+        if (_mainlight == null)
+            return;
 
         MainLightSave maincolor = new MainLightSave() 
         {
@@ -1358,9 +1639,25 @@ public class SaveAndLoadManager : MonoBehaviour
     public void SaveBlockColors()
     {
         string _path = TryMakeDataFolder();
+
+        if (string.IsNullOrEmpty(_path))
+            return;
+
         _path = Path.Combine(_path, "BlockColors.json");
 
         BuildManager BM = GameManager.Instance.BuildManager;
+
+        if (BM == null ||
+            BM.MainColor == null)
+        {
+            return;
+        }
+
+        if (BM.PreColors == null)
+            BM.PreColors = new List<Color>();
+
+        if (BM.SaveColors == null)
+            BM.SaveColors = new List<Color>();
 
         BlockColorsSave blockcolors = new BlockColorsSave() 
         {
@@ -1411,7 +1708,14 @@ public class SaveAndLoadManager : MonoBehaviour
     public void SavePlayerAchive()
     {
         string _path = TryMakeDataFolder();
+
+        if (string.IsNullOrEmpty(_path))
+            return;
+
         _path = Path.Combine(_path, "PlayerAchive.json");
+
+        if (GameManager.Instance.WorldManager == null)
+            return;
 
         PlayerAchieve PA = new PlayerAchieve()
         {
@@ -1424,9 +1728,26 @@ public class SaveAndLoadManager : MonoBehaviour
     public void SaveCameraSetting()
     {
         string _path = TryMakeDataFolder();
+
+        if (string.IsNullOrEmpty(_path))
+            return;
+
         _path = Path.Combine(_path, "CameraSetting.json");
 
-        Material CameraMaterial = GameManager.Instance.MainCamera.gameObject.GetComponent<CameraShaderPutter>().CamMaterial;
+        CameraShaderPutter cameraShader =
+            GameManager.Instance.MainCamera != null
+            ? GameManager.Instance.MainCamera
+                .GetComponent<CameraShaderPutter>()
+            : null;
+
+        if (cameraShader == null ||
+            cameraShader.CamMaterial == null)
+        {
+            return;
+        }
+
+        Material CameraMaterial =
+            cameraShader.CamMaterial;
 
         CameraSettingSave CSS = new CameraSettingSave()
         {
@@ -1484,24 +1805,42 @@ public class SaveAndLoadManager : MonoBehaviour
 
         HelpingInMake HM = findHM();
 
-        CSS.IsSubCameraUse.Add(HM.isLight);
-        CSS.IsSubCameraUse.Add(HM.isFilter);
+        if (HM != null)
+        {
+            CSS.IsSubCameraUse.Add(HM.isLight);
+            CSS.IsSubCameraUse.Add(HM.isFilter);
+        }
+        else
+        {
+            CSS.IsSubCameraUse.Add(false);
+            CSS.IsSubCameraUse.Add(false);
+        }
 
         File.WriteAllText(_path, JsonUtility.ToJson(CSS, true));
     }
 
     void LoadFile(string _path)
     {
-        string[] files = Directory.GetFiles(_path, "*.json");
+        if (!Directory.Exists(_path))
+        {
+            RestoreDefaultPlayerTransform();
+            return;
+        }
+
+        bool playerLoaded = false;
+
+        string[] files =
+            Directory.GetFiles(_path, "*.json");
 
         foreach (string file in files)
         {
-            string fileName = Path.GetFileName(file);
+            string fileName =
+                Path.GetFileName(file);
 
             switch (fileName)
             {
                 case "PlayerPos.json":
-                    LoadPlayer(file);
+                    playerLoaded = LoadPlayer(file);
                     break;
 
                 case "MainLight.json":
@@ -1522,169 +1861,509 @@ public class SaveAndLoadManager : MonoBehaviour
             }
         }
 
-        GameManager.Instance.MainCamera.stopCamera = false;
+        if (!playerLoaded)
+        {
+            Debug.LogWarning(
+                "[Load] PlayerPos.json이 없거나 올바르지 않아 " +
+                "기본 플레이어 위치를 사용합니다."
+            );
+
+            RestoreDefaultPlayerTransform();
+        }
+
+        if (GameManager.Instance.MainCamera != null)
+        {
+            GameManager.Instance.MainCamera.stopCamera = false;
+        }
     }
 
-    void LoadPlayer(string _path)
+    bool LoadPlayer(string _path)
     {
-        if (!File.Exists(_path))
-            return;
+        PlayerPositionSave data;
 
+        if (!TryReadJson(_path, out data))
+            return false;
 
-        string json =
-            File.ReadAllText(_path);
-
-        PlayerPositionSave data =
-            JsonUtility.FromJson<PlayerPositionSave>(json);
-
-
-        MainCamera mainCamera =
-            GameManager.Instance.MainCamera;
-
-        Transform player =
-            mainCamera.transform;
-
-
-        player.position =
+        Vector3 loadedPosition =
             new Vector3(
                 data.x,
                 data.y,
                 data.z
             );
 
-        player.rotation =
-            new Quaternion(
-                data.xrot,
-                data.yrot,
-                data.zrot,
-                data.wrot
+        if (!IsFiniteVector3(loadedPosition))
+        {
+            Debug.LogWarning(
+                "[Load] PlayerPos 위치 값이 올바르지 않습니다: " +
+                _path
+            );
+            return false;
+        }
+
+        Quaternion loadedRotation;
+
+        if (!TryCreateValidQuaternion(
+            data.xrot,
+            data.yrot,
+            data.zrot,
+            data.wrot,
+            out loadedRotation))
+        {
+            Debug.LogWarning(
+                "[Load] PlayerPos 회전 값이 올바르지 않아 " +
+                "기본 회전을 사용합니다: " +
+                _path
             );
 
+            loadedRotation =
+                hasDefaultPlayerTransform
+                ? defaultPlayerRotation
+                : Quaternion.identity;
+        }
+
+        MainCamera mainCamera =
+            GameManager.Instance.MainCamera;
+
+        if (mainCamera == null)
+            return false;
+
+        Transform player =
+            mainCamera.transform;
+
+        player.position = loadedPosition;
+        player.rotation = loadedRotation;
 
         mainCamera.TryCheckrot();
         mainCamera.SavePos();
+
+        return true;
     }
 
     void LoadLight(string _path)
     {
-        if (!File.Exists(_path)) return;
+        MainLightSave data;
 
-        string json = File.ReadAllText(_path);
+        if (!TryReadJson(_path, out data) ||
+            data.MainLightColor == null)
+        {
+            return;
+        }
 
-        MainLightSave data = JsonUtility.FromJson<MainLightSave>(json);
+        GameObject mainLightObject =
+            GameManager.Instance.LightManager != null
+            ? GameManager.Instance.LightManager.MainLight
+            : null;
 
-        GameObject MainLight = GameManager.Instance.LightManager.MainLight;
-        Light _mainlight = MainLight.GetComponent<Light>();
+        if (mainLightObject == null)
+            return;
 
-        LightBlockSaveData LBSD = data.MainLightColor;
-        MainLight.transform.rotation = new Quaternion(LBSD.xrot, LBSD.yrot, LBSD.zrot, LBSD.wrot);
-        _mainlight.color = new Color(LBSD.r, LBSD.g, LBSD.b);
+        Light mainLight =
+            mainLightObject.GetComponent<Light>();
+
+        if (mainLight == null)
+            return;
+
+        LightBlockSaveData saved =
+            data.MainLightColor;
+
+        Quaternion loadedRotation;
+
+        if (TryCreateValidQuaternion(
+            saved.xrot,
+            saved.yrot,
+            saved.zrot,
+            saved.wrot,
+            out loadedRotation))
+        {
+            mainLightObject.transform.rotation =
+                loadedRotation;
+        }
+
+        if (IsFinite(saved.r) &&
+            IsFinite(saved.g) &&
+            IsFinite(saved.b))
+        {
+            mainLight.color =
+                new Color(
+                    saved.r,
+                    saved.g,
+                    saved.b
+                );
+        }
     }
 
     void LoadBlockColors(string _path)
     {
-        if (!File.Exists(_path)) return;
+        BlockColorsSave data;
 
-        string json = File.ReadAllText(_path);
+        if (!TryReadJson(_path, out data))
+            return;
 
-        BlockColorsSave data = JsonUtility.FromJson<BlockColorsSave>(json);
+        BuildManager BM =
+            GameManager.Instance.BuildManager;
 
-        BuildManager BM = GameManager.Instance.BuildManager;
+        if (BM == null)
+            return;
 
-        BM.MainColor.color = new Color(data.maincolor.r, data.maincolor.g, data.maincolor.b);
-        BM.alfar = data.maincolor.a;
-        if (data.precolor.Count > 0)
+        if (BM.PreColors == null)
+            BM.PreColors = new List<Color>();
+
+        if (BM.SaveColors == null)
+            BM.SaveColors = new List<Color>();
+
+        BM.PreColors.Clear();
+        BM.SaveColors.Clear();
+
+        if (data.maincolor != null &&
+            BM.MainColor != null)
+        {
+            BM.MainColor.color =
+                new Color(
+                    data.maincolor.r,
+                    data.maincolor.g,
+                    data.maincolor.b
+                );
+
+            BM.alfar =
+                Mathf.Clamp01(
+                    data.maincolor.a
+                );
+        }
+
+        if (data.precolor != null)
         {
             foreach (ColorSaveData CSD in data.precolor)
             {
-                BM.AddPreColor(new Color(CSD.r, CSD.g, CSD.b));
+                if (CSD == null)
+                    continue;
+
+                BM.PreColors.Add(
+                    new Color(
+                        CSD.r,
+                        CSD.g,
+                        CSD.b,
+                        CSD.a
+                    )
+                );
+
+                if (BM.PreColors.Count >= BM.precolornum)
+                    break;
             }
         }
-        if (data.savecolor.Count > 0)
+
+        if (data.savecolor != null)
         {
-            int num = 0;
             foreach (ColorSaveData CSD in data.savecolor)
             {
-                BM.AddSaveColor(new Color(CSD.r, CSD.g, CSD.b), num);
-                num++;
+                if (CSD == null)
+                    continue;
+
+                BM.SaveColors.Add(
+                    new Color(
+                        CSD.r,
+                        CSD.g,
+                        CSD.b,
+                        CSD.a
+                    )
+                );
+
+                if (BM.SaveColors.Count >= BM.savecolornum)
+                    break;
             }
+        }
+
+        while (BM.SaveColors.Count < BM.savecolornum)
+        {
+            BM.SaveColors.Add(new Color(255f, 255f, 255f, 1f));
         }
     }
 
     void LoadPlayerAchive(string _path)
     {
-        if (!File.Exists(_path)) return;
+        PlayerAchieve data;
 
-        string json = File.ReadAllText(_path);
+        if (!TryReadJson(_path, out data))
+            return;
 
-        PlayerAchieve data = JsonUtility.FromJson<PlayerAchieve>(json);
-        GameManager.Instance.WorldManager.HowManyYouMakeWorld = data.HowManyMakeWorld;
+        GameManager.Instance.WorldManager
+            .HowManyYouMakeWorld =
+            Mathf.Max(
+                0,
+                data.HowManyMakeWorld
+            );
     }
 
     void LoadCameraSetting(string _path)
     {
-        if (!File.Exists(_path)) return;
+        CameraSettingSave data;
 
-        string json = File.ReadAllText(_path);
+        if (!TryReadJson(_path, out data))
+            return;
 
-        CameraSettingSave data = JsonUtility.FromJson<CameraSettingSave>(json);
-        Material CameraMaterial = GameManager.Instance.MainCamera.gameObject.GetComponent<CameraShaderPutter>().CamMaterial;
+        CameraShaderPutter cameraShader =
+            GameManager.Instance.MainCamera != null
+            ? GameManager.Instance.MainCamera
+                .GetComponent<CameraShaderPutter>()
+            : null;
 
-        foreach(var SV in data.CameraAdditionalEffect)
+        if (cameraShader == null ||
+            cameraShader.CamMaterial == null)
         {
-            switch (SV.type)
+            return;
+        }
+
+        Material CameraMaterial =
+            cameraShader.CamMaterial;
+
+        if (data.CameraAdditionalEffect != null)
+        {
+            foreach (SettingValue SV in data.CameraAdditionalEffect)
             {
-                case CameraEffect.Reverse:
-                    CameraMaterial.SetFloat(((SystemName)0).ToString(), SV.isOn ? 1f : 0f);
-                    break;
+                if (SV == null)
+                    continue;
 
-                case CameraEffect.BlackWhite:
-                    CameraMaterial.SetFloat(((SystemName)2).ToString(), SV.isOn ? 1f : 0f);
-                    break;
+                switch (SV.type)
+                {
+                    case CameraEffect.Reverse:
+                        CameraMaterial.SetFloat(((SystemName)0).ToString(), SV.isOn ? 1f : 0f);
+                        break;
 
-                case CameraEffect.ContrastThreshold:
-                    CameraMaterial.SetFloat(((SystemName)4).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)5).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.BlackWhite:
+                        CameraMaterial.SetFloat(((SystemName)2).ToString(), SV.isOn ? 1f : 0f);
+                        break;
 
-                case CameraEffect.Posterize:
-                    CameraMaterial.SetFloat(((SystemName)6).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)7).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.ContrastThreshold:
+                        CameraMaterial.SetFloat(((SystemName)4).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)5).ToString(), SV.NowValue);
+                        break;
 
-                case CameraEffect.Pixelate:
-                    CameraMaterial.SetFloat(((SystemName)8).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)9).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.Posterize:
+                        CameraMaterial.SetFloat(((SystemName)6).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)7).ToString(), SV.NowValue);
+                        break;
 
-                case CameraEffect.Vignette:
-                    CameraMaterial.SetFloat(((SystemName)10).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)11).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.Pixelate:
+                        CameraMaterial.SetFloat(((SystemName)8).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)9).ToString(), SV.NowValue);
+                        break;
 
-                case CameraEffect.EdgeDetect:
-                    CameraMaterial.SetFloat(((SystemName)12).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)13).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.Vignette:
+                        CameraMaterial.SetFloat(((SystemName)10).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)11).ToString(), SV.NowValue);
+                        break;
 
-                case CameraEffect.FilmNoise:
-                    CameraMaterial.SetFloat(((SystemName)14).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)15).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.EdgeDetect:
+                        CameraMaterial.SetFloat(((SystemName)12).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)13).ToString(), SV.NowValue);
+                        break;
 
-                case CameraEffect.CRTScanline:
-                    CameraMaterial.SetFloat(((SystemName)16).ToString(), SV.isOn ? 1f : 0f);
-                    CameraMaterial.SetFloat(((SystemName)17).ToString(), SV.NowValue);
-                    break;
+                    case CameraEffect.FilmNoise:
+                        CameraMaterial.SetFloat(((SystemName)14).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)15).ToString(), SV.NowValue);
+                        break;
+
+                    case CameraEffect.CRTScanline:
+                        CameraMaterial.SetFloat(((SystemName)16).ToString(), SV.isOn ? 1f : 0f);
+                        CameraMaterial.SetFloat(((SystemName)17).ToString(), SV.NowValue);
+                        break;
+                }
             }
         }
 
         HelpingInMake HM = findHM();
 
-        HM.isLight = data.IsSubCameraUse[0];
-        HM.isFilter = data.IsSubCameraUse[1];
+        if (HM != null &&
+            data.IsSubCameraUse != null)
+        {
+            if (data.IsSubCameraUse.Count > 0)
+                HM.isLight = data.IsSubCameraUse[0];
+
+            if (data.IsSubCameraUse.Count > 1)
+                HM.isFilter = data.IsSubCameraUse[1];
+        }
     }
 
+    bool TryReadJson<T>(
+        string path,
+        out T data)
+        where T : class
+    {
+        data = null;
+
+        if (!File.Exists(path))
+            return false;
+
+        try
+        {
+            string json =
+                File.ReadAllText(path);
+
+            if (string.IsNullOrWhiteSpace(json))
+                return false;
+
+            data =
+                JsonUtility.FromJson<T>(json);
+
+            return data != null;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning(
+                "[Load] JSON 읽기 실패: " +
+                path +
+                "\n" +
+                ex.Message
+            );
+
+            return false;
+        }
+    }
+
+    static bool IsFinite(float value)
+    {
+        return
+            !float.IsNaN(value) &&
+            !float.IsInfinity(value);
+    }
+
+    static bool IsFiniteVector3(Vector3 value)
+    {
+        return
+            IsFinite(value.x) &&
+            IsFinite(value.y) &&
+            IsFinite(value.z);
+    }
+
+    static bool TryCreateValidQuaternion(
+        float x,
+        float y,
+        float z,
+        float w,
+        out Quaternion rotation)
+    {
+        rotation = Quaternion.identity;
+
+        if (!IsFinite(x) ||
+            !IsFinite(y) ||
+            !IsFinite(z) ||
+            !IsFinite(w))
+        {
+            return false;
+        }
+
+        float magnitudeSquared =
+            x * x +
+            y * y +
+            z * z +
+            w * w;
+
+        if (magnitudeSquared < 0.000001f)
+            return false;
+
+        float inverseMagnitude =
+            1f / Mathf.Sqrt(magnitudeSquared);
+
+        rotation =
+            new Quaternion(
+                x * inverseMagnitude,
+                y * inverseMagnitude,
+                z * inverseMagnitude,
+                w * inverseMagnitude
+            );
+
+        return true;
+    }
+
+    bool IsValidPlayerPositionData(
+        PlayerPositionSave data)
+    {
+        if (data == null)
+            return false;
+
+        if (!IsFiniteVector3(
+            new Vector3(
+                data.x,
+                data.y,
+                data.z
+            )))
+        {
+            return false;
+        }
+
+        Quaternion rotation;
+
+        return TryCreateValidQuaternion(
+            data.xrot,
+            data.yrot,
+            data.zrot,
+            data.wrot,
+            out rotation
+        );
+    }
+
+    void EnsureDefaultPlayerPositionFile(
+        string targetFolder)
+    {
+        if (string.IsNullOrEmpty(targetFolder))
+            return;
+
+        Directory.CreateDirectory(targetFolder);
+
+        string playerPosPath =
+            Path.Combine(
+                targetFolder,
+                "PlayerPos.json"
+            );
+
+        PlayerPositionSave existingData;
+
+        if (TryReadJson(
+            playerPosPath,
+            out existingData) &&
+            IsValidPlayerPositionData(existingData))
+        {
+            return;
+        }
+
+        WriteDefaultPlayerPositionFile(
+            playerPosPath
+        );
+    }
+
+    void WriteDefaultPlayerPositionFile(
+        string playerPosPath)
+    {
+        if (!hasDefaultPlayerTransform)
+            CaptureDefaultPlayerTransform();
+
+        Vector3 position =
+            hasDefaultPlayerTransform
+            ? defaultPlayerPosition
+            : Vector3.zero;
+
+        Quaternion rotation =
+            hasDefaultPlayerTransform
+            ? defaultPlayerRotation
+            : Quaternion.identity;
+
+        PlayerPositionSave data =
+            new PlayerPositionSave()
+            {
+                x = position.x,
+                y = position.y,
+                z = position.z,
+
+                xrot = rotation.x,
+                yrot = rotation.y,
+                zrot = rotation.z,
+                wrot = rotation.w
+            };
+
+        File.WriteAllText(
+            playerPosPath,
+            JsonUtility.ToJson(data, true)
+        );
+    }
 
     HelpingInMake findHM()
     {
@@ -1701,41 +2380,62 @@ public class SaveAndLoadManager : MonoBehaviour
 
     public void SaveAllWorld()
     {
+        if (!HasActiveSaveFolder)
+            return;
+
         foreach(GameObject wb in GameManager.Instance.WorldManager.Worlds)
         {
-            SaveWorldData(wb.GetComponent<ChunkCode>());
+            if (wb == null)
+                continue;
+
+            ChunkCode chunk =
+                wb.GetComponent<ChunkCode>();
+
+            if (chunk != null)
+                SaveWorldData(chunk);
         }
     }
 
     public void ChangeName(string Time, string changedName)
     {
+        if (!HasActiveSaveFolder)
+            return;
+
         EnsureSaveFolder();
 
         string folder = Path.Combine(WorldSaveFolder, $"World_{Time}");
         string path = Path.Combine(folder, "world.json");
 
-        if (!File.Exists(path)) return;
+        WorldSaveData worldsave;
 
-        string json = File.ReadAllText(path);
-        WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
+        if (!TryReadJson(path, out worldsave))
+            return;
 
         worldsave.Name = changedName;
 
-        json = JsonUtility.ToJson(worldsave, true);
+        string json =
+            JsonUtility.ToJson(
+                worldsave,
+                true
+            );
+
         File.WriteAllText(path, json);
     }
 
     public string GetName(string _path)
     {
+        if (!HasActiveSaveFolder)
+            return null;
+
         EnsureSaveFolder();
 
         string folder = Path.Combine(WorldSaveFolder, _path);
         string path = Path.Combine(folder, "world.json");
 
-        if (!File.Exists(path)) return null;
+        WorldSaveData worldsave;
 
-        string json = File.ReadAllText(path);
-        WorldSaveData worldsave = JsonUtility.FromJson<WorldSaveData>(json);
+        if (!TryReadJson(path, out worldsave))
+            return null;
 
         return worldsave.Name;
     }
@@ -1788,6 +2488,9 @@ public class SaveAndLoadManager : MonoBehaviour
 
         string json = File.ReadAllText(path);
         SoundSettingSave soundSave = JsonUtility.FromJson<SoundSettingSave>(json);
+
+        if (soundSave == null)
+            return;
 
         SoundManager soundManager = GameManager.Instance.SoundManager;
 
@@ -1881,6 +2584,9 @@ public class SaveAndLoadManager : MonoBehaviour
         SensitiveSettingSave sensitiveSave =
             JsonUtility.FromJson<SensitiveSettingSave>(json);
 
+        if (sensitiveSave == null)
+            return;
+
         InputManager inputManager = GameManager.Instance.InputManager;
         MainCamera mainCamera = GameManager.Instance.MainCamera;
 
@@ -1915,6 +2621,9 @@ public class SaveAndLoadManager : MonoBehaviour
 
         string json = File.ReadAllText(path);
         LanguageSettingSave languageSave = JsonUtility.FromJson<LanguageSettingSave>(json);
+
+        if (languageSave == null)
+            return;
 
         GameManager.Instance.TranslationManager.ChangeLanguage(languageSave.Language);
     }
@@ -1961,17 +2670,65 @@ public class SaveAndLoadManager : MonoBehaviour
         KeyManager _key = GameManager.Instance.KeyManager;
         KeySaves keysaves = JsonUtility.FromJson<KeySaves>(json);
 
+        if (keysaves == null ||
+            keysaves.keys == null)
+        {
+            return;
+        }
+
         foreach (KeySave save in keysaves.keys)
         {
+            if (save == null ||
+                save.keyboard == null)
+            {
+                continue;
+            }
+
+            if (!_key.KeyboardDictionary.ContainsKey(save.keyname))
+                continue;
+
             _key.KeyboardDictionary[save.keyname] = save.keyboard;
         }
     }
 
     public bool AwaitForMaking = false;
 
-    public void CreateNewSaveWithDefaultWorld(string saveFolderName, int defaultWorldIndex = 0)
+    public void CreateNewSaveWithDefaultWorld(
+        string saveFolderName,
+        int defaultWorldIndex = 0)
     {
-        StartCoroutine(CreateNewSaveWithDefaultWorldCoroutine(saveFolderName, defaultWorldIndex));
+        if (isCreatingNewSave)
+            return;
+
+        if (!IsValidSaveFolderName(saveFolderName))
+        {
+            Debug.LogWarning(
+                "[Save] 새 세이브 폴더 이름이 올바르지 않습니다: " +
+                saveFolderName
+            );
+            return;
+        }
+
+        string defaultWorldFolder =
+            GetDefaultWorldTemplateFolder(defaultWorldIndex);
+
+        if (!Directory.Exists(defaultWorldFolder))
+        {
+            Debug.LogWarning(
+                "[Save] 기본 World 폴더가 없습니다: " +
+                defaultWorldFolder
+            );
+            return;
+        }
+
+        isCreatingNewSave = true;
+
+        StartCoroutine(
+            CreateNewSaveWithDefaultWorldCoroutine(
+                saveFolderName,
+                defaultWorldIndex
+            )
+        );
     }
 
     IEnumerator CreateNewSaveWithDefaultWorldCoroutine(
@@ -1998,29 +2755,6 @@ public class SaveAndLoadManager : MonoBehaviour
                 saveFolderName
             )
         );
-
-
-        // =========================
-        // 현재 Runtime 상태도
-        // 새 Save 기본값으로 초기화
-        // =========================
-
-        string newPlayerSettingFolder =
-            Path.Combine(
-                SaveFolder,
-                saveFolderName,
-                "WorldPlayerSetting"
-            );
-
-
-        if (Directory.Exists(newPlayerSettingFolder))
-        {
-            ResetWorldPlayerRuntime();
-
-            LoadFile(newPlayerSettingFolder);
-        }
-
-
         // =========================
         // 기본 World 복사
         // =========================
@@ -2033,11 +2767,24 @@ public class SaveAndLoadManager : MonoBehaviour
         );
 
 
-        while (!AwaitForMaking)
+        float animationWaitStart =
+            Time.realtimeSinceStartup;
+
+        while (!AwaitForMaking &&
+            Time.realtimeSinceStartup - animationWaitStart < 10f)
         {
             yield return null;
         }
 
+        if (!AwaitForMaking)
+        {
+            Debug.LogWarning(
+                "[Save] 새 세이브 제작 UI 대기 시간이 초과되었습니다. " +
+                "세이브 생성은 완료된 상태로 Load UI로 이동합니다."
+            );
+        }
+
+        isCreatingNewSave = false;
 
         GameManager.Instance.UIManager
             .StartAdditionalUI
@@ -2049,31 +2796,30 @@ public class SaveAndLoadManager : MonoBehaviour
         BuildManager BM =
             GameManager.Instance.BuildManager;
 
+        if (BM != null)
+        {
+            if (BM.PreColors == null)
+                BM.PreColors = new List<Color>();
 
-        // =========================
-        // Color 데이터 초기화
-        // =========================
+            if (BM.SaveColors == null)
+                BM.SaveColors = new List<Color>();
 
-        BM.PreColors.Clear();
-        BM.SaveColors.Clear();
+            BM.PreColors.Clear();
+            BM.SaveColors.Clear();
+        }
 
-
-        // =========================
-        // Player Achievement 초기화
-        // =========================
-
-        GameManager.Instance
-            .WorldManager
-            .HowManyYouMakeWorld = 0;
-
-
-        // =========================
-        // Camera Effect 초기화
-        // =========================
+        if (GameManager.Instance.WorldManager != null)
+        {
+            GameManager.Instance
+                .WorldManager
+                .HowManyYouMakeWorld = 0;
+        }
 
         CameraShaderPutter cameraShader =
-            GameManager.Instance.MainCamera
-                .GetComponent<CameraShaderPutter>();
+            GameManager.Instance.MainCamera != null
+            ? GameManager.Instance.MainCamera
+                .GetComponent<CameraShaderPutter>()
+            : null;
 
         if (cameraShader != null)
         {
@@ -2178,19 +2924,7 @@ public class SaveAndLoadManager : MonoBehaviour
                 "WorldPlayerSetting"
             );
 
-
-        if (!Directory.Exists(sourceFolder))
-        {
-            Debug.LogWarning(
-                $"[Save] 기본 플레이어 설정 폴더가 없습니다: {sourceFolder}"
-            );
-
-            yield break;
-        }
-
-
-        // 새 세이브이므로
-        // 빈 폴더까지 완전히 초기화
+        // 새 세이브이므로 기존 폴더가 남아 있으면 완전히 초기화한다.
         if (Directory.Exists(targetFolder))
         {
             yield return StartCoroutine(
@@ -2198,6 +2932,16 @@ public class SaveAndLoadManager : MonoBehaviour
             );
         }
 
+        if (!Directory.Exists(sourceFolder))
+        {
+            Debug.LogWarning(
+                $"[Save] 기본 플레이어 설정 폴더가 없습니다: {sourceFolder}"
+            );
+
+            Directory.CreateDirectory(targetFolder);
+            EnsureDefaultPlayerPositionFile(targetFolder);
+            yield break;
+        }
 
         yield return StartCoroutine(
             CopyDirectoryCoroutine(
@@ -2205,6 +2949,10 @@ public class SaveAndLoadManager : MonoBehaviour
                 targetFolder
             )
         );
+
+        // 템플릿 PlayerPos.json이 없거나 회전값이 잘못되어도
+        // 새 세이브에는 항상 정상적인 기본 PlayerPos를 보장한다.
+        EnsureDefaultPlayerPositionFile(targetFolder);
     }
 
     IEnumerator CopyDirectoryCoroutine(string sourceDir, string targetDir)
@@ -2255,8 +3003,18 @@ public class SaveAndLoadManager : MonoBehaviour
             return;
         }
 
-        string json = File.ReadAllText(worldInfoPath);
-        WorldSaveData worldSaveData = JsonUtility.FromJson<WorldSaveData>(json);
+        WorldSaveData worldSaveData;
+
+        if (!TryReadJson(
+            worldInfoPath,
+            out worldSaveData))
+        {
+            Debug.LogWarning(
+                "[Save] 복사된 world.json을 읽지 못했습니다: " +
+                worldInfoPath
+            );
+            return;
+        }
 
         worldSaveData.Time = newWorldTime;
 
@@ -2265,7 +3023,12 @@ public class SaveAndLoadManager : MonoBehaviour
             worldSaveData.Name = $"World_Default_{defaultWorldIndex}";
         }
 
-        json = JsonUtility.ToJson(worldSaveData, true);
+        string json =
+            JsonUtility.ToJson(
+                worldSaveData,
+                true
+            );
+
         File.WriteAllText(worldInfoPath, json);
     }
 

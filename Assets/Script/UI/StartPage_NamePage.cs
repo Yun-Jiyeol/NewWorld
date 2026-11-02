@@ -38,8 +38,24 @@ public class StartPage_NamePage : NeedToDoOnit
         }
         else
         {
-            string[] parts = GameManager.Instance.NowWorldSaveFolder.Split('_');
-            NowName = parts[0];
+            string saveName;
+            string saveTime;
+            int iconIndex;
+            int tapeIndex;
+
+            if (SaveAndLoadManager.TryParseSaveFolderName(
+                GameManager.Instance.NowWorldSaveFolder,
+                out saveName,
+                out saveTime,
+                out iconIndex,
+                out tapeIndex))
+            {
+                NowName = saveName;
+            }
+            else
+            {
+                NowName = "";
+            }
         }
 
         ChangeName();

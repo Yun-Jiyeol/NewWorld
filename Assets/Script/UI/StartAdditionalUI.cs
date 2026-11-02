@@ -308,6 +308,25 @@ public class StartAdditionalUI : MonoBehaviour
         WorldSaveFile _wsf = _NowSpawnedtape.GetComponent<WorldSaveFile>();
 
         int tapeNumver = _wsf.TapeInOnit(NowInTape);                                     //테이프 소환
+
+        if (tapeNumver < 0 ||
+            _wsf.tapeSave == null)
+        {
+            Debug.LogWarning(
+                "[SaveUI] 현재 세이브 테이프 정보를 읽지 못했습니다: " +
+                NowInTape
+            );
+
+            Destroy(_NowSpawnedtape);
+            _NowSpawnedtape = null;
+
+            NowInTape = null;
+            GameManager.Instance.NowWorldSaveFolder = null;
+
+            NamePage.Onit();
+            return;
+        }
+
         _wsf.Shadow.gameObject.SetActive(true);
         _wsf.Shadow.GetComponent<BtnClick>().enabled = false;
 
@@ -366,7 +385,20 @@ public class StartAdditionalUI : MonoBehaviour
             GameManager.Instance.SoundManager.PlayEffect(Insert2);
         }).OnComplete(() =>                 //커버 내리기
         {
-            GameManager.Instance.SoundManager.ChangeBGM(GameManager.Instance.SoundManager.TapeInSound[tapeNumver], 1f);
+            SoundManager soundManager =
+                GameManager.Instance.SoundManager;
+
+            if (soundManager != null &&
+                soundManager.TapeInSound != null &&
+                tapeNumver >= 0 &&
+                tapeNumver < soundManager.TapeInSound.Count)
+            {
+                soundManager.ChangeBGM(
+                    soundManager.TapeInSound[tapeNumver],
+                    1f
+                );
+            }
+
             CanEject = true;
         });
 

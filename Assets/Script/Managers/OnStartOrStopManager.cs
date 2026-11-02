@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OnStartOrStopManager : MonoBehaviour
@@ -14,12 +13,20 @@ public class OnStartOrStopManager : MonoBehaviour
 
     public void AddActions()
     {
-        if(OnStopGame == null && OnPauseGame == null) return;
+        if (GameManager.Instance == null ||
+            GameManager.Instance.SaveAndLoadManager == null)
+        {
+            return;
+        }
 
-        OnStopGame -= GameManager.Instance.SaveAndLoadManager.SaveAll;
-        OnStopGame += GameManager.Instance.SaveAndLoadManager.SaveAll;
-        OnPauseGame -= GameManager.Instance.SaveAndLoadManager.SaveAll;
-        OnPauseGame += GameManager.Instance.SaveAndLoadManager.SaveAll;
+        Action saveAll =
+            GameManager.Instance.SaveAndLoadManager.SaveAll;
+
+        OnStopGame -= saveAll;
+        OnStopGame += saveAll;
+
+        OnPauseGame -= saveAll;
+        OnPauseGame += saveAll;
     }
 
     public void AddTimeActions(Action _action)
@@ -30,16 +37,12 @@ public class OnStartOrStopManager : MonoBehaviour
 
     public void DelectActions()
     {
-        if (OnStopGame != null || OnPauseGame != null || AfterSomeTime != null)
-        {
-            OnStopGame?.Invoke();
-            OnPauseGame?.Invoke();
-            AfterSomeTime?.Invoke();
-        }
-
+        // Flow를 Start로 바꿀 때 저장 콜백을 "실행"하지 않고
+        // 등록만 해제한다.
+        // 실제 저장은 GoToStartPage / ExitGame / Pause / Quit에서 처리한다.
         OnStopGame = null;
         OnPauseGame = null;
-        AfterSomeTime = null;
+        StopTimeCoroutine();
     }
 
     void OnApplicationQuit()
@@ -49,7 +52,8 @@ public class OnStartOrStopManager : MonoBehaviour
 
     void OnApplicationPause(bool pause)
     {
-        if (pause) OnPauseGame?.Invoke();
+        if (pause)
+            OnPauseGame?.Invoke();
     }
 
     void OnAtSomeTime()
@@ -59,15 +63,23 @@ public class OnStartOrStopManager : MonoBehaviour
 
     void StartTimeCoroutine()
     {
-        if(TimeCoroutine != null)
+        if (TimeCoroutine == null &&
+            AfterSomeTime != null)
         {
-            TimeCoroutine = StartCoroutine(TimeSetCoroutine());
+            TimeCoroutine =
+                StartCoroutine(TimeSetCoroutine());
         }
     }
 
     public void StopTimeCoroutine()
     {
         AfterSomeTime = null;
+
+        if (TimeCoroutine != null)
+        {
+            StopCoroutine(TimeCoroutine);
+            TimeCoroutine = null;
+        }
     }
 
     IEnumerator TimeSetCoroutine()
@@ -75,6 +87,10 @@ public class OnStartOrStopManager : MonoBehaviour
         while (AfterSomeTime != null)
         {
             yield return new WaitForSeconds(time);
+
+            if (AfterSomeTime == null)
+                break;
+
             OnAtSomeTime();
         }
 

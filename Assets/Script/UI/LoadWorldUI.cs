@@ -2,7 +2,6 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +19,8 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     GameObject BlockImage = null;
     bool isSwitchingWorld = false;
 
+    Vector2 originalSpawnSize;
+
     public GameObject MakeWorldIcon;
     public GameObject DestroyWorldIcon;
 
@@ -35,12 +36,28 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     private void Awake()
     {
         StartLoadBtn.SetActive(false);
+
+        RectTransform spawnRect =
+            SpawnPos != null
+            ? SpawnPos.GetComponent<RectTransform>()
+            : null;
+
+        if (spawnRect != null)
+            originalSpawnSize = spawnRect.sizeDelta;
+
         SaveMove();
     }
 
     public override void Onit()
     {
-        NowChooseWorldName= GameManager.Instance.NowWorldSaveFolder;
+        NowChooseWorldName =
+            GameManager.Instance.NowWorldSaveFolder;
+
+        if (!SaveAndLoadManager
+            .IsValidSaveFolderName(NowChooseWorldName))
+        {
+            NowChooseWorldName = null;
+        }
 
         SettingSaveWorlds();
         CheckLoadBtn();
@@ -56,13 +73,33 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
     void SettingSaveWorlds()
     {
         SaveAndLoadManager.EnsureSaveFolder();
-        string[] worldFolders = Directory.GetDirectories(SaveAndLoadManager.SaveFolder);
 
-        List<string> validWorlds = new List<string>();
+        RectTransform spawnRect =
+            SpawnPos != null
+            ? SpawnPos.GetComponent<RectTransform>()
+            : null;
+
+        if (spawnRect != null)
+            spawnRect.sizeDelta = originalSpawnSize;
+
+        string[] worldFolders =
+            Directory.GetDirectories(
+                SaveAndLoadManager.SaveFolder
+            );
+
+        List<string> validWorlds =
+            new List<string>();
 
         foreach (string folder in worldFolders)
         {
-            string folderName = Path.GetFileName(folder);
+            string folderName =
+                Path.GetFileName(folder);
+
+            if (!SaveAndLoadManager
+                .IsValidSaveFolderName(folderName))
+            {
+                continue;
+            }
 
             validWorlds.Add(folderName);
         }
@@ -75,12 +112,40 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
 
     void MakeWorld(string WorldName)
     {
-        SpawnPos.gameObject.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 200f);
+        GameObject go =
+            Instantiate(
+                SaveFilePrefab,
+                SpawnPos
+            );
 
-        GameObject go = Instantiate(SaveFilePrefab, SpawnPos);
-        go.GetComponent<WorldSaveFile>().Onit(WorldName);
+        WorldSaveFile worldSaveFile =
+            go.GetComponent<WorldSaveFile>();
 
-        WorldSaveFiles.Add(go.GetComponent<WorldSaveFile>());
+        if (worldSaveFile == null)
+        {
+            Destroy(go);
+            return;
+        }
+
+        worldSaveFile.Onit(WorldName);
+
+        if (!worldSaveFile.IsInitialized)
+        {
+            Destroy(go);
+            return;
+        }
+
+        RectTransform spawnRect =
+            SpawnPos.gameObject
+                .GetComponent<RectTransform>();
+
+        if (spawnRect != null)
+        {
+            spawnRect.sizeDelta +=
+                new Vector2(0, 200f);
+        }
+
+        WorldSaveFiles.Add(worldSaveFile);
     }
 
     public void CheckAllWorlds(WorldSaveFile _wsf)
@@ -162,6 +227,12 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         if (isSwitchingWorld)
             return;
 
+        if (!SaveAndLoadManager
+            .IsValidSaveFolderName(NowChooseWorldName))
+        {
+            return;
+        }
+
         StartCoroutine(CancelCoroutine());
     }
 
@@ -227,7 +298,7 @@ public class LoadWorldUI : NeedToDoOnit, OnEndAction
         OriginalDeskPos = Desk.anchoredPosition;
         OriginalBtnsPos = Btns.anchoredPosition;
 
-        Color AfterColor = OriginalColor;
+        AfterColor = OriginalColor;
         AfterColor.a = 0;
         BG.color = AfterColor;
 

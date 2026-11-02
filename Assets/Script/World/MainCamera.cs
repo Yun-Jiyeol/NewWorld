@@ -52,9 +52,19 @@ public class MainCamera : MonoBehaviour
 
     KeyManager _keyManager;
 
+    [Header("Mouse Input Guard")]
+    [SerializeField] private int ignoreMouseFramesAfterLock = 2;
+
+    private int ignoreMouseInputFrames = 0;
+    private CursorLockMode lastCursorLockState;
+    private bool cursorLockStateInitialized = false;
+
     private void Start()
     {
         _keyManager = GameManager.Instance.KeyManager;
+
+        lastCursorLockState = Cursor.lockState;
+        cursorLockStateInitialized = true;
     }
 
     void Update()
@@ -65,19 +75,73 @@ public class MainCamera : MonoBehaviour
             || GameManager.Instance.flow == GameFlow.MakeOneWorld
             || GameManager.Instance.flow == GameFlow.SelectOneWorld
             || GameManager.Instance.flow == GameFlow.PutWorldInSpace) return;
-        if (stopCamera) return;
-        if (isRotating) return;
+
         CameraTurn();
     }
 
     public void CameraTurn()
     {
-        if (_keyManager.isGetKey(_keyManager.KeyboardDictionary[KeyNameSaves.CameraTurn]))
+        if (stopCamera)
+            return;
+
+        if (isRotating)
+            return;
+
+        if (ShouldIgnoreMouseInput())
+            return;
+
+        if (_keyManager.isGetKeyDown(
+            _keyManager.KeyboardDictionary[
+                KeyNameSaves.CameraTurn
+            ]))
         {
             CameraTurn180();
             return;
         }
+
         CameraMouseTurn();
+    }
+
+    bool ShouldIgnoreMouseInput()
+    {
+        if (!cursorLockStateInitialized)
+        {
+            lastCursorLockState = Cursor.lockState;
+            cursorLockStateInitialized = true;
+        }
+
+        if (lastCursorLockState != Cursor.lockState)
+        {
+            lastCursorLockState = Cursor.lockState;
+
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                ignoreMouseInputFrames =
+                    Mathf.Max(
+                        ignoreMouseInputFrames,
+                        ignoreMouseFramesAfterLock
+                    );
+            }
+        }
+
+        if (ignoreMouseInputFrames <= 0)
+            return false;
+
+        // Lock 직후 발생할 수 있는 Mouse X/Y delta를 읽고 버린다.
+        Input.GetAxis("Mouse X");
+        Input.GetAxis("Mouse Y");
+
+        ignoreMouseInputFrames--;
+        return true;
+    }
+
+    public void IgnoreMouseInputForFrames(int frameCount = 2)
+    {
+        ignoreMouseInputFrames =
+            Mathf.Max(
+                ignoreMouseInputFrames,
+                Mathf.Max(0, frameCount)
+            );
     }
 
     void CameraTurn180()
@@ -96,6 +160,7 @@ public class MainCamera : MonoBehaviour
         .OnComplete(() =>
         {
             TryCheckrot();
+            IgnoreMouseInputForFrames(1);
             stopCamera = false;
         });
     }
@@ -133,6 +198,7 @@ public class MainCamera : MonoBehaviour
 
         yaw += mouseX;
         pitch -= mouseY;
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         transform.rotation = Quaternion.Euler(pitch, yaw, roll);
     }
@@ -230,6 +296,7 @@ public class MainCamera : MonoBehaviour
             );
         }
 
+        IgnoreMouseInputForFrames(1);
         isRotating = false;
     }
 

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -31,9 +30,23 @@ public class MoveName : NeedToDoOnit
         }
         else
         {
-            string[] parts = NowName.Split('_');
+            string saveName;
+            string saveTime;
+            int iconIndex;
+            int tapeIndex;
 
-            gameObject.GetComponent<TextMeshProUGUI>().text = parts[0];
+            if (!SaveAndLoadManager.TryParseSaveFolderName(
+                NowName,
+                out saveName,
+                out saveTime,
+                out iconIndex,
+                out tapeIndex))
+            {
+                gameObject.GetComponent<TextMeshProUGUI>().text = "";
+                return;
+            }
+
+            gameObject.GetComponent<TextMeshProUGUI>().text = saveName;
 
             if (_moveCoroutine != null)
             {
