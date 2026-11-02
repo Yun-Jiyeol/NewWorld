@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a5088e2e4fa1b4d8cdb7b9010fca23, type: 3}
+  m_Name: WatchOneWorldSelectCC
+  m_EditorClassIdentifier:
+  Flows: 02000000
+  UIs:
+  MoveTypes: 0200000001000000
+  Rows:
+  - ExplainText: {fileID: 11400000, guid: 1c17f60a972147e4fbf0754435fd1758, type: 2}
+    InputType: 0
+    Keys: 0b000000
+    RangeStart: 0
+    RangeEnd: 0
+  - ExplainText: {fileID: 11400000, guid: a56a8a5e83c34481bfad1cb3fc40aa86, type: 2}
+    InputType: 0
+    Keys: 0c000000
+    RangeStart: 0
+    RangeEnd: 0
+  - ExplainText: {fileID: 11400000, guid: 0cc873d270f14be69af282e9c1c876a7, type: 2}
+    InputType: 0
+    Keys: 0d000000
+    RangeStart: 0
+    RangeEnd: 0

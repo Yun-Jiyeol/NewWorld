@@ -69497,6 +69497,8 @@ MonoBehaviour:
   RangeSpriteHeight: 10
   MouseSpriteWidth: 25
   MouseSpriteHeight: 30
+  ShiftKeyImageColor: {r: 0.45, g: 0.45, b: 0.45, a: 1}
+  ShiftKeyTextColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
   States:
   - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
   - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
@@ -69504,6 +69506,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
   - {fileID: 11400000, guid: 9b768cac8cfbfde4db3d4dd64ff2093c, type: 2}
   - {fileID: 11400000, guid: 1f7e587aa28b7c847af89a2bfe5e2ffd, type: 2}
+  - {fileID: 11400000, guid: d042e11d916343e9a1afd38a46fce723, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
 --- !u!114 &4663189002087909281
