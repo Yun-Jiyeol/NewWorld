@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a5088e2e4fa1b4d8cdb7b9010fca23, type: 3}
+  m_Name: WatchAllWorldWindowClosedCC
+  m_EditorClassIdentifier:
+  Flows: 01000000
+  UIs: 00000000
+  MoveTypes: 02000000
+  Rows:
+  - ExplainText: {fileID: 11400000, guid: fcbaa0d834e0416aaae7fc8d61bcc48e, type: 2}
+    InputType: 0
+    Keys: 12000000
+    RangeStart: 0
+    RangeEnd: 0

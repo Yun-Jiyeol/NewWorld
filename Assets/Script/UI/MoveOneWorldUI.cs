@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -35,6 +35,9 @@ public class MoveOneWorldUI : BasicUI
             SavePos();
         }
 
+        isWorldMove = true;
+        ApplyWorldControlState();
+
         StartCoroutine(updateCoroutine());
     }
 
@@ -47,30 +50,46 @@ public class MoveOneWorldUI : BasicUI
 
     IEnumerator updateCoroutine()
     {
-        isWorldMove = true;
         yield return new WaitForSeconds(0.2f);
 
         while (gameObject.activeSelf)
         {
-            if (target != null && !EventSystem.current.IsPointerOverGameObject())
+            if (target != null &&
+                EventSystem.current != null &&
+                !EventSystem.current.IsPointerOverGameObject())
             {
-                if (keyManager.isGetKeyDown(keyManager.KeyboardDictionary[KeyNameSaves.PopUpUI]))
+                if (keyManager.isGetKeyDown(
+                    keyManager.KeyboardDictionary[
+                        KeyNameSaves.PopUpUI
+                    ]))
                 {
                     isWorldMove = !isWorldMove;
+
+                    if (isWorldMove)
+                    {
+                        ApplyWorldControlState();
+                    }
+                    else
+                    {
+                        ApplyPlayerControlState();
+                    }
                 }
 
                 if (isWorldMove)
                 {
+                    GameManager.Instance.MainCamera.stopCamera = true;
+                    inputManager.nowMovingThing = CoinType.World;
+
                     inputManager.TargetMove(target);
                     inputManager.TargetScale(target);
                     inputManager.TargetTurn(target);
-                    inputManager.nowMovingThing = CoinType.World;
                 }
                 else
                 {
-                    inputManager.PlayerMove();
-                    GameManager.Instance.MainCamera.CameraTurn();
+                    GameManager.Instance.MainCamera.stopCamera = false;
                     inputManager.nowMovingThing = CoinType.Player;
+
+                    inputManager.PlayerMove();
                 }
             }
             else
@@ -80,6 +99,39 @@ public class MoveOneWorldUI : BasicUI
 
             yield return null;
         }
+    }
+
+    void ApplyWorldControlState()
+    {
+        inputManager.nowMovingThing = CoinType.World;
+
+        GameManager.Instance.CursorMover
+            ?.ChangeCursorState(cursorstate.Follow);
+
+        Cursor.lockState =
+            CursorLockMode.Confined;
+
+        GameManager.Instance.MainCamera.stopCamera =
+            true;
+    }
+
+    void ApplyPlayerControlState()
+    {
+        inputManager.nowMovingThing = CoinType.Player;
+
+        GameManager.Instance.CursorMover
+            ?.ChangeCursorState(cursorstate.Off);
+
+        Cursor.lockState =
+            CursorLockMode.Locked;
+
+        GameManager.Instance.MainCamera.TryCheckrot();
+
+        GameManager.Instance.MainCamera.stopCamera =
+            false;
+
+        GameManager.Instance.MainCamera
+            .IgnoreMouseInputForFrames(2);
     }
 
     public void ChangeBlockInWorld()

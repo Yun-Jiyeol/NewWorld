@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -304,10 +304,19 @@ public class KeyEx : MonoBehaviour
                 shiftClick = false
             };
 
-        result.Text =
-            keyManager.GetKeyFromKeyCode(
-                displayKeyboard
-            );
+        // CanControl에서는 Tab 키만 언어 설정과 관계없이
+        // 항상 영어 표기인 "Tab"을 사용한다.
+        if (displayKeyboard.key == KeyCode.Tab)
+        {
+            result.Text = "Tab";
+        }
+        else
+        {
+            result.Text =
+                keyManager.GetKeyFromKeyCode(
+                    displayKeyboard
+                );
+        }
 
         return result;
     }

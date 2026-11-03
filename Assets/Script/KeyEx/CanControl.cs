@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -34,7 +34,7 @@ public class CanControl : MonoBehaviour
     [Tooltip("Mouse6 대체 Sprite")]
     public Sprite Mouse6Sprite;
 
-    [Tooltip("마우스 휠 스크롤 입력 대체 Sprite. 비어 있으면 텍스트로 표시")]
+    [Tooltip("마우스 휠 스크롤 입력 대체 Sprite. 비어 있으면 Mouse2Sprite를 사용")]
     public Sprite MouseWheelSprite;
 
     [Header("Range Sprite Size")]
@@ -190,6 +190,11 @@ public class CanControl : MonoBehaviour
 
         int activeCount = 0;
 
+        // 같은 입력 안내가 예전/새 State에 중복 등록되어 있어도
+        // 화면에는 한 번만 표시한다.
+        HashSet<string> shownRows =
+            new HashSet<string>();
+
         // States의 위에서부터 순서대로 검사.
         // 조건이 맞는 State를 하나만 고르는 것이 아니라
         // 맞는 State의 Rows를 전부 이어서 표시한다.
@@ -224,6 +229,19 @@ public class CanControl : MonoBehaviour
                 if (row == null)
                     continue;
 
+                string rowSignature =
+                    GetRowSignature(row);
+
+                if (shownRows.Contains(
+                    rowSignature))
+                {
+                    continue;
+                }
+
+                shownRows.Add(
+                    rowSignature
+                );
+
                 KeyEx keyEx =
                     GetKeyEx(
                         activeCount
@@ -253,6 +271,48 @@ public class CanControl : MonoBehaviour
         }
 
         return activeCount;
+    }
+
+    private string GetRowSignature(
+        CanControlRowData row)
+    {
+        if (row == null)
+            return "NULL";
+
+        string signature =
+            ((int)row.InputType).ToString();
+
+        signature += "|T:" +
+            (row.ExplainText != null
+                ? row.ExplainText.GetInstanceID().ToString()
+                : "0");
+
+        if (row.InputType ==
+            CanControlInputType.Range)
+        {
+            signature += "|R:" +
+                ((int)row.RangeStart).ToString() +
+                ":" +
+                ((int)row.RangeEnd).ToString();
+
+            return signature;
+        }
+
+        signature += "|K:";
+
+        if (row.Keys != null)
+        {
+            for (int i = 0;
+                 i < row.Keys.Count;
+                 i++)
+            {
+                signature +=
+                    ((int)row.Keys[i]).ToString() +
+                    ",";
+            }
+        }
+
+        return signature;
     }
 
     private KeyEx GetKeyEx(
@@ -319,7 +379,11 @@ public class CanControl : MonoBehaviour
         switch (keyboard.inputType)
         {
             case KeyInputType.MouseWheel:
-                return MouseWheelSprite;
+                // 전용 휠 Sprite가 연결되어 있으면 우선 사용하고,
+                // 없으면 기존 Mouse2 그림을 휠 표시용으로 사용한다.
+                return MouseWheelSprite != null
+                    ? MouseWheelSprite
+                    : Mouse2Sprite;
         }
 
         return GetMouseSprite(

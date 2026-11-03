@@ -30655,6 +30655,7 @@ MonoBehaviour:
   PlayerBeforePos: {x: 0, y: 0, z: 0}
   PlayerBeforeRot: {x: 0, y: 0, z: 0, w: 0}
   ignoreMouseFramesAfterLock: 2
+  logCameraTurnState: 1
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69504,15 +69505,23 @@ MonoBehaviour:
   ShiftKeyImageColor: {r: 0.45, g: 0.45, b: 0.45, a: 1}
   ShiftKeyTextColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
   States:
-  - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
-  - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
-  - {fileID: 11400000, guid: 7db6c9adf2cab4d4f8e997fc18979c46, type: 2}
-  - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
   - {fileID: 11400000, guid: 9b768cac8cfbfde4db3d4dd64ff2093c, type: 2}
+  - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
+  - {fileID: 11400000, guid: 0bc8621a468a4b4bb83eb360c588186e, type: 2}
   - {fileID: 11400000, guid: 1f7e587aa28b7c847af89a2bfe5e2ffd, type: 2}
-  - {fileID: 11400000, guid: d042e11d916343e9a1afd38a46fce723, type: 2}
+  - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
+  - {fileID: 11400000, guid: ff03b782c8a444928d2e465dcf720b08, type: 2}
+  - {fileID: 11400000, guid: 09d8961485b1484487d94e72590d1bb2, type: 2}
   - {fileID: 11400000, guid: 57fe053bc2d74309a23f2a17f05afe74, type: 2}
+  - {fileID: 11400000, guid: 5e99c116d23d46b88367f9d6e2589f58, type: 2}
+  - {fileID: 11400000, guid: 4b77c7cda8944c098a8573d35c06c39c, type: 2}
+  - {fileID: 11400000, guid: 63030c5dc0e44bf3952b5b7109735a2c, type: 2}
   - {fileID: 11400000, guid: 7355ca6202a344edad321867f77e2a84, type: 2}
+  - {fileID: 11400000, guid: d042e11d916343e9a1afd38a46fce723, type: 2}
+  - {fileID: 11400000, guid: 634e4faa56804ba89143b072f624a832, type: 2}
+  - {fileID: 11400000, guid: 7db6c9adf2cab4d4f8e997fc18979c46, type: 2}
+  - {fileID: 11400000, guid: a0142f6dadd94dc7871eed724e42eac4, type: 2}
+  - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
   OneKeyHeight: 30
   ChangeHeightTime: 0.2
 --- !u!114 &4663189002087909281
