@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -79,8 +79,11 @@ public enum KeyNameSaves
     CameraTurn,
 
     // 월드 확대 / 축소
-    // 기존 저장 enum 번호가 밀리지 않도록 항상 맨 뒤에 유지
-    WorldScale
+    // 기존 저장 enum 번호가 밀리지 않도록 새 키는 항상 이 아래에 추가
+    WorldScale,
+
+    // CanControl 펼치기 / 접기
+    CanControlToggle
 }
 
 public class KeyManager : MonoBehaviour
@@ -88,7 +91,7 @@ public class KeyManager : MonoBehaviour
     public Dictionary<KeyNameSaves, Keyboards> KeyboardDictionary = new Dictionary<KeyNameSaves, Keyboards>()
     { 
         // OnPlayerMove
-        { KeyNameSaves.CameraTurn, new Keyboards() { key = KeyCode.F12 } },
+        { KeyNameSaves.CameraTurn, new Keyboards() { key = KeyCode.F11 } },
         { KeyNameSaves.PFrontMove, new Keyboards() { key = KeyCode.W } },
         { KeyNameSaves.PLeftMove, new Keyboards() { key = KeyCode.A } },
         { KeyNameSaves.PBackMove, new Keyboards() { key = KeyCode.S } },
@@ -126,6 +129,7 @@ public class KeyManager : MonoBehaviour
         // OnUISelect
         { KeyNameSaves.SpawnWorld, new Keyboards() { key = KeyCode.P } },
         { KeyNameSaves.PopUpUI, new Keyboards() { key = KeyCode.Tab } },
+        { KeyNameSaves.CanControlToggle, new Keyboards() { key = KeyCode.F12 } },
 
         // OnSaveColor
         { KeyNameSaves.firstsave, new Keyboards() { key = KeyCode.Alpha1, shiftClick = true } },

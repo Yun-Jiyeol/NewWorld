@@ -18,6 +18,12 @@ public class KeyEx : MonoBehaviour
     [Tooltip("설명 뒤에 붙는 ':' 이미지")]
     public RectTransform Separator;
 
+    private Image rowBackground;
+    private RectTransform rowBackgroundRect;
+
+    private static readonly Color32 RowBackgroundColor =
+        new Color32(18, 18, 18, 200);
+
     private readonly List<GameObject> keyPool =
         new List<GameObject>();
 
@@ -63,6 +69,19 @@ public class KeyEx : MonoBehaviour
 
     private void Awake()
     {
+        EnsureRowBackground();
+
+        HorizontalLayoutGroup layout =
+            GetComponent<HorizontalLayoutGroup>();
+
+        if (layout != null)
+        {
+            // 배경이 내용에 정확히 맞도록
+            // KeyEx 자체에는 추가 좌우 여백을 넣지 않는다.
+            layout.padding.left = 0;
+            layout.padding.right = 0;
+        }
+
         // 이 UI는 표시 전용이므로
         // Image / TextMeshProUGUI가 Raycast를 막지 않게 한다.
         DisableRaycastTargets(
@@ -88,7 +107,19 @@ public class KeyEx : MonoBehaviour
             return;
 
         if (ExplainText != null)
-            ExplainText.text = translatedText;
+        {
+            ExplainText.gameObject
+                .SetActive(true);
+
+            ExplainText.text =
+                translatedText;
+
+            FitExplainTextWidth();
+        }
+
+        if (Separator != null)
+            Separator.gameObject
+                .SetActive(true);
 
         KeyManager keyManager =
             GameManager.Instance != null
@@ -150,6 +181,126 @@ public class KeyEx : MonoBehaviour
         // 최종 화면 순서를 강제로 고정:
         // 설명 -> : -> 입력1 -> ~ -> 입력2 ...
         ApplyVisualOrder();
+
+        FitContentBackground();
+    }
+
+    public void SettingToggleKey(
+        KeyNameSaves keyName,
+        CanControl canControl,
+        bool showDescription,
+        string description)
+    {
+        ResetKey();
+
+        EnsureRowBackground();
+
+        if (ExplainText != null)
+        {
+            ExplainText.gameObject
+                .SetActive(
+                    showDescription
+                );
+
+            if (showDescription)
+            {
+                ExplainText.text =
+                    description;
+
+                FitExplainTextWidth();
+            }
+        }
+
+        if (Separator != null)
+        {
+            Separator.gameObject
+                .SetActive(
+                    showDescription
+                );
+        }
+
+        if (canControl == null ||
+            GameManager.Instance == null ||
+            GameManager.Instance.KeyManager == null)
+        {
+            return;
+        }
+
+        ResolvedInput input =
+            ResolveInput(
+                keyName,
+                GameManager.Instance.KeyManager,
+                canControl
+            );
+
+        if (!input.Valid)
+            return;
+
+        visualTokens.Clear();
+
+        AddResolvedToken(input);
+
+        for (int i = 0;
+             i < visualTokens.Count;
+             i++)
+        {
+            VisualToken token =
+                visualTokens[i];
+
+            if (token.IsSprite)
+            {
+                AddSprite(
+                    token.Sprite,
+                    token.OverrideSpriteSize,
+                    token.Width,
+                    token.Height,
+                    token.IsShift,
+                    canControl
+                );
+            }
+            else
+            {
+                AddKey(
+                    token.Text,
+                    token.IsShift,
+                    canControl
+                );
+            }
+        }
+
+        if (showDescription)
+        {
+            ApplyVisualOrder();
+        }
+        else
+        {
+            // 접힌 상태에서는 F12 하나만 보인다.
+            // Background는 Layout에서 제외되어 있으므로
+            // 실제 키만 화면 순서에 참여한다.
+            for (int i = 0;
+                 i < activeVisuals.Count;
+                 i++)
+            {
+                if (activeVisuals[i] != null)
+                {
+                    activeVisuals[i]
+                        .SetAsLastSibling();
+                }
+            }
+
+            if (rowBackgroundRect != null)
+            {
+                rowBackgroundRect
+                    .SetAsFirstSibling();
+            }
+
+            LayoutRebuilder
+                .ForceRebuildLayoutImmediate(
+                    (RectTransform)transform
+                );
+        }
+
+        FitContentBackground();
     }
 
     private void BuildKeys(
@@ -612,6 +763,292 @@ public class KeyEx : MonoBehaviour
             );
     }
 
+    private void EnsureRowBackground()
+    {
+        if (rowBackground == null)
+        {
+            Transform existing =
+                transform.Find(
+                    "RowBackground"
+                );
+
+            GameObject backgroundObject;
+
+            if (existing != null)
+            {
+                backgroundObject =
+                    existing.gameObject;
+
+                rowBackground =
+                    backgroundObject
+                        .GetComponent<Image>();
+
+                if (rowBackground == null)
+                {
+                    rowBackground =
+                        backgroundObject
+                            .AddComponent<Image>();
+                }
+            }
+            else
+            {
+                backgroundObject =
+                    new GameObject(
+                        "RowBackground",
+                        typeof(RectTransform),
+                        typeof(CanvasRenderer),
+                        typeof(Image),
+                        typeof(LayoutElement)
+                    );
+
+                backgroundObject
+                    .transform
+                    .SetParent(
+                        transform,
+                        false
+                    );
+
+                rowBackground =
+                    backgroundObject
+                        .GetComponent<Image>();
+            }
+
+            rowBackgroundRect =
+                rowBackground.rectTransform;
+
+            LayoutElement layoutElement =
+                rowBackground
+                    .GetComponent<LayoutElement>();
+
+            if (layoutElement == null)
+            {
+                layoutElement =
+                    rowBackground
+                        .gameObject
+                        .AddComponent<LayoutElement>();
+            }
+
+            // HorizontalLayoutGroup의 폭 계산에는 참여하지 않는다.
+            layoutElement.ignoreLayout =
+                true;
+        }
+
+        if (rowBackgroundRect == null &&
+            rowBackground != null)
+        {
+            rowBackgroundRect =
+                rowBackground.rectTransform;
+        }
+
+        rowBackground.color =
+            RowBackgroundColor;
+
+        rowBackground.raycastTarget =
+            false;
+
+        if (rowBackgroundRect != null)
+        {
+            // KeyEx 내용이 오른쪽 정렬이므로
+            // 배경도 오른쪽 끝을 기준으로 내용만 감싼다.
+            rowBackgroundRect.anchorMin =
+                new Vector2(1f, 0.5f);
+
+            rowBackgroundRect.anchorMax =
+                new Vector2(1f, 0.5f);
+
+            rowBackgroundRect.pivot =
+                new Vector2(1f, 0.5f);
+
+            rowBackgroundRect.anchoredPosition =
+                Vector2.zero;
+
+            rowBackgroundRect
+                .SetAsFirstSibling();
+        }
+    }
+
+    private void FitExplainTextWidth()
+    {
+        if (ExplainText == null)
+            return;
+
+        RectTransform rect =
+            ExplainText.rectTransform;
+
+        if (rect == null)
+            return;
+
+        // Auto Size가 켜져 있을 때 preferred 폭은
+        // 실제 화면에 최종 렌더링되는 글자보다 크게 나올 수 있다.
+        //
+        // 먼저 충분히 넓은 공간을 주어 줄바꿈 없이 렌더링하고,
+        // 높이 제한까지 적용된 실제 Mesh 폭을 사용한다.
+        rect.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal,
+            2000f
+        );
+
+        ExplainText.ForceMeshUpdate(
+            true,
+            true
+        );
+
+        float renderedWidth =
+            ExplainText.textBounds.size.x;
+
+        float targetWidth =
+            Mathf.Max(
+                1f,
+                Mathf.Ceil(
+                    renderedWidth
+                )
+            );
+
+        rect.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal,
+            targetWidth
+        );
+
+        ExplainText.ForceMeshUpdate(
+            true,
+            true
+        );
+    }
+
+    private void FitContentBackground()
+    {
+        EnsureRowBackground();
+
+        RectTransform root =
+            transform as RectTransform;
+
+        if (root == null ||
+            rowBackgroundRect == null)
+        {
+            return;
+        }
+
+        LayoutRebuilder
+            .ForceRebuildLayoutImmediate(
+                root
+            );
+
+        HorizontalLayoutGroup layout =
+            GetComponent<
+                HorizontalLayoutGroup
+            >();
+
+        float contentWidth = 0f;
+        float contentHeight = 0f;
+        int visibleCount = 0;
+
+        for (int i = 0;
+             i < transform.childCount;
+             i++)
+        {
+            Transform child =
+                transform.GetChild(i);
+
+            if (child == null ||
+                child == rowBackgroundRect ||
+                !child.gameObject.activeSelf)
+            {
+                continue;
+            }
+
+            RectTransform childRect =
+                child as RectTransform;
+
+            if (childRect == null)
+                continue;
+
+            // 중요:
+            // Image / TMP의 preferred size를 사용하면
+            // Sprite 원본(native) 크기나 TMP preferred size가 들어와
+            // 실제 화면 크기보다 수백 px 크게 계산될 수 있다.
+            // 여기서는 HorizontalLayoutGroup에 실제 배치된
+            // RectTransform 크기만 사용한다.
+            float childWidth =
+                childRect.rect.width;
+
+            float childHeight =
+                childRect.rect.height;
+
+            contentWidth +=
+                Mathf.Max(
+                    0f,
+                    childWidth
+                );
+
+            contentHeight =
+                Mathf.Max(
+                    contentHeight,
+                    childHeight
+                );
+
+            visibleCount++;
+        }
+
+        if (layout != null &&
+            visibleCount > 1)
+        {
+            contentWidth +=
+                layout.spacing *
+                (visibleCount - 1);
+        }
+
+        float finalWidth =
+            Mathf.Max(
+                1f,
+                Mathf.Ceil(
+                    contentWidth
+                )
+            );
+
+        float finalHeight =
+            Mathf.Max(
+                1f,
+                Mathf.Ceil(
+                    contentHeight
+                )
+            );
+
+        // KeyEx 자체의 폭도 실제 내용 폭으로 맞춘다.
+        // CanControl의 VerticalLayoutGroup은 이 폭을 강제로 덮어쓰지 않게
+        // Prefab에서 Child Control/Force Expand Width를 끈다.
+        root.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal,
+            finalWidth
+        );
+
+        root.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical,
+            finalHeight
+        );
+
+        rowBackgroundRect
+            .SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                finalWidth
+            );
+
+        rowBackgroundRect
+            .SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Vertical,
+                finalHeight
+            );
+
+        // Root 크기 변경 후 한 번 더 현재 Layout 위치를 확정.
+        LayoutRebuilder
+            .ForceRebuildLayoutImmediate(
+                root
+            );
+
+        // 배경은 항상 내용보다 뒤.
+        rowBackgroundRect
+            .SetAsFirstSibling();
+    }
+
     private void RestoreNormalKeyColors(
         Image keyImage,
         TextMeshProUGUI text)
@@ -668,7 +1105,43 @@ public class KeyEx : MonoBehaviour
     public void ResetKey()
     {
         if (ExplainText != null)
+        {
             ExplainText.text = "";
+
+            RectTransform explainRect =
+                ExplainText.rectTransform;
+
+            if (explainRect != null)
+            {
+                explainRect
+                    .SetSizeWithCurrentAnchors(
+                        RectTransform.Axis.Horizontal,
+                        1f
+                    );
+            }
+        }
+
+        // 풀에서 재사용될 때 이전 행의 긴 폭이
+        // 한 프레임이라도 남지 않도록 초기화한다.
+        RectTransform root =
+            transform as RectTransform;
+
+        if (root != null)
+        {
+            root.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                1f
+            );
+        }
+
+        if (rowBackgroundRect != null)
+        {
+            rowBackgroundRect
+                .SetSizeWithCurrentAnchors(
+                    RectTransform.Axis.Horizontal,
+                    1f
+                );
+        }
 
         for (int i = 0;
              i < keyPool.Count;

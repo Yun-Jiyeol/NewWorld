@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7594909795014279750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7594909795014279751}
+  - component: {fileID: 7594909795014279744}
+  - component: {fileID: 7594909795014279745}
+  m_Layer: 5
+  m_Name: CanControl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7594909795014279751
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7594909795014279750}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -10, y: 10}
+  m_SizeDelta: {x: 500, y: 1080}
+  m_Pivot: {x: 1, y: 0}
+--- !u!114 &7594909795014279744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7594909795014279750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 8
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 1
+--- !u!114 &7594909795014279745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7594909795014279750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95b0505aafc04204881c4b7260559f15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  KeyExPrefab: {fileID: 412898107104791482, guid: c0a6da4d2f43f434bbb9838af69ecbda, type: 3}
+  RangeSprite: {fileID: -1466679096, guid: ab690205bd2f9644fbd4af9a24ad7768, type: 3}
+  Mouse0Sprite: {fileID: -728098034, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse1Sprite: {fileID: 717588431, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse2Sprite: {fileID: -1748526293, guid: 32dd320f6c3c0cd41b9920e9bcbe8e1c, type: 3}
+  Mouse3Sprite: {fileID: 0}
+  Mouse4Sprite: {fileID: 0}
+  Mouse5Sprite: {fileID: 0}
+  Mouse6Sprite: {fileID: 0}
+  MouseWheelSprite: {fileID: 0}
+  RangeSpriteWidth: 20
+  RangeSpriteHeight: 10
+  MouseSpriteWidth: 25
+  MouseSpriteHeight: 30
+  ShiftKeyImageColor: {r: 0.45, g: 0.45, b: 0.45, a: 1}
+  ShiftKeyTextColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  States:
+  - {fileID: 11400000, guid: 9b768cac8cfbfde4db3d4dd64ff2093c, type: 2}
+  - {fileID: 11400000, guid: 56ba46b2a67dddd4d97b95f931c56bcc, type: 2}
+  - {fileID: 11400000, guid: 0bc8621a468a4b4bb83eb360c588186e, type: 2}
+  - {fileID: 11400000, guid: 53a5a896d22a4ebcbe316aede163d83c, type: 2}
+  - {fileID: 11400000, guid: 1f7e587aa28b7c847af89a2bfe5e2ffd, type: 2}
+  - {fileID: 11400000, guid: 8259d1af2dead0d4e9302b9da0cb4fe4, type: 2}
+  - {fileID: 11400000, guid: ff03b782c8a444928d2e465dcf720b08, type: 2}
+  - {fileID: 11400000, guid: 09d8961485b1484487d94e72590d1bb2, type: 2}
+  - {fileID: 11400000, guid: 57fe053bc2d74309a23f2a17f05afe74, type: 2}
+  - {fileID: 11400000, guid: 5e99c116d23d46b88367f9d6e2589f58, type: 2}
+  - {fileID: 11400000, guid: 4b77c7cda8944c098a8573d35c06c39c, type: 2}
+  - {fileID: 11400000, guid: 63030c5dc0e44bf3952b5b7109735a2c, type: 2}
+  - {fileID: 11400000, guid: 7355ca6202a344edad321867f77e2a84, type: 2}
+  - {fileID: 11400000, guid: d042e11d916343e9a1afd38a46fce723, type: 2}
+  - {fileID: 11400000, guid: 634e4faa56804ba89143b072f624a832, type: 2}
+  - {fileID: 11400000, guid: 7db6c9adf2cab4d4f8e997fc18979c46, type: 2}
+  - {fileID: 11400000, guid: a0142f6dadd94dc7871eed724e42eac4, type: 2}
+  - {fileID: 11400000, guid: 8b5988990757059458e453d1fb71ddd5, type: 2}
+  - {fileID: 11400000, guid: 5fd8079a556844d198c4a7cb3ed1549f, type: 2}
+  OneKeyHeight: 30
+  ChangeHeightTime: 0.2
+  isExpanded: 1

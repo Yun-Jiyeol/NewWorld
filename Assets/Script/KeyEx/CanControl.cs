@@ -1,10 +1,16 @@
 ﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class CanControl : MonoBehaviour
 {
+    public static CanControl Instance { get; private set; }
+
+    private static bool hasPendingExpandedState = false;
+    private static bool pendingExpandedState = true;
+
     [Header("Prefab")]
     [Tooltip("필요할 때 생성하고 보관할 KeyEx Prefab")]
     public KeyEx KeyExPrefab;
@@ -69,6 +75,12 @@ public class CanControl : MonoBehaviour
     public float OneKeyHeight = 30f;
     public float ChangeHeightTime = 0.2f;
 
+    [Header("Collapse")]
+    [Tooltip("기본은 펼친 상태. PlayerSetting에서 저장된 값이 있으면 덮어씀")]
+    [SerializeField] private bool isExpanded = true;
+
+    public bool IsExpanded => isExpanded;
+
     private RectTransform thisRect;
 
     private readonly List<KeyEx> keyPool =
@@ -88,8 +100,25 @@ public class CanControl : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         thisRect =
             GetComponent<RectTransform>();
+
+        if (hasPendingExpandedState)
+        {
+            isExpanded =
+                pendingExpandedState;
+
+            hasPendingExpandedState =
+                false;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void OnEnable()
@@ -100,6 +129,9 @@ public class CanControl : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance == null)
+            return;
+
+        if (TryToggleExpanded())
             return;
 
         GameFlow nowFlow =
@@ -164,11 +196,22 @@ public class CanControl : MonoBehaviour
                     .GetLanguage();
         }
 
-        int activeCount =
-            ShowMatchingStates(
-                nowFlow,
-                nowUI,
-                nowMoveType
+        int activeCount = 0;
+
+        if (isExpanded)
+        {
+            activeCount =
+                ShowMatchingStates(
+                    nowFlow,
+                    nowUI,
+                    nowMoveType
+                );
+        }
+
+        // F12 접기/펼치기 키는 항상 마지막(최하단)에 표시한다.
+        activeCount =
+            ShowCollapseToggle(
+                activeCount
             );
 
         HideUnusedKeyEx(
@@ -178,6 +221,168 @@ public class CanControl : MonoBehaviour
         ChangeHeight(
             activeCount
         );
+    }
+
+    private bool TryToggleExpanded()
+    {
+        if (GameManager.Instance == null ||
+            GameManager.Instance.KeyManager == null)
+        {
+            return false;
+        }
+
+        if (!GameManager.Instance.KeyManager
+            .KeyboardDictionary
+            .TryGetValue(
+                KeyNameSaves.CanControlToggle,
+                out Keyboards toggleKey
+            ))
+        {
+            return false;
+        }
+
+        if (!GameManager.Instance.KeyManager
+            .isGetKeyDown(toggleKey))
+        {
+            return false;
+        }
+
+        SetExpanded(
+            !isExpanded,
+            true
+        );
+
+        return true;
+    }
+
+    public void SetExpanded(
+        bool expanded,
+        bool saveSetting)
+    {
+        isExpanded = expanded;
+
+        Refresh();
+
+        if (saveSetting &&
+            GameManager.Instance != null &&
+            GameManager.Instance.SaveAndLoadManager != null)
+        {
+            GameManager.Instance.SaveAndLoadManager
+                .PlayerSetting_SaveCanControl(
+                    isExpanded
+                );
+        }
+    }
+
+    public static void ApplyLoadedExpandedState(
+        bool expanded)
+    {
+        pendingExpandedState =
+            expanded;
+
+        hasPendingExpandedState =
+            true;
+
+        if (Instance != null)
+        {
+            Instance.SetExpanded(
+                expanded,
+                false
+            );
+
+            hasPendingExpandedState =
+                false;
+        }
+    }
+
+    private int ShowCollapseToggle(
+        int index)
+    {
+        KeyEx keyEx =
+            GetKeyEx(index);
+
+        if (keyEx == null)
+            return index;
+
+        keyEx.gameObject
+            .SetActive(true);
+
+        keyEx.SettingToggleKey(
+            KeyNameSaves.CanControlToggle,
+            this,
+            isExpanded,
+            GetCollapseExplainText()
+        );
+
+        // CanControl 부모의 VerticalLayoutGroup은
+        // Reverse Arrangement를 사용할 수 있다.
+        // 화면 기준 "맨 아래"가 되도록 실제 Layout 방향을 보고 배치한다.
+        PlaceToggleAtBottom(
+            keyEx
+        );
+
+        return index + 1;
+    }
+
+    private void PlaceToggleAtBottom(
+        KeyEx keyEx)
+    {
+        if (keyEx == null)
+            return;
+
+        VerticalLayoutGroup layout =
+            GetComponent<VerticalLayoutGroup>();
+
+        bool reverse =
+            layout != null &&
+            layout.reverseArrangement;
+
+        if (reverse)
+        {
+            // Reverse Arrangement에서는 첫 sibling이 화면의 맨 아래.
+            keyEx.transform
+                .SetAsFirstSibling();
+        }
+        else
+        {
+            keyEx.transform
+                .SetAsLastSibling();
+        }
+
+        if (thisRect != null)
+        {
+            LayoutRebuilder
+                .ForceRebuildLayoutImmediate(
+                    thisRect
+                );
+        }
+    }
+
+    private string GetCollapseExplainText()
+    {
+        if (GameManager.Instance == null ||
+            GameManager.Instance.TranslationManager == null)
+        {
+            return "창 접기";
+        }
+
+        LanguageEnum language =
+            GameManager.Instance
+                .TranslationManager
+                .GetLanguage();
+
+        switch (language)
+        {
+            case LanguageEnum.Kor:
+                return "창 접기";
+
+            case LanguageEnum.Com:
+                return "0x434C53";
+
+            case LanguageEnum.Eng:
+            default:
+                return "Collapse";
+        }
     }
 
     private int ShowMatchingStates(

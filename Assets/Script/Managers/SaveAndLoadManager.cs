@@ -147,6 +147,13 @@ public class LanguageSettingSave
 }
 
 [System.Serializable]
+public class CanControlSettingSave
+{
+    // 기존 파일이 없을 때 기본값은 펼침.
+    public bool IsExpanded = true;
+}
+
+[System.Serializable]
 public class PlayerPositionSave
 {
     //좌표
@@ -2640,12 +2647,88 @@ public class SaveAndLoadManager : MonoBehaviour
         GameManager.Instance.TranslationManager.ChangeLanguage(languageSave.Language);
     }
 
+    public void PlayerSetting_SaveCanControl(
+        bool isExpanded)
+    {
+        string path =
+            TryMakePlayerSettingFolder();
+
+        path =
+            Path.Combine(
+                path,
+                "CanControlSetting.json"
+            );
+
+        CanControlSettingSave save =
+            new CanControlSettingSave()
+            {
+                IsExpanded =
+                    isExpanded
+            };
+
+        File.WriteAllText(
+            path,
+            JsonUtility.ToJson(
+                save,
+                true
+            )
+        );
+    }
+
+    public void PlayerSetting_LoadCanControl()
+    {
+        string path =
+            TryMakePlayerSettingFolder();
+
+        path =
+            Path.Combine(
+                path,
+                "CanControlSetting.json"
+            );
+
+        if (!File.Exists(path))
+        {
+            // 구버전 / 최초 실행은 기본 펼침.
+            CanControl.ApplyLoadedExpandedState(
+                true
+            );
+
+            return;
+        }
+
+        string json =
+            File.ReadAllText(path);
+
+        CanControlSettingSave save =
+            JsonUtility.FromJson<
+                CanControlSettingSave
+            >(json);
+
+        if (save == null)
+        {
+            CanControl.ApplyLoadedExpandedState(
+                true
+            );
+
+            return;
+        }
+
+        CanControl.ApplyLoadedExpandedState(
+            save.IsExpanded
+        );
+    }
+
     void LoadStartFile(string _path)
     {
         if (!Directory.Exists(_path))
         {
             Directory.CreateDirectory(_path);
         }
+
+        // 설정 파일이 없는 기존 사용자도 항상 기본 펼침으로 시작.
+        CanControl.ApplyLoadedExpandedState(
+            true
+        );
 
         string[] files = Directory.GetFiles(_path, "*.json"); 
         
@@ -2670,6 +2753,10 @@ public class SaveAndLoadManager : MonoBehaviour
                 case "LanguageSetting.json":
                     PlayerSetting_LoadLanguage();
                     break;
+
+                case "CanControlSetting.json":
+                    PlayerSetting_LoadCanControl();
+                    break;
             }
         }
     }
@@ -2688,6 +2775,9 @@ public class SaveAndLoadManager : MonoBehaviour
             return;
         }
 
+        bool hasSavedCanControlToggle =
+            false;
+
         foreach (KeySave save in keysaves.keys)
         {
             if (save == null ||
@@ -2696,10 +2786,36 @@ public class SaveAndLoadManager : MonoBehaviour
                 continue;
             }
 
+            if (save.keyname ==
+                KeyNameSaves.CanControlToggle)
+            {
+                hasSavedCanControlToggle =
+                    true;
+            }
+
             if (!_key.KeyboardDictionary.ContainsKey(save.keyname))
                 continue;
 
             _key.KeyboardDictionary[save.keyname] = save.keyboard;
+        }
+
+        // 구버전 KeySetting에는 CanControlToggle이 없고
+        // CameraTurn 기본키가 F12였으므로 새 F12 토글과 충돌한다.
+        // 구버전 파일에서만 CameraTurn을 F11로 1회 마이그레이션한다.
+        if (!hasSavedCanControlToggle &&
+            _key.KeyboardDictionary
+                .TryGetValue(
+                    KeyNameSaves.CameraTurn,
+                    out Keyboards cameraTurn
+                ) &&
+            cameraTurn != null &&
+            cameraTurn.inputType ==
+                KeyInputType.Key &&
+            cameraTurn.key ==
+                KeyCode.F12)
+        {
+            cameraTurn.key =
+                KeyCode.F11;
         }
     }
 
