@@ -6,6 +6,30 @@
     <title>Unity WebGL Player | NewWorld</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #231F20;
+      }
+
+      #unity-container.unity-desktop {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #unity-canvas {
+        display: block;
+      }
+
+      #unity-footer {
+        height: 38px;
+      }
+    </style>
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
@@ -196,7 +220,9 @@
       // Set this to false if you want to decouple this synchronization from
       // happening inside the engine, and you would instead like to size up
       // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
+      // WebGL에서는 게임 내부 Screen.SetResolution() 값을 상한으로 사용하고,
+      // 브라우저보다 큰 해상도는 현재 브라우저 영역까지만 렌더링한다.
+      config.matchWebGLToCanvasSize = false;
 
       // If you would like all file writes inside Unity Application.persistentDataPath
       // directory to automatically persist so that the contents are remembered when
@@ -223,39 +249,140 @@
 
         unityShowBanner('WebGL builds are not supported on mobile devices.');
       } else {
-        // Desktop:
-        // Keep the visible WebGL canvas at 16:9 and use as much of the
-        // browser viewport as possible, up to 1920x1080.
+        // Desktop WebGL resolution policy
         //
-        // Unity's default matchWebGLToCanvasSize behavior keeps the
-        // WebGL render target matched to this CSS size (and devicePixelRatio),
-        // preventing a small 960x600 render from being stretched larger.
-        function resizeUnityCanvas() {
-          const footerHeight = 38;
-          const maxWidth = 1920;
-          const maxHeight = 1080;
+        // 1) Unity의 Screen.SetResolution()으로 선택한 해상도를 "원하는 최대 크기"로 사용.
+        // 2) 선택 해상도가 브라우저보다 작으면 확대하지 않고 그대로 표시.
+        // 3) 선택 해상도가 브라우저보다 크면 브라우저 안에 들어오는 최대 크기로만 축소.
+        // 4) 항상 원래 종횡비 유지.
+        // 5) 게임 + footer 전체를 화면 중앙에 배치.
 
-          const availableWidth = window.innerWidth;
-          const availableHeight = Math.max(
-            1,
-            window.innerHeight - footerHeight
+        const footerHeight = 38;
+
+        // ScreenSettingManager의 현재 선택 목록과 동일.
+        const knownUnityResolutions = [
+          [1280, 720],
+          [1600, 900],
+          [1920, 1080],
+          [2560, 1440],
+          [3840, 2160]
+        ];
+
+        // Unity의 기본값과 동일.
+        let requestedUnityWidth = 1920;
+        let requestedUnityHeight = 1080;
+
+        let applyingCanvasSize = false;
+
+        function isKnownUnityResolution(width, height) {
+          return knownUnityResolutions.some(
+            ([w, h]) => w === width && h === height
           );
-
-          const scale = Math.min(
-            availableWidth / maxWidth,
-            availableHeight / maxHeight,
-            1
-          );
-
-          const width = Math.floor(maxWidth * scale);
-          const height = Math.floor(maxHeight * scale);
-
-          canvas.style.width = width + "px";
-          canvas.style.height = height + "px";
         }
 
-        resizeUnityCanvas();
-        window.addEventListener("resize", resizeUnityCanvas);
+        function fitUnityCanvasToBrowser() {
+          const availableWidth =
+            Math.max(1, window.innerWidth);
+
+          const availableHeight =
+            Math.max(
+              1,
+              window.innerHeight - footerHeight
+            );
+
+          // 1보다 커지지 않으므로 작은 해상도는 절대 확대하지 않는다.
+          const scale = Math.min(
+            1,
+            availableWidth / requestedUnityWidth,
+            availableHeight / requestedUnityHeight
+          );
+
+          const displayWidth =
+            Math.max(
+              1,
+              Math.floor(
+                requestedUnityWidth * scale
+              )
+            );
+
+          const displayHeight =
+            Math.max(
+              1,
+              Math.floor(
+                requestedUnityHeight * scale
+              )
+            );
+
+          applyingCanvasSize = true;
+
+          // 실제 WebGL 렌더 타겟도 화면에 표시되는 크기까지만 사용.
+          // 2560/3840을 선택해도 작은 브라우저에서는 불필요하게
+          // 초고해상도로 렌더링하지 않는다.
+          canvas.width = displayWidth;
+          canvas.height = displayHeight;
+
+          canvas.style.width =
+            displayWidth + "px";
+
+          canvas.style.height =
+            displayHeight + "px";
+
+          // 부모의 크기도 정확히 맞춰서 중앙 정렬 시
+          // 위/오른쪽으로 한쪽만 남는 현상을 없앤다.
+          container.style.width =
+            displayWidth + "px";
+
+          container.style.height =
+            (displayHeight + footerHeight) + "px";
+
+          applyingCanvasSize = false;
+        }
+
+        // Unity의 Screen.SetResolution()이 canvas width/height를 변경하면
+        // 그 값을 다음 표시 크기의 기준값으로 기억한다.
+        const canvasResolutionObserver =
+          new MutationObserver(() => {
+            if (applyingCanvasSize)
+              return;
+
+            const width = Number(canvas.width);
+            const height = Number(canvas.height);
+
+            if (!isKnownUnityResolution(width, height))
+              return;
+
+            requestedUnityWidth = width;
+            requestedUnityHeight = height;
+
+            fitUnityCanvasToBrowser();
+          });
+
+        canvasResolutionObserver.observe(
+          canvas,
+          {
+            attributes: true,
+            attributeFilter: ["width", "height"]
+          }
+        );
+
+        // 빌드 시작 전 초기 크기.
+        const initialWidth = Number(canvas.width);
+        const initialHeight = Number(canvas.height);
+
+        if (isKnownUnityResolution(
+              initialWidth,
+              initialHeight
+            )) {
+          requestedUnityWidth = initialWidth;
+          requestedUnityHeight = initialHeight;
+        }
+
+        fitUnityCanvasToBrowser();
+
+        window.addEventListener(
+          "resize",
+          fitUnityCanvasToBrowser
+        );
       }
 
       loadingBar.style.display = "block";
