@@ -393,16 +393,13 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
   <a href="https://github.com/Yun-Jiyeol/NewWorld/releases/latest">GitHub Release 페이지 열기</a>
 </p>
 
-> 영상 링크를 사용하려면 최신 GitHub Release에  
-> `NewWorld_Feature_Demo.mp4`라는 이름으로 영상을 첨부하면 됩니다.
-
 ---
 
 # 개발 상태
 
-현재 **개발 중**입니다.
+현재 **개발 완료** 상태입니다.
 
-월드 제작 기능, UI, 조작 방식, 저장 시스템, 최적화 등을 계속 수정하고 있으며 개발 진행에 따라 README의 내용도 갱신할 예정입니다.
+월드 제작, 블록 편집, 색상, 조명, 저장/불러오기, 설정 및 월드 관리 등 계획한 주요 기능의 개발을 완료했습니다.
 
 ---
 
