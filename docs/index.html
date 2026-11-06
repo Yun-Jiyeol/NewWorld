@@ -9,7 +9,7 @@
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
+      <canvas id="unity-canvas" width=1920 height=1080></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -223,10 +223,39 @@
 
         unityShowBanner('WebGL builds are not supported on mobile devices.');
       } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        // Desktop:
+        // Keep the visible WebGL canvas at 16:9 and use as much of the
+        // browser viewport as possible, up to 1920x1080.
+        //
+        // Unity's default matchWebGLToCanvasSize behavior keeps the
+        // WebGL render target matched to this CSS size (and devicePixelRatio),
+        // preventing a small 960x600 render from being stretched larger.
+        function resizeUnityCanvas() {
+          const footerHeight = 38;
+          const maxWidth = 1920;
+          const maxHeight = 1080;
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+          const availableWidth = window.innerWidth;
+          const availableHeight = Math.max(
+            1,
+            window.innerHeight - footerHeight
+          );
+
+          const scale = Math.min(
+            availableWidth / maxWidth,
+            availableHeight / maxHeight,
+            1
+          );
+
+          const width = Math.floor(maxWidth * scale);
+          const height = Math.floor(maxHeight * scale);
+
+          canvas.style.width = width + "px";
+          canvas.style.height = height + "px";
+        }
+
+        resizeUnityCanvas();
+        window.addEventListener("resize", resizeUnityCanvas);
       }
 
       loadingBar.style.display = "block";
