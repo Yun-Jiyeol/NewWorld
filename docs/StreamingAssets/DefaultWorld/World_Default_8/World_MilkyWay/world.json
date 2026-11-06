@@ -1,0 +1,15 @@
+{
+    "Name": "World_MilkyWay",
+    "Time": "DefaultTemplate8_MilkyWay",
+    "x": 0.0,
+    "y": -10.0,
+    "z": -360.0,
+    "xrot": 0.0,
+    "yrot": 0.0,
+    "zrot": 0.0,
+    "wrot": 1.0,
+    "size": 2.0,
+    "isLightBlock": false,
+    "lightblock": null,
+    "blocks": null
+}

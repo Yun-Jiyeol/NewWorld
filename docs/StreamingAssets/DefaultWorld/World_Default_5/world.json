@@ -1,0 +1,15 @@
+{
+  "Name": "World_Default_5",
+  "Time": "DefaultTemplate5",
+  "x": 0.0,
+  "y": -15.0,
+  "z": 100.0,
+  "xrot": 0.0,
+  "yrot": 0.7071067811865475,
+  "zrot": 0.0,
+  "wrot": 0.7071067811865476,
+  "size": 1.0,
+  "isLightBlock": false,
+  "lightblock": null,
+  "blocks": null
+}
