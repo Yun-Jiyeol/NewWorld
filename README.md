@@ -8,6 +8,30 @@
   <b>Unity / C# 기반 3D 월드 생성·편집 프로젝트</b>
 </p>
 
+<a id="top"></a>
+
+## 목차
+
+- [프로젝트 소개](#project-introduction)
+- [다운로드](#download)
+- [주요 기능](#features)
+  - [1. 메인 페이지](#feature-main)
+  - [2. 카세트 테이프 기반 저장 / 불러오기](#feature-save-load)
+  - [3. 월드 생성](#feature-world-create)
+  - [4. 블록 선택 및 편집](#feature-block-edit)
+  - [5. 색상 편집](#feature-color-edit)
+  - [6. 상황별 조작 안내](#feature-control-guide)
+  - [7. 월드 관리](#feature-world-manage)
+  - [8. 개인 월드 조명](#feature-lighting)
+  - [9. 카메라 / 화면 효과](#feature-camera-effects)
+- [게임 설정](#game-settings)
+- [사용 기술](#tech-stack)
+- [전체 기능 영상 보기](#full-video)
+- [개발 상태](#development-status)
+---
+
+<a id="project-introduction"></a>
+
 ## 프로젝트 소개
 
 **NewWorld**는 비어 있는 공간에 자신만의 블록을 만들고 배치하며, 원하는 형태의 공간을 자유롭게 제작하고 꾸며 나가는 개인 개발 프로젝트입니다.
@@ -17,6 +41,8 @@
 이에 사용자가 원하는 공간을 자유롭게 제작할 수 있도록 **제작에 필요한 기능을 우선적으로 구현하는 것**에 중점을 두었습니다. 블록 설치 및 파괴, 색상 조정, 조명 설정, 오브젝트와 월드의 위치 이동 등 다양한 편집 기능을 제공하며, 사용자가 자신만의 3D 공간을 직접 구성하고 표현할 수 있도록 제작했습니다.
 
 ---
+
+<a id="download"></a>
 
 ## 다운로드
 
@@ -28,7 +54,11 @@ Windows 빌드는 GitHub Releases에서 받을 수 있습니다.
 
 ---
 
+<a id="features"></a>
+
 # 주요 기능
+
+<a id="feature-main"></a>
 
 ## 1. 메인 페이지
 
@@ -47,6 +77,8 @@ Windows 빌드는 GitHub Releases에서 받을 수 있습니다.
 - 시스템 메시지와 상태 로그 확인
 
 ---
+
+<a id="feature-save-load"></a>
 
 ## 2. 카세트 테이프 기반 저장 / 불러오기
 
@@ -107,6 +139,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="feature-world-create"></a>
+
 ## 3. 월드 생성
 
 <p align="center">
@@ -142,6 +176,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="feature-block-edit"></a>
+
 ## 4. 블록 선택 및 편집
 
 ### 개별 선택 / 범위 선택
@@ -171,6 +207,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="feature-color-edit"></a>
+
 ## 5. 색상 편집
 
 <p align="center">
@@ -191,6 +229,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="feature-control-guide"></a>
+
 ## 6. 상황별 조작 안내
 
 <p align="center">
@@ -208,6 +248,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 - 접었을 때는 `F12`만 남겨 플레이 화면을 최소한으로 가림
 
 ---
+
+<a id="feature-world-manage"></a>
 
 ## 7. 월드 관리
 
@@ -239,6 +281,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="feature-lighting"></a>
+
 ## 8. 개인 월드 조명
 
 <p align="center">
@@ -259,6 +303,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 이를 이용해 월드마다 서로 다른 분위기와 시각적 연출을 구성할 수 있습니다.
 
 ---
+
+<a id="feature-camera-effects"></a>
 
 ## 9. 카메라 / 화면 효과
 
@@ -282,6 +328,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 각 효과를 개별적으로 켜고 끌 수 있어 원하는 화면 분위기를 구성할 수 있습니다.
 
 ---
+
+<a id="game-settings"></a>
 
 # 게임 설정
 
@@ -360,6 +408,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="tech-stack"></a>
+
 # 사용 기술
 
 - **Unity**
@@ -376,6 +426,8 @@ NewWorld의 세이브 데이터는 **카세트 테이프 형태의 UI**를 통�
 
 ---
 
+<a id="full-video"></a>
+
 # 전체 기능 영상 보기
 
 NewWorld의 주요 기능을 순서대로 확인할 수 있는 전체 영상입니다.
@@ -383,6 +435,8 @@ NewWorld의 주요 기능을 순서대로 확인할 수 있는 전체 영상입�
 https://github.com/Yun-Jiyeol/NewWorld/issues/1
 
 ---
+
+<a id="development-status"></a>
 
 # 개발 상태
 
